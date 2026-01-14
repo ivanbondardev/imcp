@@ -30,9 +30,21 @@ The **Iron Man Suit** metaphor:
 | 4 | [Approval Pattern](./docs/core/03_approval_pattern.md) | Human-in-the-loop mechanism |
 | 5 | [Case Cockpit UX](./docs/core/04_case_cockpit_ux.md) | UI/UX patterns |
 
-### 2. Explore a Case Example
+### 2. Learn How to Create New Case Templates
 
-📁 **[docs/case_templates/f1_sea_import/](./docs/case_templates/f1_sea_import/)** — sea import from China
+📄 **[Case Template Implementation Framework](./docs/case_templates/IMPLEMENTATION_FRAMEWORK.md)** — developer's guide
+
+Step-by-step process for transforming raw manager instructions into a complete case_template:
+- 10 implementation phases
+- Interview questions for SME and system administrators (1C, email, partners)
+- State machine design patterns
+- Approval gates methodology
+- Checklists and quality gates
+
+### 3. Explore a Case Example
+
+📁 **[docs/case_templates/](./docs/case_templates/)** — all case templates  
+🚢 **[docs/case_templates/f1_sea_import/](./docs/case_templates/f1_sea_import/)** — sea import from China
 
 This is a complete case type example with:
 - state machine (states and transitions)
@@ -84,6 +96,7 @@ AI        — a tool, not a decision-maker
 ## Quick Links
 
 - 📖 [Core Documentation](./docs/core/README.md)
+- 🛠️ [Case Template Implementation Framework](./docs/case_templates/IMPLEMENTATION_FRAMEWORK.md)
 - 🚢 [F1 Sea Import Template](./docs/case_templates/f1_sea_import/)
 - 📊 [Data Model Contract](./docs/core/02_core_data_model.md)
 
