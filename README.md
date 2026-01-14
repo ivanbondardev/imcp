@@ -68,16 +68,16 @@ AI        — a tool, not a decision-maker
 
 ## 🎮 Live Demo
 
-**[▶️ Open Demo](https://ivbon.github.io/imcp/)** — інтерактивна демонстрація платформи
+**[▶️ Open Demo](https://ivanbondardev.github.io/imcp/)** — interactive platform demonstration
 
-| Сторінка | Опис |
-|----------|------|
-| [Landing](https://ivbon.github.io/imcp/) | Головна сторінка платформи |
-| [Case List](https://ivbon.github.io/imcp/demo/case-list.html) | Список справ з фільтрами |
-| [Case Detail](https://ivbon.github.io/imcp/demo/case-detail.html) | Детальний огляд справи |
-| [Timeline](https://ivbon.github.io/imcp/demo/timeline.html) | Хронологія подій |
-| [Documents](https://ivbon.github.io/imcp/demo/documents.html) | Управління документами |
-| [Approvals](https://ivbon.github.io/imcp/demo/approvals.html) | Погодження та верифікація |
+| Page | Description |
+|------|-------------|
+| [Landing](https://ivanbondardev.github.io/imcp/) | Platform landing page |
+| [Case List](https://ivanbondardev.github.io/imcp/demo/case-list.html) | Cases list with filters |
+| [Case Detail](https://ivanbondardev.github.io/imcp/demo/case-detail.html) | Detailed case overview |
+| [Timeline](https://ivanbondardev.github.io/imcp/demo/timeline.html) | Event timeline |
+| [Documents](https://ivanbondardev.github.io/imcp/demo/documents.html) | Document management |
+| [Approvals](https://ivanbondardev.github.io/imcp/demo/approvals.html) | Approvals & verification |
 
 ---
 
