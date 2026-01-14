@@ -79,6 +79,7 @@
 
 | Термін | Визначення |
 |--------|------------|
+| **IMCP** | Iron Man Case Platform — платформа часткової автономії |
 | **Case** | Одиниця роботи з початком, кінцем та state machine |
 | **Case Type** | Тип кейса (наприклад, `F1_SEA_IMPORT`) |
 | **Owner** | Відповідальний менеджер за кейс |
@@ -91,6 +92,7 @@
 | **Status** | Технічний агрегат (`OPEN`, `BLOCKED`, `DONE`, `ARCHIVED`) |
 | **Primary State** | Головний поточний стан (один на кейс) |
 | **Substate** | Паралельний підстан для незалежних процесів |
+| **State Machine** | Кінцевий автомат, що визначає можливі переходи між станами |
 
 ### Approvals & Decisions
 
@@ -100,14 +102,17 @@
 | **Approval Gate** | Human-in-the-loop точка для критичних рішень |
 | **Snapshot** | Збережений стан даних у момент створення approval |
 | **Draft** | Чернетка, підготовлена системою для верифікації |
+| **HITL** | Human-in-the-Loop — підхід, де людина залишається в циклі прийняття рішень |
+| **Partial Autonomy** | Часткова автономія — AI допомагає, але не замінює людину |
 
 ### UI & UX
 
 | Термін | Визначення |
 |--------|------------|
 | **NBA** | Next Best Action — наступна рекомендована дія |
-| **Case Cockpit** | Головний екран роботи з кейсом |
+| **Case Cockpit** | Головний екран роботи з кейсом ("кабіна пілота") |
 | **Timeline** | Хронологічний журнал подій кейса |
+| **Risk Indicator** | Візуальний індикатор ризику (червоний/жовтий/зелений) |
 
 ### Data & Events
 
@@ -117,16 +122,35 @@
 | **Computed** | JSONB-поле для розрахункових даних (AI, workflow) |
 | **Case Event** | Запис у журналі подій (audit log) |
 | **Idempotency Key** | Ключ для запобігання дублювання операцій |
+| **Audit Log** | Журнал аудиту — хто, що, коли зробив |
+| **Flag** | Прапорець ризику або стану (`LOW_CONFIDENCE`, `MISSING_DATA`) |
 
 ### Technical
 
 | Термін | Визначення |
 |--------|------------|
 | **SoT** | Source of Truth — єдине джерело істини (Supabase) |
+| **SLA** | Service Level Agreement — часові рамки/дедлайн для кейса |
+| **n8n** | Платформа автоматизації workflow з візуальним редактором |
 | **n8n Node** | Компонент автоматизації у n8n |
-| **RLS** | Row Level Security — контроль доступу на рівні рядків |
-| **SLA** | Service Level Agreement — часові рамки для кейса |
-| **Flag** | Прапорець ризику або стану (`LOW_CONFIDENCE`, `MISSING_DATA`) |
+| **RLS** | Row Level Security — безпека на рівні рядків у Postgres |
+| **JSONB** | Binary JSON — ефективний формат зберігання JSON у Postgres |
+| **Supabase** | Backend-as-a-Service на базі Postgres |
+| **LLM** | Large Language Model — велика мовна модель (GPT, Claude тощо) |
+
+### Логістичні терміни (F1_SEA_IMPORT)
+
+| Термін | Визначення |
+|--------|------------|
+| **B/L** | Bill of Lading — коносамент (документ на вантаж) |
+| **HBL** | House Bill of Lading — коносамент від експедитора |
+| **MBL** | Master Bill of Lading — коносамент від перевізника |
+| **ETA** | Estimated Time of Arrival — очікуваний час прибуття |
+| **ETD** | Estimated Time of Departure — очікуваний час відправлення |
+| **POL** | Port of Loading — порт завантаження |
+| **POD** | Port of Discharge — порт вивантаження |
+| **Incoterms** | Міжнародні правила торгівлі (FOB, CIF, EXW тощо) |
+| **HS Code** | Harmonized System Code — код товару для митниці |
 
 ---
 
