@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approvals — IMCP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <h1>IMCP</h1>
+          <span>Case Platform</span>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="sidebar-nav">
+          <li>
+            <a href="../index.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              Головна
+            </a>
+          </li>
+          <li>
+            <a href="case-list.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              Кейси
+              <span class="nav-badge">12</span>
+            </a>
+          </li>
+          <li>
+            <a href="approvals.html" class="active">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              Підтвердження
+              <span class="nav-badge">3</span>
+            </a>
+          </li>
+          <li>
+            <a href="documents.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Документи
+            </a>
+          </li>
+          <li>
+            <a href="timeline.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Таймлайн
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Фільтри</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Очікують рішення
+                <span class="nav-badge">3</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Затверджені
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                Відхилені
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2>Підтвердження (Approvals)</h2>
+            <p class="text-sm text-muted">Human Approval Gates — 3 очікують рішення</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+              </svg>
+              Фільтри
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="page-content">
+        <!-- Info Banner -->
+        <div class="info-banner">
+          <div class="info-banner-content">
+            <div class="info-banner-icon" style="background: var(--accent); color: white;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </div>
+            <div>
+              <h4 style="color: var(--accent);">Про Human Approval Gates</h4>
+              <p>
+                Approval — це контрольна точка, де система підготувала чернетку рішення, і людина повинна 
+                <strong>підтвердити</strong>, <strong>відредагувати і підтвердити</strong>, або <strong>відхилити</strong>. 
+                Кожне рішення фіксується з повною аудит-історією.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="inbox-section">
+          <div class="inbox-section-header">
+            <h3 class="inbox-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warning);">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Очікують рішення (PENDING)
+              <span class="inbox-section-count">3</span>
+            </h3>
+          </div>
+
+          <!-- Approval 1: Quote -->
+          <div class="approval-item">
+            <div class="approval-header">
+              <div class="approval-type">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"/>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                QUOTE_APPROVAL
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="badge badge-warning">PENDING</span>
+                <a href="case-detail.html" class="btn btn-sm btn-ghost">Case: F1-SEA-2026-02451</a>
+              </div>
+            </div>
+            <div class="approval-body">
+              <div class="mb-4">
+                <h4>Підтвердити калькуляцію ціни</h4>
+                <p class="text-sm text-secondary mt-2">
+                  Client: ACME Ltd • Route: Yiwu → Kyiv (SEA) • Cargo: 12 pcs, 3.2 cbm
+                </p>
+              </div>
+              
+              <div class="approval-snapshot">
+                <div style="font-weight: 600; margin-bottom: 8px;">Request Snapshot:</div>
+                <pre style="margin: 0; white-space: pre-wrap; border: none; padding: 0; background: transparent;">{
+  "base_cost_usd": 2450,
+  "margin_usd": 350,
+  "total_usd": 2800,
+  "validity_days": 7,
+  "assumptions": [
+    "Stackable cargo",
+    "No dangerous goods",
+    "Standard container load"
+  ],
+  "risks": [
+    "Dimensions not verified by warehouse"
+  ]
+}</pre>
+              </div>
+
+              <div class="risk-flag risk-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>Ризик: габарити клієнта ще не верифіковані складом</span>
+              </div>
+            </div>
+            <div class="approval-actions">
+              <button class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Approve
+              </button>
+              <button class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Edit & Approve
+              </button>
+              <button class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Reject
+              </button>
+            </div>
+          </div>
+
+          <!-- Approval 2: Dims Change -->
+          <div class="approval-item">
+            <div class="approval-header">
+              <div class="approval-type">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                DIMS_CHANGE_APPROVAL
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="badge badge-warning">PENDING</span>
+                <span class="badge badge-danger">SLA: 8h</span>
+                <a href="case-detail.html" class="btn btn-sm btn-ghost">Case: F1-SEA-2026-02448</a>
+              </div>
+            </div>
+            <div class="approval-body">
+              <div class="mb-4">
+                <h4>Підтвердити зміну габаритів</h4>
+                <p class="text-sm text-secondary mt-2">
+                  Client: Global Trade LLC • Warehouse виміряв інші габарити
+                </p>
+              </div>
+              
+              <div class="approval-snapshot">
+                <div style="font-weight: 600; margin-bottom: 8px;">Dims Comparison:</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div>
+                    <div class="text-xs text-muted" style="text-transform: uppercase; margin-bottom: 4px;">Client Declared</div>
+                    <div class="text-secondary">3.2 cbm • 12 packages</div>
+                  </div>
+                  <div>
+                    <div class="text-xs text-muted" style="text-transform: uppercase; margin-bottom: 4px;">Warehouse Measured</div>
+                    <div style="color: var(--danger); font-weight: 500;">4.1 cbm • 12 packages (+28%)</div>
+                  </div>
+                </div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--divider);">
+                  <div class="text-sm" style="color: var(--warning);">
+                    ⚠️ Зміна габаритів >10% вплине на ціну (+$180)
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="approval-actions">
+              <button class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Approve New Dims
+              </button>
+              <button class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Edit Dims
+              </button>
+              <button class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Reject
+              </button>
+            </div>
+          </div>
+
+          <!-- Approval 3: BL Draft -->
+          <div class="approval-item">
+            <div class="approval-header">
+              <div class="approval-type">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                BL_DRAFT_APPROVAL
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="badge badge-warning">PENDING</span>
+                <a href="case-detail.html" class="btn btn-sm btn-ghost">Case: F1-SEA-2026-02445</a>
+              </div>
+            </div>
+            <div class="approval-body">
+              <div class="mb-4">
+                <h4>Перевірити драфт коносаменту (BL)</h4>
+                <p class="text-sm text-secondary mt-2">
+                  Client: Tech Import UA • ЗЕД надіслав драфт BL для перевірки
+                </p>
+              </div>
+              
+              <div class="approval-snapshot">
+                <div style="font-weight: 600; margin-bottom: 8px;">BL Draft Details:</div>
+                <pre style="margin: 0; white-space: pre-wrap; border: none; padding: 0; background: transparent;">{
+  "bl_number": "MSKU1234567890",
+  "shipper": "Shenzhen Tech Co Ltd",
+  "consignee": "Tech Import UA LLC",
+  "vessel": "EVER GOLDEN",
+  "voyage": "123E",
+  "port_of_loading": "SHENZHEN",
+  "port_of_discharge": "ODESSA",
+  "packages": "15 PALLETS",
+  "description": "ELECTRONIC COMPONENTS",
+  "ai_check": {
+    "confidence": 0.92,
+    "issues_found": 1,
+    "issue_description": "Consignee name differs from contract"
+  }
+}</pre>
+              </div>
+
+              <div class="risk-flag risk-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>AI виявив: Назва консигнатора відрізняється від контракту</span>
+              </div>
+            </div>
+            <div class="approval-actions">
+              <button class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Approve BL
+              </button>
+              <button class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                View Document
+              </button>
+              <button class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Request Correction
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recently Decided -->
+        <div class="inbox-section">
+          <div class="inbox-section-header">
+            <h3 class="inbox-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Нещодавно вирішені
+              <span class="inbox-section-count">5</span>
+            </h3>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Тип</th>
+                    <th>Case</th>
+                    <th>Рішення</th>
+                    <th>Хто</th>
+                    <th>Коли</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="badge badge-primary">QUOTE_APPROVAL</span></td>
+                    <td>F1-SEA-2026-02444</td>
+                    <td><span class="status-badge status-approved">APPROVED</span></td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <span class="avatar avatar-sm">МК</span>
+                        Марія К.
+                      </div>
+                    </td>
+                    <td>Вчора, 16:42</td>
+                    <td><button class="btn btn-sm btn-ghost">Details</button></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-primary">ONEC_DEAL_CREATE</span></td>
+                    <td>F1-SEA-2026-02443</td>
+                    <td><span class="status-badge status-approved">APPROVED</span></td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <span class="avatar avatar-sm">ІП</span>
+                        Іван П.
+                      </div>
+                    </td>
+                    <td>Вчора, 14:20</td>
+                    <td><button class="btn btn-sm btn-ghost">Details</button></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-primary">DIMS_CHANGE</span></td>
+                    <td>F1-SEA-2026-02442</td>
+                    <td><span class="status-badge status-rejected">REJECTED</span></td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <span class="avatar avatar-sm">ОС</span>
+                        Олена С.
+                      </div>
+                    </td>
+                    <td>Вчора, 11:05</td>
+                    <td><button class="btn btn-sm btn-ghost">Details</button></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-primary">BL_DRAFT</span></td>
+                    <td>F1-SEA-2026-02441</td>
+                    <td><span class="status-badge status-approved">APPROVED</span></td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <span class="avatar avatar-sm">ІП</span>
+                        Іван П.
+                      </div>
+                    </td>
+                    <td>2 дні тому</td>
+                    <td><button class="btn btn-sm btn-ghost">Details</button></td>
+                  </tr>
+                  <tr>
+                    <td><span class="badge badge-primary">POA_SCAN</span></td>
+                    <td>F1-SEA-2026-02440</td>
+                    <td><span class="status-badge status-approved">APPROVED</span></td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <span class="avatar avatar-sm">МК</span>
+                        Марія К.
+                      </div>
+                    </td>
+                    <td>2 дні тому</td>
+                    <td><button class="btn btn-sm btn-ghost">Details</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approval Types Reference -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <h4 class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              Типи Approvals (F1_SEA_IMPORT)
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Тип</th>
+                    <th>Опис</th>
+                    <th>Що в request_snapshot</th>
+                    <th>Ризик</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>QUOTE_APPROVAL</code></td>
+                    <td>Підтвердження калькуляції ціни перед відправкою клієнту</td>
+                    <td>Breakdown собівартості, маржа, умови, ризики</td>
+                    <td><span class="badge badge-warning">Medium</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>ONEC_DEAL_CREATE_APPROVAL</code></td>
+                    <td>Підтвердження створення угоди в 1С</td>
+                    <td>Payload для 1C, idempotency_key</td>
+                    <td><span class="badge badge-danger">High</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>DIMS_CHANGE_APPROVAL</code></td>
+                    <td>Підтвердження зміни габаритів (client vs warehouse)</td>
+                    <td>Порівняння dims, вплив на ціну</td>
+                    <td><span class="badge badge-warning">Medium</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>BL_DRAFT_APPROVAL</code></td>
+                    <td>Перевірка драфту коносаменту</td>
+                    <td>BL version, diff з контрактом, AI check</td>
+                    <td><span class="badge badge-danger">High</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>POA_SCAN_APPROVAL</code></td>
+                    <td>Перевірка скану довіреності</td>
+                    <td>Document preview, checklist</td>
+                    <td><span class="badge badge-warning">Medium</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

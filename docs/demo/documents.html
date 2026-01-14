@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents — IMCP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <h1>IMCP</h1>
+          <span>Case Platform</span>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="sidebar-nav">
+          <li>
+            <a href="../index.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              Головна
+            </a>
+          </li>
+          <li>
+            <a href="case-list.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              Кейси
+              <span class="nav-badge">12</span>
+            </a>
+          </li>
+          <li>
+            <a href="approvals.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              Підтвердження
+              <span class="nav-badge">3</span>
+            </a>
+          </li>
+          <li>
+            <a href="documents.html" class="active">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Документи
+            </a>
+          </li>
+          <li>
+            <a href="timeline.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Таймлайн
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Фільтри</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Нещодавно завантажені
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 11 12 14 22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Потребують верифікації
+                <span class="nav-badge">4</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Верифіковані
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2>Документи</h2>
+            <p class="text-sm text-muted">Управління документами кейсів</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+              </svg>
+              Фільтри
+            </button>
+            <button class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Завантажити
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="page-content">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Потребують верифікації</span>
+              <div class="stat-icon warning">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">4</div>
+            <div class="stat-change negative">AI extracted, needs human check</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Завантажено сьогодні</span>
+              <div class="stat-icon primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">8</div>
+            <div class="stat-change positive">+3 vs вчора</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Верифіковано</span>
+              <div class="stat-icon success">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">156</div>
+            <div class="stat-change">Цього місяця</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">AI Extraction Rate</span>
+              <div class="stat-icon info">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">89%</div>
+            <div class="stat-change positive">Avg confidence</div>
+          </div>
+        </div>
+
+        <!-- Needs Verification Section -->
+        <div class="inbox-section">
+          <div class="inbox-section-header">
+            <h3 class="inbox-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warning);">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              Потребують верифікації
+              <span class="inbox-section-count">4</span>
+            </h3>
+          </div>
+
+          <div class="card">
+            <ul class="doc-list">
+              <li class="doc-item">
+                <div class="doc-icon" style="background: var(--warning-bg); color: var(--warning-text);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div class="doc-info">
+                  <div class="doc-name">Invoice_INV2026-0451.pdf</div>
+                  <div class="doc-meta">
+                    <span>INVOICE</span>
+                    <span>•</span>
+                    <span>ZED</span>
+                    <span>•</span>
+                    <span>Case: F1-SEA-2026-02451</span>
+                    <span>•</span>
+                    <span>AI: 92% confidence</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <div class="doc-actions">
+                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-success">Verify</button>
+                  </div>
+                </div>
+              </li>
+              <li class="doc-item">
+                <div class="doc-icon" style="background: var(--warning-bg); color: var(--warning-text);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div class="doc-info">
+                  <div class="doc-name">BL_Draft_MSKU1234567890.pdf</div>
+                  <div class="doc-meta">
+                    <span>BL_DRAFT</span>
+                    <span>•</span>
+                    <span>ZED</span>
+                    <span>•</span>
+                    <span>Case: F1-SEA-2026-02445</span>
+                    <span>•</span>
+                    <span style="color: var(--warning);">AI: 76% confidence</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="badge badge-danger">LOW CONFIDENCE</span>
+                  <div class="doc-actions">
+                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-success">Verify</button>
+                  </div>
+                </div>
+              </li>
+              <li class="doc-item">
+                <div class="doc-icon" style="background: var(--warning-bg); color: var(--warning-text);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div class="doc-info">
+                  <div class="doc-name">Packing_List_GT2026.xlsx</div>
+                  <div class="doc-meta">
+                    <span>PACKING_LIST</span>
+                    <span>•</span>
+                    <span>CLIENT</span>
+                    <span>•</span>
+                    <span>Case: F1-SEA-2026-02448</span>
+                    <span>•</span>
+                    <span>AI: 88% confidence</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <div class="doc-actions">
+                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-success">Verify</button>
+                  </div>
+                </div>
+              </li>
+              <li class="doc-item">
+                <div class="doc-icon" style="background: var(--warning-bg); color: var(--warning-text);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div class="doc-info">
+                  <div class="doc-name">POA_Scan_TechImport.pdf</div>
+                  <div class="doc-meta">
+                    <span>POA</span>
+                    <span>•</span>
+                    <span>CLIENT</span>
+                    <span>•</span>
+                    <span>Case: F1-SEA-2026-02445</span>
+                    <span>•</span>
+                    <span>AI: 95% confidence</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <div class="doc-actions">
+                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-success">Verify</button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Recently Uploaded Section -->
+        <div class="inbox-section">
+          <div class="inbox-section-header">
+            <h3 class="inbox-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Нещодавно завантажені
+            </h3>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Документ</th>
+                    <th>Тип</th>
+                    <th>Case</th>
+                    <th>Джерело</th>
+                    <th>Статус</th>
+                    <th>Завантажено</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="flex items-center gap-3">
+                        <div class="doc-icon" style="width: 28px; height: 28px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                          </svg>
+                        </div>
+                        <span style="font-weight: 500;">Contract_ACME_2026.pdf</span>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-gray">CONTRACT</span></td>
+                    <td><a href="case-detail.html" style="color: var(--accent); text-decoration: none;">F1-SEA-2026-02451</a></td>
+                    <td>CLIENT</td>
+                    <td><span class="badge badge-success">VERIFIED</span></td>
+                    <td>Сьогодні, 11:30</td>
+                    <td><button class="btn btn-sm btn-ghost">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center gap-3">
+                        <div class="doc-icon" style="width: 28px; height: 28px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                          </svg>
+                        </div>
+                        <span style="font-weight: 500;">Invoice_INV2026-0451.pdf</span>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-gray">INVOICE</span></td>
+                    <td><a href="case-detail.html" style="color: var(--accent); text-decoration: none;">F1-SEA-2026-02451</a></td>
+                    <td>ZED</td>
+                    <td><span class="badge badge-info">PROCESSING</span></td>
+                    <td>Сьогодні, 10:45</td>
+                    <td><button class="btn btn-sm btn-ghost">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center gap-3">
+                        <div class="doc-icon" style="width: 28px; height: 28px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                          </svg>
+                        </div>
+                        <span style="font-weight: 500;">Packing_List.xlsx</span>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-gray">PACKING_LIST</span></td>
+                    <td><a href="case-detail.html" style="color: var(--accent); text-decoration: none;">F1-SEA-2026-02451</a></td>
+                    <td>CLIENT</td>
+                    <td><span class="badge badge-success">VERIFIED</span></td>
+                    <td>Сьогодні, 09:20</td>
+                    <td><button class="btn btn-sm btn-ghost">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center gap-3">
+                        <div class="doc-icon" style="width: 28px; height: 28px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                          </svg>
+                        </div>
+                        <span style="font-weight: 500;">BL_Draft_MSKU1234.pdf</span>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-gray">BL_DRAFT</span></td>
+                    <td><a href="case-detail.html" style="color: var(--accent); text-decoration: none;">F1-SEA-2026-02445</a></td>
+                    <td>ZED</td>
+                    <td><span class="badge badge-warning">NEEDS VERIFICATION</span></td>
+                    <td>Вчора, 16:10</td>
+                    <td><button class="btn btn-sm btn-ghost">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center gap-3">
+                        <div class="doc-icon" style="width: 28px; height: 28px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                          </svg>
+                        </div>
+                        <span style="font-weight: 500;">Export_Declaration.pdf</span>
+                      </div>
+                    </td>
+                    <td><span class="badge badge-gray">EXPORT_DEC</span></td>
+                    <td><a href="case-detail.html" style="color: var(--accent); text-decoration: none;">F1-SEA-2026-02448</a></td>
+                    <td>BROKER</td>
+                    <td><span class="badge badge-success">VERIFIED</span></td>
+                    <td>Вчора, 14:55</td>
+                    <td><button class="btn btn-sm btn-ghost">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Types Reference -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <h4 class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              Типи документів (F1_SEA_IMPORT)
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>doc_type</th>
+                    <th>Опис</th>
+                    <th>Джерело</th>
+                    <th>AI Extraction</th>
+                    <th>Required State</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>CONTRACT</code></td>
+                    <td>Контракт з клієнтом</td>
+                    <td>CLIENT</td>
+                    <td>Extract parties, amounts</td>
+                    <td>CLIENT_INFO_COLLECTED</td>
+                  </tr>
+                  <tr>
+                    <td><code>INVOICE</code></td>
+                    <td>Інвойс постачальника</td>
+                    <td>CLIENT / ZED</td>
+                    <td>Extract items, totals</td>
+                    <td>CONFIRMED</td>
+                  </tr>
+                  <tr>
+                    <td><code>PACKING_LIST</code></td>
+                    <td>Пакувальний лист</td>
+                    <td>CLIENT</td>
+                    <td>Extract dims, weights</td>
+                    <td>CLIENT_INFO_COLLECTED</td>
+                  </tr>
+                  <tr>
+                    <td><code>BL_DRAFT</code></td>
+                    <td>Драфт коносаменту</td>
+                    <td>ZED</td>
+                    <td>Extract BL fields, compare with contract</td>
+                    <td>BL_DRAFT_RECEIVED</td>
+                  </tr>
+                  <tr>
+                    <td><code>POA</code></td>
+                    <td>Довіреність</td>
+                    <td>CLIENT</td>
+                    <td>Verify signatures, dates</td>
+                    <td>PRE_ARRIVAL_TASKS</td>
+                  </tr>
+                  <tr>
+                    <td><code>EXPORT_DEC</code></td>
+                    <td>Експортна декларація</td>
+                    <td>BROKER</td>
+                    <td>Limited extraction</td>
+                    <td>Optional</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Workflow -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h4>Document Flow: Upload → Extract → Verify</h4>
+          </div>
+          <div class="card-body">
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 120px; text-align: center; padding: 14px; background: var(--info-bg); border-radius: var(--radius-lg);">
+                <div style="font-size: 20px; margin-bottom: 6px;">📤</div>
+                <div style="font-weight: 600; color: var(--info-text);">UPLOADED</div>
+                <div class="text-xs text-muted">Human uploads file</div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+              <div style="flex: 1; min-width: 120px; text-align: center; padding: 14px; background: var(--warning-bg); border-radius: var(--radius-lg);">
+                <div style="font-size: 20px; margin-bottom: 6px;">🤖</div>
+                <div style="font-weight: 600; color: var(--warning-text);">PROCESSING</div>
+                <div class="text-xs text-muted">AI extracts data</div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+              <div style="flex: 1; min-width: 120px; text-align: center; padding: 14px; background: var(--success-bg); border-radius: var(--radius-lg);">
+                <div style="font-size: 20px; margin-bottom: 6px;">✅</div>
+                <div style="font-weight: 600; color: var(--success-text);">VERIFIED</div>
+                <div class="text-xs text-muted">Human confirms extraction</div>
+              </div>
+            </div>
+            <p class="text-sm text-secondary mt-4" style="text-align: center;">
+              Якщо AI confidence &lt; 85%, документ автоматично потребує верифікації людиною
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

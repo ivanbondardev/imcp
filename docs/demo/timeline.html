@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline — IMCP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <h1>IMCP</h1>
+          <span>Case Platform</span>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="sidebar-nav">
+          <li>
+            <a href="../index.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              Головна
+            </a>
+          </li>
+          <li>
+            <a href="case-list.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              Кейси
+              <span class="nav-badge">12</span>
+            </a>
+          </li>
+          <li>
+            <a href="approvals.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              Підтвердження
+              <span class="nav-badge">3</span>
+            </a>
+          </li>
+          <li>
+            <a href="documents.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Документи
+            </a>
+          </li>
+          <li>
+            <a href="timeline.html" class="active">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Таймлайн
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Фільтри подій</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                HUMAN
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                SYSTEM
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                </svg>
+                AI
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                INTEGRATION
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2>Timeline / Event Log</h2>
+            <p class="text-sm text-muted">Append-only audit log усіх подій платформи</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+              </svg>
+              Фільтри
+            </button>
+            <button class="btn btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Експорт
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="page-content">
+        <!-- Info Banner -->
+        <div class="info-banner success">
+          <div class="info-banner-content">
+            <div class="info-banner-icon" style="background: var(--success); color: white;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 style="color: var(--success);">Audit Trail & Accountability</h4>
+              <p>
+                Кожна подія фіксується з повним контекстом: хто, коли, що, на основі чого. 
+                <code>case_events</code> — append-only, видалення заборонено.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">Подій сьогодні</span>
+              <div class="stat-icon primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">47</div>
+            <div class="stat-change positive">+12 vs вчора</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">HUMAN events</span>
+              <div class="stat-icon success">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">18</div>
+            <div class="stat-change">38% від усіх</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">SYSTEM events</span>
+              <div class="stat-icon info">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">21</div>
+            <div class="stat-change">45% від усіх</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-label">AI events</span>
+              <div class="stat-icon warning">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">8</div>
+            <div class="stat-change">17% від усіх</div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Усі події (останні)
+            </h4>
+            <div class="btn-group">
+              <button class="btn btn-sm btn-ghost">Case: All</button>
+              <button class="btn btn-sm btn-ghost">Actor: All</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <!-- Today -->
+              <div class="text-xs text-muted" style="text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; padding-left: 24px; font-weight: 600;">
+                Сьогодні
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker system">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">SYSTEM</span>
+                    <span class="timeline-time">12:10</span>
+                  </div>
+                  <div class="timeline-event">APPROVAL_CREATED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    Type: QUOTE_APPROVAL • 
+                    <code>status: PENDING</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker system">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">SYSTEM</span>
+                    <span class="timeline-time">12:10</span>
+                  </div>
+                  <div class="timeline-event">STATE_CHANGED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    <code style="background: var(--warning-bg);">QUOTE_READY → QUOTE_APPROVAL_PENDING</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker system">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">SYSTEM</span>
+                    <span class="timeline-time">12:08</span>
+                  </div>
+                  <div class="timeline-event">QUOTE_CALCULATED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    <code style="background: var(--success-bg);">total: $2,800</code> • 
+                    version: 1
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker human">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">HUMAN (Іван П.)</span>
+                    <span class="timeline-time">11:42</span>
+                  </div>
+                  <div class="timeline-event">STATE_CHANGED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    <code style="background: var(--success-bg);">CLIENT_INFO_COLLECTED → QUOTE_READY</code> • 
+                    reason: all_required_fields_received
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker human">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">HUMAN (Іван П.)</span>
+                    <span class="timeline-time">11:30</span>
+                  </div>
+                  <div class="timeline-event">DOC_UPLOADED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    doc_type: CONTRACT • 
+                    source: CLIENT • 
+                    file: Contract_ACME_2026.pdf
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker ai">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">AI</span>
+                    <span class="timeline-time">10:30</span>
+                  </div>
+                  <div class="timeline-event">DOC_EXTRACTED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    <code style="background: var(--info-bg);">confidence: 92%</code> • 
+                    fields_count: 7 • 
+                    model: gpt-4
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker human">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">HUMAN (Іван П.)</span>
+                    <span class="timeline-time">09:55</span>
+                  </div>
+                  <div class="timeline-event">CASE_CREATED</div>
+                  <div class="timeline-details">
+                    Case: <a href="case-detail.html" style="color: var(--accent);">F1-SEA-2026-02451</a> • 
+                    case_type: F1_SEA_IMPORT • 
+                    initial_state: NEW • 
+                    client: ACME Ltd
+                  </div>
+                </div>
+              </div>
+
+              <!-- Yesterday -->
+              <div class="text-xs text-muted" style="text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 12px; padding-left: 24px; font-weight: 600;">
+                Вчора
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker human">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">HUMAN (Марія К.)</span>
+                    <span class="timeline-time">16:42</span>
+                  </div>
+                  <div class="timeline-event">APPROVAL_APPROVED</div>
+                  <div class="timeline-details">
+                    Case: F1-SEA-2026-02444 • 
+                    approval_type: QUOTE_APPROVAL • 
+                    <code style="background: var(--success-bg);">has_edits: false</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker system">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">SYSTEM</span>
+                    <span class="timeline-time">16:42</span>
+                  </div>
+                  <div class="timeline-event">STATE_CHANGED</div>
+                  <div class="timeline-details">
+                    Case: F1-SEA-2026-02444 • 
+                    <code style="background: var(--success-bg);">QUOTE_APPROVAL_PENDING → QUOTE_SENT</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker" style="border-color: var(--success);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">INTEGRATION (1C)</span>
+                    <span class="timeline-time">14:25</span>
+                  </div>
+                  <div class="timeline-event">INTEGRATION_SUCCESS</div>
+                  <div class="timeline-details">
+                    Case: F1-SEA-2026-02443 • 
+                    integration_type: ONEC • 
+                    action: CREATE_DEAL • 
+                    <code style="background: var(--success-bg);">external_id: DEAL-2026-0443</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker human">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">HUMAN (Іван П.)</span>
+                    <span class="timeline-time">14:20</span>
+                  </div>
+                  <div class="timeline-event">APPROVAL_APPROVED</div>
+                  <div class="timeline-details">
+                    Case: F1-SEA-2026-02443 • 
+                    approval_type: ONEC_DEAL_CREATE_APPROVAL
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker" style="border-color: var(--danger);">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">HUMAN (Олена С.)</span>
+                    <span class="timeline-time">11:05</span>
+                  </div>
+                  <div class="timeline-event">APPROVAL_REJECTED</div>
+                  <div class="timeline-details">
+                    Case: F1-SEA-2026-02442 • 
+                    approval_type: DIMS_CHANGE_APPROVAL • 
+                    <code style="background: var(--danger-bg);">reason: Потрібне перевимірювання</code>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker system">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-actor">SYSTEM</span>
+                    <span class="timeline-time">10:00</span>
+                  </div>
+                  <div class="timeline-event">EMAIL_SENT</div>
+                  <div class="timeline-details">
+                    Case: F1-SEA-2026-02448 • 
+                    to: client@globaltrade.com • 
+                    template: quote_notification • 
+                    subject: "Ваша калькуляція готова"
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Types Reference -->
+        <div class="card mt-6">
+          <div class="card-header">
+            <h4 class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              Event Taxonomy (IMCP)
+            </h4>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+              <!-- Core Events -->
+              <div>
+                <h5 class="mb-2">Core Events</h5>
+                <ul style="list-style: none; font-size: 12px;">
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code>CASE_CREATED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Кейс створено</span>
+                  </li>
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code>STATE_CHANGED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Змінено бізнес-стан</span>
+                  </li>
+                  <li style="padding: 6px 0;">
+                    <code>STATUS_CHANGED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Змінено технічний статус</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Approval Events -->
+              <div>
+                <h5 class="mb-2">Approval Events</h5>
+                <ul style="list-style: none; font-size: 12px;">
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code style="background: var(--warning-bg);">APPROVAL_CREATED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Створено запит</span>
+                  </li>
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code style="background: var(--success-bg);">APPROVAL_APPROVED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Затверджено</span>
+                  </li>
+                  <li style="padding: 6px 0;">
+                    <code style="background: var(--danger-bg);">APPROVAL_REJECTED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Відхилено</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Document Events -->
+              <div>
+                <h5 class="mb-2">Document Events</h5>
+                <ul style="list-style: none; font-size: 12px;">
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code>DOC_UPLOADED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Завантажено документ</span>
+                  </li>
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code style="background: var(--info-bg);">DOC_EXTRACTED</code>
+                    <span class="text-muted" style="margin-left: 6px;">AI витягнув дані</span>
+                  </li>
+                  <li style="padding: 6px 0;">
+                    <code style="background: var(--success-bg);">DOC_VERIFIED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Верифіковано людиною</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Integration Events -->
+              <div>
+                <h5 class="mb-2">Integration Events</h5>
+                <ul style="list-style: none; font-size: 12px;">
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code>INTEGRATION_STARTED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Розпочато</span>
+                  </li>
+                  <li style="padding: 6px 0; border-bottom: 1px solid var(--divider);">
+                    <code style="background: var(--success-bg);">INTEGRATION_SUCCESS</code>
+                    <span class="text-muted" style="margin-left: 6px;">Успішно</span>
+                  </li>
+                  <li style="padding: 6px 0;">
+                    <code style="background: var(--danger-bg);">INTEGRATION_FAILED</code>
+                    <span class="text-muted" style="margin-left: 6px;">Помилка</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actor Types -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h4>Actor Types</h4>
+          </div>
+          <div class="card-body">
+            <div class="flex gap-6" style="flex-wrap: wrap;">
+              <div class="flex items-center gap-3">
+                <div class="timeline-marker human" style="position: static; width: 28px; height: 28px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 12px;">HUMAN</div>
+                  <div class="text-xs text-muted">Дії менеджера</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="timeline-marker system" style="position: static; width: 28px; height: 28px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 12px;">SYSTEM</div>
+                  <div class="text-xs text-muted">n8n workflows, triggers</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="timeline-marker ai" style="position: static; width: 28px; height: 28px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 12px;">AI</div>
+                  <div class="text-xs text-muted">Extraction, generation</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="timeline-marker" style="position: static; width: 28px; height: 28px; border-color: var(--success);">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style="font-weight: 600; font-size: 12px;">INTEGRATION</div>
+                  <div class="text-xs text-muted">1C, API callbacks</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

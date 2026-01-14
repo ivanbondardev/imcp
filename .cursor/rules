@@ -1,0 +1,134 @@
+# IMCP — Iron Man Case Platform
+
+> **AI генерує. Людина вирішує. Відповідальність залишається людською.**
+
+## Про проєкт
+
+IMCP — платформа часткової автономії для управління складними бізнес-кейсами.
+Метафора: Iron Man Suit — людина-пілот + AI-екзоскелет.
+
+## Архітектура
+
+```
+Supabase  = Source of Truth (єдине джерело істини)
+n8n       = Orchestration Layer (виконавець workflows)
+UI        = Case Cockpit (кабіна пілота, Next.js)
+AI        = Інструмент, НЕ суб'єкт рішення
+```
+
+### Ключові принципи
+
+1. **Case-Driven** — усе обертається навколо кейсу
+2. **Human-in-the-Loop** — критичні рішення приймає людина
+3. **Draft-First** — система генерує чернетки, людина верифікує
+4. **Event-Driven** — зміни = події, які тригерять автоматизацію
+5. **Auditability** — кожна дія логується
+
+## Термінологія (ВАЖЛИВО)
+
+| Термін | Значення |
+|--------|----------|
+| `state` | Бізнес-стан у state machine (WAITING_CLIENT_INFO, QUOTE_READY) |
+| `status` | Технічний агрегат (OPEN, BLOCKED, DONE, ARCHIVED) |
+| `approval` | Контрольна точка, де людина підтверджує рішення |
+| `snapshot` | Збережений стан даних у момент створення approval |
+| `payload` | JSONB з доменними даними кейса |
+| `computed` | JSONB з розрахунковими даними (AI, workflow) |
+| `NBA` | Next Best Action — наступна рекомендована дія |
+
+## UI Contract — Що UI може і НЕ може
+
+### UI МОЖЕ записувати:
+- `cases.payload.*` — доменні поля
+- `approvals` — створювати (PENDING) та вирішувати (decision_*)
+- `documents` — метадані нових документів
+- `case_events` — тільки actor_type='HUMAN'
+
+### UI НЕ МОЖЕ:
+- ❌ Змінювати `cases.state` — контролюється n8n
+- ❌ Змінювати `cases.status` — рахується автоматично
+- ❌ Змінювати `cases.computed` — результати AI/workflow
+- ❌ Запускати workflows напряму — тільки через зміни даних
+
+## Event Types (канонічні)
+
+Core: CASE_CREATED, STATE_CHANGED, STATUS_CHANGED
+Approval: APPROVAL_CREATED, APPROVAL_APPROVED, APPROVAL_REJECTED
+Document: DOC_UPLOADED, DOC_EXTRACTED, DOC_VERIFIED
+Integration: INTEGRATION_STARTED, INTEGRATION_SUCCESS, INTEGRATION_FAILED
+
+## Approval Pattern
+
+```
+1. Система готує request_snapshot (чернетка)
+2. Створюється approval (status=PENDING)
+3. Людина вирішує: APPROVED / REJECTED / CANCELLED
+4. Workflow реагує на APPROVAL_DECIDED
+5. Рішення immutable — не змінюється після прийняття
+```
+
+## Idempotency (ОБОВ'ЯЗКОВО)
+
+- approvals.idempotency_key — UNIQUE
+- case_events.idempotency_key — для дедуплікації
+- Інтеграції: case_id + action + version
+
+## JSONB Ownership
+
+| Поле | UI | n8n | AI |
+|------|----|----|-----|
+| payload.client | ✅ | ❌ | ❌ |
+| payload.cargo | ✅ | ✅ | ✅ |
+| computed.quote | ❌ | ✅ | ❌ |
+| computed.risks | ❌ | ✅ | ✅ |
+| computed.nba | ❌ | ✅ | ❌ |
+
+## Структура документації
+
+```
+docs/core/
+├── 00_shared_mental_model.md  — ментальна модель
+├── 01_architecture_overview.md — архітектура + контракти
+├── 02_core_data_model.md      — модель даних (специфікація)
+├── 03_approval_pattern.md     — патерн підтверджень
+├── 04_case_cockpit_ux.md      — UX/UI патерни
+
+docs/case_templates/
+└── f1_sea_import/             — приклад типу кейса
+```
+
+## Coding Conventions
+
+### Supabase/SQL
+- Таблиці: snake_case (cases, case_events, approvals)
+- JSONB поля: payload, computed, metadata
+- Timestamps: created_at, updated_at (TIMESTAMPTZ)
+- UUID для всіх PK
+
+### TypeScript/Next.js
+- Інтерфейси для payload per case_type
+- Strict null checks
+- Zod для валідації JSONB
+
+### n8n Workflows
+- Короткі, подієві (не довгі очікування)
+- Кожен workflow = реакція на конкретну подію
+- Idempotency keys для всіх критичних дій
+- Логування в case_events
+
+## Failure Handling
+
+```
+Transient errors → Retry (max 3, exponential backoff)
+Integration errors → Log event + create incident
+Critical errors → Alert + pause workflows
+```
+
+## Перед написанням коду
+
+1. Перевір docs/core/ для контрактів
+2. Використовуй правильну термінологію (state ≠ status)
+3. UI не змінює state/status/computed напряму
+4. Кожна критична дія через approval
+5. Логуй події в case_events
+6. Використовуй idempotency keys
