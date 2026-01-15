@@ -312,6 +312,26 @@ code {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Video Embed Wrapper */
+.video-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 3rem auto 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 /* Problems Section */
 .problems-section {
   padding: 5rem 1.5rem;
