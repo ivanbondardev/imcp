@@ -14,6 +14,11 @@
 | [ui_style_reference.md](./ui_style_reference.md) | Guide | UX/UI, Frontend | Дизайн-токени, палітра, компоненти |
 | [owner_dashboard_spec.md](./owner_dashboard_spec.md) | Spec | Business Owner, Ops Lead, Product, UX | Специфікація Owner Dashboard |
 | [personal_settings_spec.md](./personal_settings_spec.md) | Spec | Product, UX/UI, Frontend, Architecture | Персональні налаштування менеджера |
+| [case_list_spec.md](./case_list_spec.md) | Spec | Product, UX/UI, Frontend, Operations Manager | Операційна черга кейсів (Case List) |
+| [documents_spec.md](./documents_spec.md) | Spec | Product, UX/UI, Frontend, Operations Manager | Управління документами та AI верифікація |
+| [case_detail_spec.md](./case_detail_spec.md) | Spec | Product, UX/UI, Frontend, Operations Manager | Case Cockpit — детальний екран кейса |
+| [timeline_spec.md](./timeline_spec.md) | Spec | Product, UX/UI, Frontend, Compliance | Timeline / Event Log — append-only audit log |
+| [approvals_spec.md](./approvals_spec.md) | Spec | Product, UX/UI, Frontend, Operations Manager | Human Approval Gates |
 
 ---
 
@@ -54,6 +59,11 @@ UI/UX документи базуються на core специфікаціях
 ### Completed
 
 - [x] `personal_settings_spec.md` — персональні налаштування та система нотифікацій
+- [x] `case_list_spec.md` — операційна черга кейсів
+- [x] `case_detail_spec.md` — Case Cockpit (детальний екран кейса)
+- [x] `documents_spec.md` — управління документами та AI верифікація
+- [x] `approvals_spec.md` — Human Approval Gates
+- [x] `timeline_spec.md` — Timeline / Event Log
 
 ### Planned
 
@@ -67,5 +77,10 @@ UI/UX документи базуються на core специфікаціях
 1. **[Core README](../core/README.md)** — загальне розуміння платформи
 2. **[ui_style_reference.md](./ui_style_reference.md)** — дизайн-система
 3. **[04_case_cockpit_ux.md](../core/04_case_cockpit_ux.md)** — основний UI для менеджерів
-4. **[owner_dashboard_spec.md](./owner_dashboard_spec.md)** — UI для бізнес-овнерів
-5. **[personal_settings_spec.md](./personal_settings_spec.md)** — персональні налаштування
+4. **[case_list_spec.md](./case_list_spec.md)** — операційна черга кейсів
+5. **[case_detail_spec.md](./case_detail_spec.md)** — Case Cockpit (детальний екран кейса)
+6. **[documents_spec.md](./documents_spec.md)** — управління документами
+7. **[approvals_spec.md](./approvals_spec.md)** — Human Approval Gates
+8. **[timeline_spec.md](./timeline_spec.md)** — Timeline / Event Log
+9. **[owner_dashboard_spec.md](./owner_dashboard_spec.md)** — UI для бізнес-овнерів
+10. **[personal_settings_spec.md](./personal_settings_spec.md)** — персональні налаштування
