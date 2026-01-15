@@ -145,7 +145,7 @@
               </svg>
               Фільтри
             </button>
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" onclick="openNewCaseModal()">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -597,5 +597,543 @@
       </div>
     </main>
   </div>
+
+  <!-- Modal: Новий кейс -->
+  <div id="newCaseModal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Створити новий кейс</h3>
+        <button class="btn btn-icon btn-ghost" onclick="closeNewCaseModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="newCaseForm">
+          <!-- Тип кейсу -->
+          <div class="form-group">
+            <label class="form-label" for="caseType">Тип кейсу <span class="text-danger">*</span></label>
+            <select class="form-select" id="caseType" required onchange="updateCaseTypeFields()">
+              <option value="">Оберіть тип кейсу...</option>
+              <option value="F1_SEA_IMPORT">🚢 Морський імпорт (Китай → Україна)</option>
+              <option value="F1_AIR_IMPORT">✈️ Авіа імпорт</option>
+              <option value="F1_RAIL_IMPORT">🚂 Залізничний імпорт</option>
+              <option value="F1_AUTO_EXPORT">🚛 Авто експорт</option>
+            </select>
+            <p class="form-help" id="caseTypeHelp"></p>
+          </div>
+
+          <!-- Клієнт -->
+          <div class="form-group">
+            <label class="form-label" for="clientSelect">Клієнт <span class="text-danger">*</span></label>
+            <div class="client-select-wrapper">
+              <select class="form-select" id="clientSelect" required>
+                <option value="">Оберіть клієнта...</option>
+                <option value="client_1">ACME Ltd</option>
+                <option value="client_2">Global Trade LLC</option>
+                <option value="client_3">Tech Import UA</option>
+                <option value="client_4">Світ Товарів</option>
+                <option value="client_5">ФОП Коваленко</option>
+                <option value="new">+ Додати нового клієнта</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Форма нового клієнта (прихована) -->
+          <div id="newClientFields" class="new-client-fields" style="display: none;">
+            <div class="form-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              Новий клієнт
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="newClientName">Назва компанії <span class="text-danger">*</span></label>
+                <input type="text" class="form-input" id="newClientName" placeholder="ТОВ Приклад">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="newClientContact">Контактна особа</label>
+                <input type="text" class="form-input" id="newClientContact" placeholder="Іван Петренко">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="newClientEmail">Email</label>
+                <input type="email" class="form-input" id="newClientEmail" placeholder="client@example.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="newClientPhone">Телефон</label>
+                <input type="tel" class="form-input" id="newClientPhone" placeholder="+380 50 123 4567">
+              </div>
+            </div>
+          </div>
+
+          <!-- Динамічні поля залежно від типу кейсу -->
+          <div id="caseTypeFields" style="display: none;">
+            
+            <!-- Поля для F1_SEA_IMPORT -->
+            <div id="fields_F1_SEA_IMPORT" class="case-type-fields" style="display: none;">
+              <div class="form-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                Дані відправлення (морський імпорт)
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="originWarehouse">Склад відправлення <span class="text-danger">*</span></label>
+                  <select class="form-select" id="originWarehouse">
+                    <option value="">Оберіть склад...</option>
+                    <option value="YIWU">Yiwu (Китай)</option>
+                    <option value="SHENZHEN">Shenzhen (Китай)</option>
+                    <option value="GUANGZHOU">Guangzhou (Китай)</option>
+                    <option value="OTHER">Інший</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="readyDate">Дата готовності вантажу</label>
+                  <input type="date" class="form-input" id="readyDate">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="cargoDescription">Опис вантажу</label>
+                <textarea class="form-textarea" id="cargoDescription" rows="2" placeholder="Опишіть товар, кількість місць, особливості..."></textarea>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="packagesCount">Кількість місць</label>
+                  <input type="number" class="form-input" id="packagesCount" min="1" placeholder="10">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="brokerOwner">Брокер</label>
+                  <select class="form-select" id="brokerOwner">
+                    <option value="OUR">Наш брокер</option>
+                    <option value="CLIENT">Брокер клієнта</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">
+                    <input type="checkbox" id="dangerousGoods"> Небезпечний вантаж
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <input type="checkbox" id="stackable" checked> Можна штабелювати
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Поля для F1_AIR_IMPORT -->
+            <div id="fields_F1_AIR_IMPORT" class="case-type-fields" style="display: none;">
+              <div class="form-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+                </svg>
+                Дані відправлення (авіа імпорт)
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="airOriginCity">Місто відправлення</label>
+                  <input type="text" class="form-input" id="airOriginCity" placeholder="Шанхай, Пекін...">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="airReadyDate">Дата готовності</label>
+                  <input type="date" class="form-input" id="airReadyDate">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="airCargoDescription">Опис вантажу</label>
+                <textarea class="form-textarea" id="airCargoDescription" rows="2" placeholder="Опишіть товар..."></textarea>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="airWeightKg">Вага (кг)</label>
+                  <input type="number" class="form-input" id="airWeightKg" min="0.1" step="0.1" placeholder="25.5">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="airUrgency">Терміновість</label>
+                  <select class="form-select" id="airUrgency">
+                    <option value="STANDARD">Стандартна</option>
+                    <option value="EXPRESS">Експрес</option>
+                    <option value="URGENT">Термінова</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Поля для F1_RAIL_IMPORT -->
+            <div id="fields_F1_RAIL_IMPORT" class="case-type-fields" style="display: none;">
+              <div class="form-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="3" width="16" height="16" rx="2"/>
+                  <path d="M4 11h16"/>
+                  <path d="M12 3v8"/>
+                  <path d="m8 19-2 3"/>
+                  <path d="m18 22-2-3"/>
+                </svg>
+                Дані відправлення (залізничний імпорт)
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="railOriginStation">Станція відправлення</label>
+                  <input type="text" class="form-input" id="railOriginStation" placeholder="Xian, Zhengzhou...">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="railDestStation">Станція призначення</label>
+                  <input type="text" class="form-input" id="railDestStation" placeholder="Київ-Ліски, Одеса...">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="railContainerType">Тип контейнера</label>
+                <select class="form-select" id="railContainerType">
+                  <option value="20FT">20' стандарт</option>
+                  <option value="40FT">40' стандарт</option>
+                  <option value="40HC">40' High Cube</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Поля для F1_AUTO_EXPORT -->
+            <div id="fields_F1_AUTO_EXPORT" class="case-type-fields" style="display: none;">
+              <div class="form-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 17h4V5H2v12h3"/>
+                  <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/>
+                  <circle cx="7.5" cy="17.5" r="2.5"/>
+                  <circle cx="17.5" cy="17.5" r="2.5"/>
+                </svg>
+                Дані відправлення (авто експорт)
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="autoOriginCity">Місто завантаження</label>
+                  <input type="text" class="form-input" id="autoOriginCity" placeholder="Київ, Львів...">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="autoDestCountry">Країна призначення</label>
+                  <input type="text" class="form-input" id="autoDestCountry" placeholder="Польща, Німеччина...">
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="autoLoadDate">Дата завантаження</label>
+                  <input type="date" class="form-input" id="autoLoadDate">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="autoTruckType">Тип транспорту</label>
+                  <select class="form-select" id="autoTruckType">
+                    <option value="TENT">Тент</option>
+                    <option value="REF">Рефрижератор</option>
+                    <option value="CONTAINER">Контейнеровоз</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Додаткові примітки -->
+          <div class="form-group" id="notesGroup" style="display: none;">
+            <label class="form-label" for="caseNotes">Примітки</label>
+            <textarea class="form-textarea" id="caseNotes" rows="2" placeholder="Додаткова інформація..."></textarea>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNewCaseModal()">Скасувати</button>
+        <button class="btn btn-primary" onclick="createNewCase()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Створити кейс
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal {
+      background: var(--bg-editor);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-popup);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      animation: modalSlideIn 0.2s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .modal-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--divider);
+      background: var(--bg-panel);
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 16px 0 12px;
+      padding: 8px 12px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--divider);
+    }
+
+    .form-section-title svg {
+      color: var(--accent);
+    }
+
+    .new-client-fields {
+      background: var(--accent-light);
+      padding: 12px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      border: 1px solid #b3d4fc;
+    }
+
+    .new-client-fields .form-section-title {
+      background: white;
+      margin-top: 0;
+    }
+
+    .case-type-fields {
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .form-label input[type="checkbox"] {
+      margin-right: 8px;
+      transform: translateY(1px);
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal {
+        max-height: 95vh;
+      }
+    }
+  </style>
+
+  <script>
+    // Відкрити модальне вікно
+    function openNewCaseModal() {
+      document.getElementById('newCaseModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Закрити модальне вікно
+    function closeNewCaseModal() {
+      document.getElementById('newCaseModal').style.display = 'none';
+      document.body.style.overflow = '';
+      resetNewCaseForm();
+    }
+
+    // Скинути форму
+    function resetNewCaseForm() {
+      document.getElementById('newCaseForm').reset();
+      document.getElementById('newClientFields').style.display = 'none';
+      document.getElementById('caseTypeFields').style.display = 'none';
+      document.getElementById('notesGroup').style.display = 'none';
+      document.getElementById('caseTypeHelp').textContent = '';
+      
+      // Сховати всі поля типів кейсів
+      document.querySelectorAll('.case-type-fields').forEach(el => {
+        el.style.display = 'none';
+      });
+    }
+
+    // Оновити поля залежно від типу кейсу
+    function updateCaseTypeFields() {
+      const caseType = document.getElementById('caseType').value;
+      const fieldsContainer = document.getElementById('caseTypeFields');
+      const notesGroup = document.getElementById('notesGroup');
+      const helpText = document.getElementById('caseTypeHelp');
+      
+      // Сховати всі поля типів кейсів
+      document.querySelectorAll('.case-type-fields').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      if (caseType) {
+        fieldsContainer.style.display = 'block';
+        notesGroup.style.display = 'block';
+        
+        // Показати відповідні поля
+        const typeFields = document.getElementById('fields_' + caseType);
+        if (typeFields) {
+          typeFields.style.display = 'block';
+        }
+        
+        // Підказка для типу кейсу
+        const helpTexts = {
+          'F1_SEA_IMPORT': 'Морська доставка контейнерів зі складів Китаю (Yiwu, Shenzhen) до портів України.',
+          'F1_AIR_IMPORT': 'Авіаперевезення для термінових та легких вантажів з будь-яких аеропортів світу.',
+          'F1_RAIL_IMPORT': 'Залізничні перевезення по маршрутах China Railway Express.',
+          'F1_AUTO_EXPORT': 'Автомобільні перевезення з України до країн Європи.'
+        };
+        helpText.textContent = helpTexts[caseType] || '';
+      } else {
+        fieldsContainer.style.display = 'none';
+        notesGroup.style.display = 'none';
+        helpText.textContent = '';
+      }
+    }
+
+    // Показати/сховати поля нового клієнта
+    document.getElementById('clientSelect').addEventListener('change', function() {
+      const newClientFields = document.getElementById('newClientFields');
+      if (this.value === 'new') {
+        newClientFields.style.display = 'block';
+      } else {
+        newClientFields.style.display = 'none';
+      }
+    });
+
+    // Створити новий кейс (демо)
+    function createNewCase() {
+      const caseType = document.getElementById('caseType').value;
+      const clientSelect = document.getElementById('clientSelect').value;
+      
+      if (!caseType) {
+        alert('Будь ласка, оберіть тип кейсу');
+        return;
+      }
+      
+      if (!clientSelect) {
+        alert('Будь ласка, оберіть або додайте клієнта');
+        return;
+      }
+      
+      if (clientSelect === 'new') {
+        const newClientName = document.getElementById('newClientName').value;
+        if (!newClientName) {
+          alert('Будь ласка, вкажіть назву нового клієнта');
+          return;
+        }
+      }
+      
+      // Демо: показуємо успішне створення
+      const caseTypeNames = {
+        'F1_SEA_IMPORT': 'Морський імпорт',
+        'F1_AIR_IMPORT': 'Авіа імпорт',
+        'F1_RAIL_IMPORT': 'Залізничний імпорт',
+        'F1_AUTO_EXPORT': 'Авто експорт'
+      };
+      
+      const newCaseNumber = 'F1-SEA-2026-' + String(Math.floor(Math.random() * 9000) + 1000).padStart(5, '0');
+      
+      alert(`✅ Кейс створено!\n\nНомер: ${newCaseNumber}\nТип: ${caseTypeNames[caseType]}\n\nКейс перейшов у стан: WAITING_CLIENT_INFO\n\nМенеджеру призначено задачу: "Зібрати дані від клієнта"`);
+      
+      closeNewCaseModal();
+      
+      // В реальному додатку тут був би редірект на сторінку нового кейсу
+      // window.location.href = 'case-detail.html?id=' + newCaseNumber;
+    }
+
+    // Закрити модал при кліку на overlay
+    document.getElementById('newCaseModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeNewCaseModal();
+      }
+    });
+
+    // Закрити модал при натисканні Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('newCaseModal');
+        if (modal.style.display === 'flex') {
+          closeNewCaseModal();
+        }
+      }
+    });
+  </script>
 </body>
 </html>
