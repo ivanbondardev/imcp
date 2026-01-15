@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Персональні налаштування — IMCP</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Personal Settings specific styles */
+    
+    /* Settings Content */
+    .settings-content {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .settings-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .settings-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    /* Settings Section */
+    .settings-section {
+      background: var(--bg-editor);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+    }
+    
+    .settings-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--divider);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    
+    .settings-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .settings-section-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+    }
+    
+    .settings-section-body {
+      padding: 16px;
+    }
+    
+    /* Toggle Row - Clickable entire row */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      margin: 0 -12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--transition);
+      border-bottom: 1px solid var(--divider);
+    }
+    
+    .toggle-row:last-child {
+      border-bottom: none;
+    }
+    
+    .toggle-row:hover {
+      background: var(--bg-hover);
+    }
+    
+    .toggle-row:focus-within {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+    
+    .toggle-row.disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .toggle-row.disabled:hover {
+      background: transparent;
+    }
+    
+    .toggle-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+    }
+    
+    .toggle-label .lock-icon {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    
+    .toggle-sublabel {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    .toggle-warning {
+      font-size: 11px;
+      color: var(--warning);
+      margin-top: 4px;
+      display: none;
+    }
+    
+    .toggle-warning.visible {
+      display: block;
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+    
+    .toggle-switch:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    
+    .toggle-switch.active {
+      background: var(--accent);
+    }
+    
+    .toggle-switch.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .toggle-switch.active::after {
+      transform: translateX(20px);
+    }
+    
+    /* Event Categories */
+    .event-category {
+      margin-bottom: 16px;
+    }
+    
+    .event-category:last-child {
+      margin-bottom: 0;
+    }
+    
+    .event-category-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+    }
+    
+    .event-category-title.critical {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+    }
+    
+    .event-category-title.operational {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+    
+    .event-category-title.informational {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+    
+    /* Email Settings Panel */
+    .email-settings-panel {
+      margin-top: 12px;
+      padding: 16px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--divider);
+    }
+    
+    .email-settings-panel.hidden {
+      display: none;
+    }
+    
+    .email-settings-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .email-settings-row:last-child {
+      margin-bottom: 0;
+    }
+    
+    .email-settings-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      min-width: 100px;
+    }
+    
+    .email-settings-value {
+      font-size: 12px;
+      color: var(--text);
+    }
+    
+    .email-mode-select {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      background: var(--bg-editor);
+      color: var(--text);
+      min-width: 160px;
+    }
+    
+    .email-mode-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .digest-time-input {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      background: var(--bg-editor);
+      color: var(--text);
+      width: 100px;
+    }
+    
+    .digest-time-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .digest-time-row {
+      display: none;
+    }
+    
+    .digest-time-row.visible {
+      display: flex;
+    }
+    
+    /* Quiet Hours */
+    .quiet-hours-config {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 16px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--divider);
+    }
+    
+    .quiet-hours-config.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    .time-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .time-input-group label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .time-input-group input[type="time"] {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: var(--bg-editor);
+      color: var(--text);
+    }
+    
+    .time-input-group input[type="time"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    /* Timezone Select */
+    .timezone-row {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--divider);
+      margin-top: 4px;
+    }
+    
+    .timezone-select {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      background: var(--bg-editor);
+      color: var(--text);
+    }
+    
+    .timezone-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    /* Inbox Settings */
+    .priority-order-info {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--info-bg);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      color: var(--info-text);
+    }
+    
+    .priority-order-info strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .priority-order-info ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .priority-order-info li {
+      margin: 2px 0;
+    }
+    
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .column-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background var(--transition);
+      border: 1px solid transparent;
+    }
+    
+    .column-checkbox:hover {
+      background: var(--bg-hover);
+      border-color: var(--border);
+    }
+    
+    .column-checkbox:focus-within {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+    
+    .column-checkbox input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+    }
+    
+    .column-checkbox.locked {
+      opacity: 0.7;
+      cursor: not-allowed;
+      background: var(--bg-panel);
+    }
+    
+    .column-checkbox.locked:hover {
+      background: var(--bg-panel);
+      border-color: transparent;
+    }
+    
+    .column-checkbox.locked input[type="checkbox"] {
+      pointer-events: none;
+    }
+    
+    .locked-label {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    /* Sort Options */
+    .sort-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 12px;
+    }
+    
+    .sort-option:hover {
+      background: var(--bg-hover);
+    }
+    
+    .sort-option:focus-within {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+    
+    .sort-option.selected {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    
+    .sort-option input[type="radio"] {
+      accent-color: var(--accent);
+    }
+    
+    .sort-recommended {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--success);
+      background: var(--success-bg);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    
+    /* Templates */
+    .template-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: all var(--transition);
+    }
+    
+    .template-card:hover {
+      border-color: var(--accent);
+    }
+    
+    .template-card:last-child {
+      margin-bottom: 0;
+    }
+    
+    .template-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .template-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .template-type-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-light);
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    
+    .template-actions {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .template-content {
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-editor);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--divider);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    
+    .template-content .placeholder {
+      background: var(--selection);
+      color: var(--accent);
+      padding: 0 4px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    
+    .template-content .placeholder.invalid {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+    }
+    
+    .template-placeholders {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .template-placeholders strong {
+      color: var(--text-secondary);
+    }
+    
+    /* Templates Empty State */
+    .templates-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    
+    .templates-empty svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+    
+    .templates-empty h4 {
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    
+    .templates-empty p {
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    
+    /* Placeholders Hint */
+    .placeholders-hint {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--info-bg);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      color: var(--info-text);
+    }
+    
+    .placeholders-hint code {
+      background: rgba(0,0,0,0.1);
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-size: 11px;
+    }
+    
+    /* Sticky Save Bar */
+    .save-bar {
+      position: fixed;
+      bottom: 0;
+      left: var(--sidebar-width);
+      right: 0;
+      background: var(--bg-editor);
+      border-top: 1px solid var(--divider);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      z-index: 100;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+      transform: translateY(100%);
+      transition: transform 0.2s ease;
+    }
+    
+    .save-bar.visible {
+      transform: translateY(0);
+    }
+    
+    .save-bar-info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--warning);
+    }
+    
+    .save-bar-info svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    /* Reset Section Link */
+    .reset-section-link {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .reset-section-link:hover {
+      color: var(--accent);
+    }
+    
+    .reset-section-link svg {
+      width: 12px;
+      height: 12px;
+    }
+    
+    /* MVP Badge */
+    .mvp-badge {
+      font-size: 9px;
+      background: var(--info-bg);
+      color: var(--info-text);
+      padding: 2px 6px;
+      border-radius: 8px;
+      margin-left: 6px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    /* Add bottom padding for sticky bar */
+    .page-content {
+      padding-bottom: 80px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .save-bar {
+        left: 0;
+      }
+      
+      .columns-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .quiet-hours-config {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar-logo" style="text-decoration: none; color: inherit;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <h1>IMCP</h1>
+          <span>Case Platform</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="sidebar-nav">
+          <li>
+            <a href="owner-dashboard.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              Owner Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="case-list.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              Кейси
+              <span class="nav-badge">12</span>
+            </a>
+          </li>
+          <li>
+            <a href="approvals.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              Підтвердження
+              <span class="nav-badge">9</span>
+            </a>
+          </li>
+          <li>
+            <a href="documents.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Документи
+            </a>
+          </li>
+          <li>
+            <a href="timeline.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Таймлайн
+            </a>
+          </li>
+        </ul>
+
+        <!-- Settings Navigation in Main Sidebar -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Налаштування</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="personal-settings.html" class="active" data-section="notifications">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                Сповіщення
+              </a>
+            </li>
+            <li>
+              <a href="personal-settings.html#inbox" data-section="inbox">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+                  <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+                </svg>
+                Вхідні
+              </a>
+            </li>
+            <li>
+              <a href="personal-settings.html#templates" data-section="templates">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                Шаблони
+              </a>
+            </li>
+            <li>
+              <a href="personal-settings.html#views" data-section="views">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="3" y1="9" x2="21" y2="9"/>
+                  <line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
+                Збережені види
+                <span class="mvp-badge">MVP</span>
+              </a>
+            </li>
+            <li>
+              <a href="personal-settings.html#ui" data-section="ui">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Інтерфейс
+                <span class="mvp-badge">MVP</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="breadcrumb">
+          <a href="../index.html">IMCP</a>
+          <span class="breadcrumb-separator">▸</span>
+          <a href="personal-settings.html">Налаштування</a>
+          <span class="breadcrumb-separator">▸</span>
+          <span class="breadcrumb-current" id="breadcrumb-section">Сповіщення</span>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="page-content">
+        <div class="settings-content">
+          
+          <div class="settings-header">
+            <div>
+              <h2 class="settings-title" id="section-title">Сповіщення</h2>
+              <p class="settings-subtitle" id="section-subtitle">Канали, типи подій та тихі години</p>
+            </div>
+            <a class="reset-section-link" onclick="resetSection()">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Скинути секцію
+            </a>
+          </div>
+
+          <!-- Section: Notifications -->
+          <div id="section-notifications">
+            
+            <!-- Channels -->
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                  Канали сповіщень
+                </div>
+              </div>
+              <div class="settings-section-body">
+                
+                <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                  <div class="toggle-info">
+                    <div class="toggle-label">In-app сповіщення</div>
+                    <div class="toggle-sublabel">Показувати в іконці дзвоника та notification drawer</div>
+                  </div>
+                  <div class="toggle-switch active" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1" role="switch" aria-checked="true"></div>
+                </div>
+                
+                <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="false">
+                  <div class="toggle-info">
+                    <div class="toggle-label">Email сповіщення</div>
+                    <div class="toggle-sublabel">Надсилати на <strong>ivan.petrenko@company.ua</strong></div>
+                  </div>
+                  <div class="toggle-switch" id="email-toggle" onclick="event.stopPropagation(); toggleEmail(this)" tabindex="-1" role="switch" aria-checked="false"></div>
+                </div>
+                
+                <!-- Email Settings Panel -->
+                <div class="email-settings-panel hidden" id="email-settings">
+                  <div class="email-settings-row">
+                    <span class="email-settings-label">Режим відправки:</span>
+                    <select class="email-mode-select" id="email-mode" onchange="toggleDigestTime()">
+                      <option value="instant">Миттєво (max 10/год)</option>
+                      <option value="digest_daily">Щоденний дайджест</option>
+                      <option value="digest_weekly">Щотижневий дайджест</option>
+                    </select>
+                  </div>
+                  <div class="email-settings-row digest-time-row" id="digest-time-row">
+                    <span class="email-settings-label">Час відправки:</span>
+                    <input type="time" class="digest-time-input" value="09:00" onchange="markUnsaved()">
+                  </div>
+                </div>
+                
+                <div class="toggle-row disabled" tabindex="0" role="button" aria-disabled="true">
+                  <div class="toggle-info">
+                    <div class="toggle-label">
+                      Messenger (Slack/Telegram)
+                      <span class="mvp-badge">MVP</span>
+                    </div>
+                    <div class="toggle-sublabel">Інтеграція з месенджерами</div>
+                  </div>
+                  <div class="toggle-switch disabled" tabindex="-1" role="switch" aria-checked="false" aria-disabled="true"></div>
+                </div>
+                
+              </div>
+            </div>
+            
+            <!-- Event Types -->
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  Типи подій
+                </div>
+              </div>
+              <div class="settings-section-body">
+                
+                <!-- Critical -->
+                <div class="event-category">
+                  <div class="event-category-title critical">Критичні — потребують негайної дії</div>
+                  
+                  <div class="toggle-row disabled" tabindex="0" role="button" aria-disabled="true" title="Обов'язкове сповіщення, не можна вимкнути">
+                    <div class="toggle-info">
+                      <div class="toggle-label">
+                        Потрібне підтвердження (approval_required)
+                        <span class="lock-icon" title="Обов'язкове сповіщення">🔒</span>
+                      </div>
+                      <div class="toggle-sublabel">Запит на approval потребує вашої дії. <strong>Обов'язково, не можна вимкнути.</strong></div>
+                    </div>
+                    <div class="toggle-switch active disabled" tabindex="-1" role="switch" aria-checked="true" aria-disabled="true"></div>
+                  </div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                    <div class="toggle-info">
+                      <div class="toggle-label">SLA під загрозою (&lt; 24 год)</div>
+                      <div class="toggle-sublabel">Дедлайн наближається</div>
+                      <div class="toggle-warning" id="warning-sla">Увага: ви можете пропустити критичний дедлайн</div>
+                    </div>
+                    <div class="toggle-switch active" data-warning="warning-sla" onclick="event.stopPropagation(); toggleWithWarning(this)" tabindex="-1" role="switch" aria-checked="true"></div>
+                  </div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                    <div class="toggle-info">
+                      <div class="toggle-label">Розбіжність даних (data_conflict)</div>
+                      <div class="toggle-sublabel">Конфлікт між даними клієнта та складу</div>
+                      <div class="toggle-warning" id="warning-conflict">Увага: ви можете пропустити важливу розбіжність у габаритах</div>
+                    </div>
+                    <div class="toggle-switch active" data-warning="warning-conflict" onclick="event.stopPropagation(); toggleWithWarning(this)" tabindex="-1" role="switch" aria-checked="true"></div>
+                  </div>
+                </div>
+                
+                <!-- Operational -->
+                <div class="event-category">
+                  <div class="event-category-title operational">Операційні — робочий процес</div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                    <div class="toggle-info">
+                      <div class="toggle-label">Кейс призначено мені (case_assigned)</div>
+                      <div class="toggle-sublabel">Новий кейс потрапив до вашого inbox</div>
+                      <div class="toggle-warning" id="warning-assigned">Увага: ви можете не помітити новий призначений кейс</div>
+                    </div>
+                    <div class="toggle-switch active" data-warning="warning-assigned" onclick="event.stopPropagation(); toggleWithWarning(this)" tabindex="-1" role="switch" aria-checked="true"></div>
+                  </div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="false">
+                    <div class="toggle-info">
+                      <div class="toggle-label">Статус кейса змінився (state_changed)</div>
+                      <div class="toggle-sublabel">Перехід на новий бізнес-стан</div>
+                    </div>
+                    <div class="toggle-switch" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1" role="switch" aria-checked="false"></div>
+                  </div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="false">
+                    <div class="toggle-info">
+                      <div class="toggle-label">Документ завантажено (doc_uploaded)</div>
+                      <div class="toggle-sublabel">Новий документ додано до кейса</div>
+                    </div>
+                    <div class="toggle-switch" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1" role="switch" aria-checked="false"></div>
+                  </div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                    <div class="toggle-info">
+                      <div class="toggle-label">Помилка інтеграції (integration_failed)</div>
+                      <div class="toggle-sublabel">Збій синхронізації з 1C або іншою системою</div>
+                      <div class="toggle-warning" id="warning-integration">Увага: ви можете пропустити критичну помилку інтеграції</div>
+                    </div>
+                    <div class="toggle-switch active" data-warning="warning-integration" onclick="event.stopPropagation(); toggleWithWarning(this)" tabindex="-1" role="switch" aria-checked="true"></div>
+                  </div>
+                </div>
+                
+                <!-- Informational -->
+                <div class="event-category">
+                  <div class="event-category-title informational">Інформаційні — FYI</div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="false">
+                    <div class="toggle-info">
+                      <div class="toggle-label">Автоматичний крок виконано (automation_completed)</div>
+                      <div class="toggle-sublabel">Workflow завершив автоматичну дію</div>
+                    </div>
+                    <div class="toggle-switch" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1" role="switch" aria-checked="false"></div>
+                  </div>
+                  
+                  <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="false">
+                    <div class="toggle-info">
+                      <div class="toggle-label">AI-чернетка готова (ai_draft_generated)</div>
+                      <div class="toggle-sublabel">Система згенерувала draft для перегляду</div>
+                    </div>
+                    <div class="toggle-switch" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1" role="switch" aria-checked="false"></div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            
+            <!-- Quiet Hours -->
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                  Тихі години
+                </div>
+              </div>
+              <div class="settings-section-body">
+                
+                <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                  <div class="toggle-info">
+                    <div class="toggle-label">Увімкнути тихі години</div>
+                    <div class="toggle-sublabel">Не турбувати в зазначений період (крім критичних)</div>
+                  </div>
+                  <div class="toggle-switch active" id="quiet-hours-toggle" onclick="event.stopPropagation(); toggleQuietHours(this)" tabindex="-1" role="switch" aria-checked="true"></div>
+                </div>
+                
+                <div class="quiet-hours-config" id="quiet-hours-config">
+                  <div class="time-input-group">
+                    <label for="quiet-start">Початок</label>
+                    <input type="time" id="quiet-start" value="22:00" onchange="markUnsaved()">
+                  </div>
+                  <div class="time-input-group">
+                    <label for="quiet-end">Кінець</label>
+                    <input type="time" id="quiet-end" value="08:00" onchange="markUnsaved()">
+                  </div>
+                  <div class="timezone-row">
+                    <label style="font-size: 11px; color: var(--text-muted);">Часовий пояс:</label>
+                    <select class="timezone-select" onchange="markUnsaved()">
+                      <option value="Europe/Kyiv" selected>Europe/Kyiv (UTC+2/+3)</option>
+                      <option value="Europe/Warsaw">Europe/Warsaw (UTC+1/+2)</option>
+                      <option value="Europe/Berlin">Europe/Berlin (UTC+1/+2)</option>
+                      <option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="toggle-row disabled" style="margin-top: 12px;" tabindex="0" role="button" aria-disabled="true" title="Заблоковано: критичні події завжди доставляються">
+                  <div class="toggle-info">
+                    <div class="toggle-label">
+                      Завжди сповіщати про критичні (critical_override)
+                      <span class="lock-icon" title="Заблоковано для PoC">🔒</span>
+                    </div>
+                    <div class="toggle-sublabel">Ігнорує тихі години для критичних подій. <strong>Заблоковано, не можна вимкнути.</strong></div>
+                  </div>
+                  <div class="toggle-switch active disabled" tabindex="-1" role="switch" aria-checked="true" aria-disabled="true"></div>
+                </div>
+                
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- Section: Inbox (shown when navigated) -->
+          <div id="section-inbox" style="display: none;">
+            
+            <!-- Default Filters -->
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                  </svg>
+                  Фільтри за замовчуванням
+                </div>
+              </div>
+              <div class="settings-section-body">
+                
+                <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                  <div class="toggle-info">
+                    <div class="toggle-label">Показувати лише мої кейси</div>
+                    <div class="toggle-sublabel">Фільтрувати кейси, де ви — owner</div>
+                  </div>
+                  <div class="toggle-switch active" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1"></div>
+                </div>
+                
+                <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                  <div class="toggle-info">
+                    <div class="toggle-label">Показувати "Pending approvals" першими</div>
+                    <div class="toggle-sublabel">Пріоритет для кейсів, що очікують підтвердження</div>
+                  </div>
+                  <div class="toggle-switch active" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1"></div>
+                </div>
+                
+                <div class="toggle-row" onclick="toggleRowClick(this)" tabindex="0" role="button" aria-pressed="true">
+                  <div class="toggle-info">
+                    <div class="toggle-label">Показувати "At risk" першими</div>
+                    <div class="toggle-sublabel">Пріоритет для кейсів із ризиками (SLA, BLOCKED)</div>
+                  </div>
+                  <div class="toggle-switch active" onclick="event.stopPropagation(); toggleSwitch(this)" tabindex="-1"></div>
+                </div>
+                
+                <div class="priority-order-info">
+                  <strong>Детерміноване правило пріоритизації:</strong>
+                  <ol>
+                    <li><strong>Pending approvals</strong> — найвищий пріоритет</li>
+                    <li><strong>At risk</strong> — SLA &lt; 24h, BLOCKED, conflicts</li>
+                    <li><strong>Решта кейсів</strong> — сортуються за обраним методом</li>
+                  </ol>
+                </div>
+                
+              </div>
+            </div>
+            
+            <!-- Default Sorting -->
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="21" y1="10" x2="3" y2="10"/>
+                    <line x1="21" y1="6" x2="3" y2="6"/>
+                    <line x1="21" y1="14" x2="3" y2="14"/>
+                    <line x1="21" y1="18" x2="3" y2="18"/>
+                  </svg>
+                  Сортування за замовчуванням
+                </div>
+              </div>
+              <div class="settings-section-body">
+                <label class="sort-option selected" onclick="selectSort(this)">
+                  <input type="radio" name="default_sort" value="sla_asc" checked>
+                  SLA deadline (найближчий спочатку)
+                  <span class="sort-recommended">рекомендовано</span>
+                </label>
+                <label class="sort-option" onclick="selectSort(this)">
+                  <input type="radio" name="default_sort" value="risk_desc">
+                  Risk score (найвищий спочатку)
+                </label>
+                <label class="sort-option" onclick="selectSort(this)">
+                  <input type="radio" name="default_sort" value="updated_desc">
+                  Останнє оновлення (нещодавні спочатку)
+                </label>
+                <label class="sort-option" onclick="selectSort(this)">
+                  <input type="radio" name="default_sort" value="created_desc">
+                  Дата створення (нові спочатку)
+                </label>
+              </div>
+            </div>
+            
+            <!-- Visible Columns -->
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="12" y1="3" x2="12" y2="21"/>
+                  </svg>
+                  Видимі колонки
+                </div>
+              </div>
+              <div class="settings-section-body">
+                <div class="columns-grid">
+                  <label class="column-checkbox locked">
+                    <input type="checkbox" checked disabled>
+                    Case ID
+                    <span class="locked-label">🔒 Обов'язкова</span>
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" checked onchange="markUnsaved()">
+                    Статус
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" checked onchange="markUnsaved()">
+                    Next Best Action
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" checked onchange="markUnsaved()">
+                    SLA
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" onchange="markUnsaved()">
+                    Owner
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" checked onchange="markUnsaved()">
+                    Клієнт
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" checked onchange="markUnsaved()">
+                    Risk flags
+                  </label>
+                  <label class="column-checkbox">
+                    <input type="checkbox" onchange="markUnsaved()">
+                    Тип кейса
+                  </label>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 12px;">
+                  Мінімум колонок завжди видно: Case ID, Статус, SLA
+                </p>
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- Section: Templates -->
+          <div id="section-templates" style="display: none;">
+            
+            <div class="settings-section">
+              <div class="settings-section-header">
+                <div class="settings-section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Ваші шаблони
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="alert('Відкрити модальне вікно створення шаблону')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Додати шаблон
+                </button>
+              </div>
+              <div class="settings-section-body">
+                
+                <div class="template-card">
+                  <div class="template-header">
+                    <div class="template-name">
+                      Quote validity reminder
+                      <span class="template-type-badge">MESSAGE</span>
+                    </div>
+                    <div class="template-actions">
+                      <button class="btn btn-sm btn-ghost" title="Редагувати">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button class="btn btn-sm btn-ghost" title="Дублювати">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      </button>
+                      <button class="btn btn-sm btn-ghost" title="Видалити" style="color: var(--danger);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="template-content">
+                    Dear <span class="placeholder">{{client_contact}}</span>, this is a reminder that quote for case <span class="placeholder">{{case_id}}</span> is valid for <span class="placeholder">{{quote_validity}}</span> days. Please confirm at your earliest convenience.
+                  </div>
+                  <div class="template-placeholders">
+                    <strong>Плейсхолдери:</strong> client_contact, case_id, quote_validity
+                  </div>
+                </div>
+                
+                <div class="template-card">
+                  <div class="template-header">
+                    <div class="template-name">
+                      Стандартний коментар до котировки
+                      <span class="template-type-badge">COMMENT</span>
+                    </div>
+                    <div class="template-actions">
+                      <button class="btn btn-sm btn-ghost" title="Редагувати">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button class="btn btn-sm btn-ghost" title="Дублювати">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      </button>
+                      <button class="btn btn-sm btn-ghost" title="Видалити" style="color: var(--danger);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="template-content">
+                    Ціна діє 7–9 днів. Можливі коригування при зміні габаритів. Остаточна ціна буде підтверджена після отримання актуальних даних від складу.
+                  </div>
+                  <div class="template-placeholders">
+                    <strong>Плейсхолдери:</strong> немає
+                  </div>
+                </div>
+                
+                <div class="template-card">
+                  <div class="template-header">
+                    <div class="template-name">
+                      Запит на відсутні дані
+                      <span class="template-type-badge">REQUEST</span>
+                    </div>
+                    <div class="template-actions">
+                      <button class="btn btn-sm btn-ghost" title="Редагувати">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button class="btn btn-sm btn-ghost" title="Дублювати">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      </button>
+                      <button class="btn btn-sm btn-ghost" title="Видалити" style="color: var(--danger);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="template-content">
+                    Шановний <span class="placeholder">{{client_name}}</span>,<br><br>
+                    Для продовження обробки кейса <span class="placeholder">{{case_id}}</span> потрібні такі дані:<br>
+                    • Точні габарити вантажу (ДхШхВ)<br>
+                    • Дата готовності до відвантаження<br>
+                    • Контактні дані отримувача<br><br>
+                    Будь ласка, надайте інформацію до <span class="placeholder">{{sla_date}}</span>.
+                  </div>
+                  <div class="template-placeholders">
+                    <strong>Плейсхолдери:</strong> client_name, case_id, sla_date
+                  </div>
+                </div>
+                
+                <div class="placeholders-hint">
+                  <strong>Дозволені плейсхолдери (whitelist):</strong><br>
+                  <code>{{case_id}}</code>, <code>{{client_name}}</code>, <code>{{client_contact}}</code>, 
+                  <code>{{route_origin}}</code>, <code>{{route_destination}}</code>, <code>{{cargo_cbm}}</code>, 
+                  <code>{{sla_date}}</code>, <code>{{quote_total}}</code>, <code>{{quote_validity}}</code><br><br>
+                  <span style="color: var(--warning-text);">Невідомі плейсхолдери підсвічуються при збереженні. Відсутні дані показуються як порожній рядок з попередженням.</span>
+                </div>
+                
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- Section: Saved Views (MVP) -->
+          <div id="section-views" style="display: none;">
+            <div class="info-banner warning" style="margin-bottom: 20px;">
+              <div class="info-banner-content">
+                <div class="info-banner-icon" style="background: var(--warning); color: white;">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 style="color: var(--warning);">MVP функціональність</h4>
+                  <p>Збережені види будуть доступні в наступній версії. Ви зможете зберігати комбінації фільтрів для швидкого доступу.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: UI Preferences (MVP) -->
+          <div id="section-ui" style="display: none;">
+            <div class="info-banner warning" style="margin-bottom: 20px;">
+              <div class="info-banner-content">
+                <div class="info-banner-icon" style="background: var(--warning); color: white;">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 style="color: var(--warning);">MVP функціональність</h4>
+                  <p>Налаштування інтерфейсу (щільність, тема, панелі) будуть доступні в наступній версії.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticky Save Bar -->
+    <div class="save-bar" id="save-bar">
+      <div class="save-bar-info">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Незбережені зміни
+      </div>
+      <button class="btn btn-secondary" onclick="cancelChanges()">Скасувати</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveSettings()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Зберегти
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Section navigation
+    const sections = {
+      'notifications': { title: 'Сповіщення', subtitle: 'Канали, типи подій та тихі години' },
+      'inbox': { title: 'Вхідні', subtitle: 'Фільтри, сортування та видимі колонки' },
+      'templates': { title: 'Шаблони', subtitle: 'Персональні шаблони для повідомлень' },
+      'views': { title: 'Збережені види', subtitle: 'Швидкий доступ до фільтрів (MVP)' },
+      'ui': { title: 'Інтерфейс', subtitle: 'Щільність, тема та панелі (MVP)' }
+    };
+    
+    function showSection(sectionId) {
+      // Hide all sections
+      Object.keys(sections).forEach(id => {
+        const el = document.getElementById('section-' + id);
+        if (el) el.style.display = 'none';
+      });
+      
+      // Show selected section
+      const section = document.getElementById('section-' + sectionId);
+      if (section) section.style.display = 'block';
+      
+      // Update header
+      document.getElementById('section-title').textContent = sections[sectionId].title;
+      document.getElementById('section-subtitle').textContent = sections[sectionId].subtitle;
+      document.getElementById('breadcrumb-section').textContent = sections[sectionId].title;
+      
+      // Update sidebar active state
+      document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.section === sectionId) {
+          link.classList.add('active');
+        }
+      });
+    }
+    
+    // Handle hash navigation
+    function handleHash() {
+      const hash = window.location.hash.replace('#', '') || 'notifications';
+      if (sections[hash]) {
+        showSection(hash);
+      }
+    }
+    
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
+    
+    // Toggle row click (entire row is clickable)
+    function toggleRowClick(row) {
+      if (row.classList.contains('disabled')) return;
+      const toggle = row.querySelector('.toggle-switch');
+      if (toggle && !toggle.classList.contains('disabled')) {
+        toggle.click();
+      }
+    }
+    
+    // Basic toggle
+    function toggleSwitch(el) {
+      if (el.classList.contains('disabled')) return;
+      el.classList.toggle('active');
+      el.setAttribute('aria-checked', el.classList.contains('active'));
+      markUnsaved();
+    }
+    
+    // Toggle with warning preview
+    function toggleWithWarning(el) {
+      if (el.classList.contains('disabled')) return;
+      const warningId = el.dataset.warning;
+      const warning = document.getElementById(warningId);
+      
+      el.classList.toggle('active');
+      el.setAttribute('aria-checked', el.classList.contains('active'));
+      
+      if (warning) {
+        if (el.classList.contains('active')) {
+          warning.classList.remove('visible');
+        } else {
+          warning.classList.add('visible');
+        }
+      }
+      
+      markUnsaved();
+    }
+    
+    // Email toggle with panel
+    function toggleEmail(el) {
+      if (el.classList.contains('disabled')) return;
+      el.classList.toggle('active');
+      el.setAttribute('aria-checked', el.classList.contains('active'));
+      
+      const panel = document.getElementById('email-settings');
+      if (el.classList.contains('active')) {
+        panel.classList.remove('hidden');
+      } else {
+        panel.classList.add('hidden');
+      }
+      
+      markUnsaved();
+    }
+    
+    // Toggle digest time visibility
+    function toggleDigestTime() {
+      const mode = document.getElementById('email-mode').value;
+      const digestRow = document.getElementById('digest-time-row');
+      
+      if (mode.startsWith('digest')) {
+        digestRow.classList.add('visible');
+      } else {
+        digestRow.classList.remove('visible');
+      }
+      
+      markUnsaved();
+    }
+    
+    // Quiet hours toggle
+    function toggleQuietHours(el) {
+      if (el.classList.contains('disabled')) return;
+      el.classList.toggle('active');
+      el.setAttribute('aria-checked', el.classList.contains('active'));
+      
+      const config = document.getElementById('quiet-hours-config');
+      if (el.classList.contains('active')) {
+        config.classList.remove('disabled');
+      } else {
+        config.classList.add('disabled');
+      }
+      
+      markUnsaved();
+    }
+    
+    // Sort option
+    function selectSort(el) {
+      const parent = el.parentElement;
+      parent.querySelectorAll('.sort-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      el.classList.add('selected');
+      el.querySelector('input').checked = true;
+      markUnsaved();
+    }
+    
+    // Save bar visibility
+    let hasUnsavedChanges = false;
+    
+    function markUnsaved() {
+      hasUnsavedChanges = true;
+      document.getElementById('save-bar').classList.add('visible');
+    }
+    
+    function cancelChanges() {
+      if (confirm('Скасувати всі незбережені зміни?')) {
+        hasUnsavedChanges = false;
+        document.getElementById('save-bar').classList.remove('visible');
+        location.reload();
+      }
+    }
+    
+    // Save settings
+    function saveSettings() {
+      const btn = document.getElementById('save-btn');
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin">
+          <line x1="12" y1="2" x2="12" y2="6"/>
+          <line x1="12" y1="18" x2="12" y2="22"/>
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/>
+          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+          <line x1="2" y1="12" x2="6" y2="12"/>
+          <line x1="18" y1="12" x2="22" y2="12"/>
+          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/>
+          <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+        </svg>
+        Збереження...
+      `;
+      
+      setTimeout(() => {
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          Зберегти
+        `;
+        hasUnsavedChanges = false;
+        document.getElementById('save-bar').classList.remove('visible');
+        showToast('Налаштування збережено');
+      }, 800);
+    }
+    
+    // Reset section
+    function resetSection() {
+      if (confirm('Скинути налаштування цієї секції до стандартних?')) {
+        showToast('Налаштування скинуто');
+        markUnsaved();
+      }
+    }
+    
+    // Toast notification
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        background: var(--text);
+        color: white;
+        padding: 12px 20px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        box-shadow: var(--shadow-popup);
+        z-index: 1001;
+        animation: slideIn 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+    
+    // Warn before leaving with unsaved changes
+    window.addEventListener('beforeunload', (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .spin {
+        animation: spin 1s linear infinite;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

@@ -13,6 +13,7 @@
 |----------|-----|-----------|------|
 | [ui_style_reference.md](./ui_style_reference.md) | Guide | UX/UI, Frontend | Дизайн-токени, палітра, компоненти |
 | [owner_dashboard_spec.md](./owner_dashboard_spec.md) | Spec | Business Owner, Ops Lead, Product, UX | Специфікація Owner Dashboard |
+| [personal_settings_spec.md](./personal_settings_spec.md) | Spec | Product, UX/UI, Frontend, Architecture | Персональні налаштування менеджера |
 
 ---
 
@@ -50,9 +51,12 @@ UI/UX документи базуються на core специфікаціях
 
 ## Roadmap документації
 
+### Completed
+
+- [x] `personal_settings_spec.md` — персональні налаштування та система нотифікацій
+
 ### Planned
 
-- [ ] `notifications_spec.md` — система нотифікацій
 - [ ] `mobile_patterns.md` — адаптація для mobile
 - [ ] `accessibility_guide.md` — a11y вимоги
 
@@ -64,3 +68,4 @@ UI/UX документи базуються на core специфікаціях
 2. **[ui_style_reference.md](./ui_style_reference.md)** — дизайн-система
 3. **[04_case_cockpit_ux.md](../core/04_case_cockpit_ux.md)** — основний UI для менеджерів
 4. **[owner_dashboard_spec.md](./owner_dashboard_spec.md)** — UI для бізнес-овнерів
+5. **[personal_settings_spec.md](./personal_settings_spec.md)** — персональні налаштування
