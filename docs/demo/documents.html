@@ -131,9 +131,12 @@
       <!-- Header -->
       <header class="page-header">
         <div class="flex items-center justify-between">
-          <div>
-            <h2>Документи</h2>
-            <p class="text-sm text-muted">Управління документами кейсів</p>
+          <div style="display: flex; align-items: center;">
+            <div>
+              <h2>Документи</h2>
+              <p class="text-sm text-muted">Управління документами кейсів</p>
+            </div>
+            <span class="help-trigger" data-help="documents-page" style="margin-left: 12px;">?</span>
           </div>
           <div class="btn-group">
             <button class="btn btn-secondary">
@@ -159,6 +162,7 @@
         <!-- Stats -->
         <div class="stats-grid">
           <div class="stat-card">
+            <span class="help-trigger" data-help="needs-verification">?</span>
             <div class="stat-header">
               <span class="stat-label">Потребують верифікації</span>
               <div class="stat-icon warning">
@@ -203,6 +207,7 @@
           </div>
 
           <div class="stat-card">
+            <span class="help-trigger" data-help="extraction-rate">?</span>
             <div class="stat-header">
               <span class="stat-label">AI Extraction Rate</span>
               <div class="stat-icon info">
@@ -227,6 +232,7 @@
               </svg>
               Потребують верифікації
               <span class="inbox-section-count">4</span>
+              <span class="help-trigger" data-help="ai-confidence">?</span>
             </h3>
           </div>
 
@@ -483,6 +489,7 @@
                 <line x1="12" y1="8" x2="12.01" y2="8"/>
               </svg>
               Типи документів (F1_SEA_IMPORT)
+              <span class="help-trigger" data-help="doc-types">?</span>
             </h4>
           </div>
           <div class="card-body">
@@ -549,7 +556,10 @@
         <!-- Document Workflow -->
         <div class="card mt-4">
           <div class="card-header">
-            <h4>Document Flow: Upload → Extract → Verify</h4>
+            <h4 class="flex items-center gap-2">
+              Document Flow: Upload → Extract → Verify
+              <span class="help-trigger" data-help="doc-workflow">?</span>
+            </h4>
           </div>
           <div class="card-body">
             <div class="flex items-center gap-4" style="flex-wrap: wrap;">
@@ -586,5 +596,377 @@
       </div>
     </main>
   </div>
+
+  <style>
+    /* ===== Onboarding Tips System ===== */
+    .tip {
+      position: absolute;
+      background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+      color: white;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 12px;
+      max-width: 280px;
+      box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3);
+      z-index: 100;
+      animation: tipPulse 0.4s ease-out, tipGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes tipPulse {
+      0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes tipGlow {
+      0%, 100% { box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3); }
+      50% { box-shadow: 0 8px 40px rgba(0, 120, 212, 0.5); }
+    }
+
+    .tip.hiding { animation: tipHide 0.3s ease-in forwards; }
+    @keyframes tipHide { to { opacity: 0; transform: scale(0.95) translateY(-10px); } }
+
+    .tip-content { display: flex; gap: 10px; align-items: flex-start; }
+    .tip-icon { flex-shrink: 0; width: 24px; height: 24px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .tip-icon svg { width: 14px; height: 14px; }
+    .tip-text { flex: 1; }
+    .tip-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+    .tip-description { opacity: 0.9; line-height: 1.4; }
+
+    .tip-close { position: absolute; top: 8px; right: 8px; background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .tip-close:hover { background: rgba(255, 255, 255, 0.35); }
+    .tip-close svg { width: 12px; height: 12px; }
+
+    .tip::before { content: ''; position: absolute; width: 12px; height: 12px; background: inherit; transform: rotate(45deg); }
+    .tip.arrow-top::before { top: -6px; left: 24px; }
+    .tip.arrow-bottom::before { bottom: -6px; left: 24px; }
+    .tip.arrow-left::before { left: -6px; top: 16px; }
+    .tip.arrow-right::before { right: -6px; top: 16px; }
+
+    .tip-step { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; opacity: 0.75; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+    .tip-step-dots { display: flex; gap: 4px; }
+    .tip-step-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); }
+    .tip-step-dot.active { background: white; }
+
+    .tip-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .tip-btn { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+    .tip-btn-primary { background: white; color: #005a9e; }
+    .tip-btn-primary:hover { background: rgba(255, 255, 255, 0.9); }
+    .tip-btn-secondary { background: rgba(255, 255, 255, 0.15); color: white; }
+    .tip-btn-secondary:hover { background: rgba(255, 255, 255, 0.25); }
+
+    .tips-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .tips-overlay.active { opacity: 1; pointer-events: auto; }
+    .tip-highlight { position: relative; z-index: 101; box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.4); border-radius: var(--radius-md); }
+
+    .show-tips-btn { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: var(--radius-lg); font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md); transition: all 0.2s; z-index: 50; }
+    .show-tips-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-popup); }
+    .show-tips-btn svg { width: 16px; height: 16px; }
+
+    /* ===== Static Help Triggers ===== */
+    .help-trigger { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: var(--bg-hover); border: 1px solid var(--divider); border-radius: 50%; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-left: 6px; flex-shrink: 0; }
+    .help-trigger:hover { background: var(--accent); border-color: var(--accent); color: white; transform: scale(1.1); }
+    .help-trigger.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    .help-popup { position: absolute; background: var(--bg-editor); border: 1px solid var(--divider); border-radius: var(--radius-lg); box-shadow: var(--shadow-popup); padding: 12px 14px; font-size: 12px; max-width: 300px; z-index: 200; animation: helpPopupIn 0.2s ease; }
+    @keyframes helpPopupIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .help-popup.closing { animation: helpPopupOut 0.15s ease forwards; }
+    @keyframes helpPopupOut { to { opacity: 0; transform: translateY(-8px); } }
+
+    .help-popup::before { content: ''; position: absolute; top: -6px; left: 20px; width: 10px; height: 10px; background: var(--bg-editor); border-left: 1px solid var(--divider); border-top: 1px solid var(--divider); transform: rotate(45deg); }
+    .help-popup.arrow-bottom::before { top: auto; bottom: -6px; border-left: none; border-top: none; border-right: 1px solid var(--divider); border-bottom: 1px solid var(--divider); }
+
+    .help-popup-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--divider); }
+    .help-popup-icon { width: 24px; height: 24px; background: var(--accent-light); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+    .help-popup-icon svg { width: 14px; height: 14px; }
+    .help-popup-title { font-weight: 600; color: var(--text); }
+    .help-popup-content { color: var(--text-secondary); line-height: 1.5; }
+    .help-popup-content ul { margin: 8px 0 0 0; padding-left: 16px; }
+    .help-popup-content li { margin-bottom: 4px; }
+    .help-popup-content code { background: var(--bg-panel); padding: 1px 4px; border-radius: 3px; font-size: 11px; font-family: var(--font-mono); }
+
+    /* Positioning */
+    .stat-card { position: relative; }
+    .stat-card .help-trigger { position: absolute; top: 12px; right: 12px; }
+    .inbox-section-title .help-trigger { margin-left: 8px; }
+    .card { position: relative; }
+  </style>
+
+  <script>
+    // ===== ONBOARDING TIPS SYSTEM =====
+    const TipsManager = {
+      storageKey: 'imcp_documents_tips',
+      tips: [],
+      currentStep: 0,
+      tourMode: false,
+
+      init() {
+        this.loadState();
+        this.createTips();
+        this.createShowTipsButton();
+        setTimeout(() => { if (!this.allTipsDismissed()) this.showInitialTips(); }, 500);
+      },
+
+      loadState() {
+        try { const saved = localStorage.getItem(this.storageKey); this.dismissedTips = saved ? JSON.parse(saved) : {}; }
+        catch (e) { this.dismissedTips = {}; }
+      },
+
+      saveState() { try { localStorage.setItem(this.storageKey, JSON.stringify(this.dismissedTips)); } catch (e) {} },
+
+      allTipsDismissed() { return this.tips.every(tip => this.dismissedTips[tip.id]); },
+
+      createTips() {
+        this.tips = [
+          { id: 'tip-verification', targetSelector: '.inbox-section:first-of-type', title: 'Документи для верифікації', description: 'AI автоматично обробляє документи. Якщо confidence < 85%, потрібна перевірка людиною.', position: 'inside-top', arrow: 'none', icon: 'check' },
+          { id: 'tip-stats', targetSelector: '.stats-grid', title: 'Статистика документів', description: 'Швидкий огляд: скільки потребує верифікації, завантажено сьогодні, AI extraction rate.', position: 'bottom-left', arrow: 'top', icon: 'chart' },
+          { id: 'tip-workflow', targetSelector: '.card:last-of-type', title: 'Document Workflow', description: 'Три етапи обробки: Upload → AI Processing → Human Verification.', position: 'inside-top', arrow: 'none', icon: 'flow' },
+          { id: 'tip-types', targetSelector: '.card-header', title: 'Типи документів', description: 'Кожен тип документа має свої правила AI extraction та required state.', position: 'bottom-left', arrow: 'top', icon: 'file' }
+        ];
+      },
+
+      createShowTipsButton() {
+        const btn = document.createElement('button');
+        btn.className = 'show-tips-btn';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Підказки`;
+        btn.onclick = () => this.startTour();
+        document.body.appendChild(btn);
+      },
+
+      showInitialTips() {
+        const firstActiveTip = this.tips.find(tip => !this.dismissedTips[tip.id]);
+        if (firstActiveTip) this.showTip(firstActiveTip, false);
+      },
+
+      showTip(tipConfig, isTour = false) {
+        const target = document.querySelector(tipConfig.targetSelector);
+        if (!target) return;
+        this.hideAllTips();
+
+        const tip = document.createElement('div');
+        tip.className = `tip arrow-${tipConfig.arrow}`;
+        tip.dataset.tipId = tipConfig.id;
+
+        tip.innerHTML = `
+          <button class="tip-close" onclick="TipsManager.dismissTip('${tipConfig.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="tip-content">
+            <div class="tip-icon">${this.getIcon(tipConfig.icon)}</div>
+            <div class="tip-text">
+              <div class="tip-title">${tipConfig.title}</div>
+              <div class="tip-description">${tipConfig.description}</div>
+              ${isTour ? `<div class="tip-actions">${this.currentStep > 0 ? '<button class="tip-btn tip-btn-secondary" onclick="TipsManager.prevStep()">← Назад</button>' : ''}${this.currentStep < this.tips.length - 1 ? '<button class="tip-btn tip-btn-primary" onclick="TipsManager.nextStep()">Далі →</button>' : '<button class="tip-btn tip-btn-primary" onclick="TipsManager.endTour()">Готово ✓</button>'}</div>` : ''}
+              ${isTour ? this.getStepIndicator() : ''}
+            </div>
+          </div>`;
+
+        document.body.appendChild(tip);
+        this.positionTip(tip, target, tipConfig.position);
+        if (isTour) target.classList.add('tip-highlight');
+      },
+
+      positionTip(tip, target, position) {
+        const targetRect = target.getBoundingClientRect();
+        const tipRect = tip.getBoundingClientRect();
+        let top, left;
+
+        switch (position) {
+          case 'bottom-right': top = targetRect.bottom + 12; left = targetRect.right - tipRect.width; break;
+          case 'bottom-left': top = targetRect.bottom + 12; left = targetRect.left; break;
+          case 'inside-top': top = targetRect.top + 60; left = targetRect.left + 20; break;
+          default: top = targetRect.bottom + 12; left = targetRect.left;
+        }
+
+        const padding = 16;
+        left = Math.max(padding, Math.min(left, window.innerWidth - tipRect.width - padding));
+        top = Math.max(padding, Math.min(top, window.innerHeight - tipRect.height - padding));
+
+        tip.style.position = 'fixed';
+        tip.style.top = `${top}px`;
+        tip.style.left = `${left}px`;
+      },
+
+      getIcon(iconName) {
+        const icons = {
+          check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+          chart: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+          flow: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+          file: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+        };
+        return icons[iconName] || icons.file;
+      },
+
+      getStepIndicator() {
+        const dots = this.tips.map((_, i) => `<span class="tip-step-dot ${i === this.currentStep ? 'active' : ''}"></span>`).join('');
+        return `<div class="tip-step"><div class="tip-step-dots">${dots}</div><span>${this.currentStep + 1} з ${this.tips.length}</span></div>`;
+      },
+
+      dismissTip(tipId) {
+        const tip = document.querySelector(`[data-tip-id="${tipId}"]`);
+        if (tip) { tip.classList.add('hiding'); setTimeout(() => tip.remove(), 300); }
+        this.dismissedTips[tipId] = true;
+        this.saveState();
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        if (this.tourMode) this.endTour();
+      },
+
+      hideAllTips() {
+        document.querySelectorAll('.tip').forEach(tip => tip.remove());
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+      },
+
+      startTour() {
+        this.tourMode = true;
+        this.currentStep = 0;
+        let overlay = document.querySelector('.tips-overlay');
+        if (!overlay) { overlay = document.createElement('div'); overlay.className = 'tips-overlay'; overlay.onclick = () => this.endTour(); document.body.appendChild(overlay); }
+        overlay.classList.add('active');
+        this.showCurrentTourStep();
+      },
+
+      showCurrentTourStep() {
+        if (this.currentStep >= 0 && this.currentStep < this.tips.length) {
+          this.showTip(this.tips[this.currentStep], true);
+          const target = document.querySelector(this.tips[this.currentStep].targetSelector);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+
+      nextStep() {
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        this.currentStep++;
+        if (this.currentStep < this.tips.length) this.showCurrentTourStep(); else this.endTour();
+      },
+
+      prevStep() {
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        if (this.currentStep > 0) { this.currentStep--; this.showCurrentTourStep(); }
+      },
+
+      endTour() {
+        this.tourMode = false;
+        this.hideAllTips();
+        const overlay = document.querySelector('.tips-overlay');
+        if (overlay) overlay.classList.remove('active');
+      },
+
+      resetAllTips() { this.dismissedTips = {}; this.saveState(); this.showInitialTips(); }
+    };
+
+    // ===== STATIC HELP SYSTEM =====
+    const HelpManager = {
+      activePopup: null,
+      activeTrigger: null,
+
+      helpContent: {
+        'documents-page': {
+          title: 'Сторінка документів',
+          icon: 'file',
+          content: `<p>Центральне управління документами всіх кейсів.</p><ul><li>Завантаження нових документів</li><li>AI extraction та верифікація</li><li>Пошук по всіх документах</li></ul>`
+        },
+        'needs-verification': {
+          title: 'Потребують верифікації',
+          icon: 'check',
+          content: `<p>Документи, де AI extraction потребує підтвердження людини.</p><p><strong>Причини:</strong></p><ul><li>Confidence < 85%</li><li>Нові типи документів</li><li>Виявлені розбіжності</li></ul>`
+        },
+        'ai-confidence': {
+          title: 'AI Confidence',
+          icon: 'ai',
+          content: `<p>Рівень впевненості AI в правильності extraction.</p><ul><li>🟢 >90% — автоматично verified</li><li>🟡 85-90% — рекомендована перевірка</li><li>🔴 <85% — обов'язкова верифікація</li></ul>`
+        },
+        'doc-sources': {
+          title: 'Джерела документів',
+          icon: 'source',
+          content: `<p>Звідки надійшов документ:</p><ul><li><strong>CLIENT</strong> — від клієнта</li><li><strong>ZED</strong> — від ЗЕД</li><li><strong>BROKER</strong> — від митного брокера</li><li><strong>WAREHOUSE</strong> — від складу</li></ul>`
+        },
+        'doc-statuses': {
+          title: 'Статуси документів',
+          icon: 'status',
+          content: `<p>Етапи обробки документа:</p><ul><li>📤 <strong>UPLOADED</strong> — завантажено</li><li>⚙️ <strong>PROCESSING</strong> — AI обробляє</li><li>⚠️ <strong>NEEDS VERIFICATION</strong> — потрібна перевірка</li><li>✅ <strong>VERIFIED</strong> — підтверджено</li></ul>`
+        },
+        'doc-types': {
+          title: 'Типи документів',
+          icon: 'file',
+          content: `<p>Кожен тип має свої правила:</p><ul><li><code>CONTRACT</code> — контракт</li><li><code>INVOICE</code> — інвойс</li><li><code>PACKING_LIST</code> — пакувальний лист</li><li><code>BL_DRAFT</code> — коносамент</li><li><code>POA</code> — довіреність</li></ul>`
+        },
+        'doc-workflow': {
+          title: 'Document Workflow',
+          icon: 'flow',
+          content: `<p>Процес обробки документа:</p><ol><li><strong>Upload</strong> — людина завантажує</li><li><strong>Processing</strong> — AI витягує дані</li><li><strong>Verification</strong> — людина підтверджує</li></ol><p>Після верифікації дані автоматично оновлюються в кейсі.</p>`
+        },
+        'extraction-rate': {
+          title: 'AI Extraction Rate',
+          icon: 'ai',
+          content: `<p>Середній рівень впевненості AI при обробці документів.</p><p>89% означає, що в середньому AI впевнений на 89% у правильності витягнутих даних.</p>`
+        }
+      },
+
+      init() { this.bindEvents(); },
+
+      bindEvents() {
+        document.addEventListener('click', (e) => {
+          const trigger = e.target.closest('.help-trigger');
+          if (trigger) { e.preventDefault(); e.stopPropagation(); const helpId = trigger.dataset.help; if (helpId) this.togglePopup(helpId, trigger); return; }
+          if (this.activePopup && !e.target.closest('.help-popup')) this.closePopup();
+        });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.activePopup) this.closePopup(); });
+      },
+
+      togglePopup(helpId, trigger) {
+        if (this.activeTrigger === trigger) { this.closePopup(); return; }
+        this.closePopup();
+
+        const content = this.helpContent[helpId];
+        if (!content) return;
+
+        const popup = document.createElement('div');
+        popup.className = 'help-popup';
+        popup.innerHTML = `<div class="help-popup-header"><div class="help-popup-icon">${this.getIcon(content.icon)}</div><div class="help-popup-title">${content.title}</div></div><div class="help-popup-content">${content.content}</div>`;
+
+        document.body.appendChild(popup);
+        this.positionPopup(popup, trigger);
+
+        this.activePopup = popup;
+        this.activeTrigger = trigger;
+        trigger.classList.add('active');
+      },
+
+      positionPopup(popup, trigger) {
+        const triggerRect = trigger.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+
+        let top = triggerRect.bottom + 8;
+        let left = triggerRect.left - 10;
+
+        if (left + popupRect.width > window.innerWidth - 16) left = window.innerWidth - popupRect.width - 16;
+        if (top + popupRect.height > window.innerHeight - 16) { top = triggerRect.top - popupRect.height - 8; popup.classList.add('arrow-bottom'); }
+        left = Math.max(16, left);
+
+        popup.style.position = 'fixed';
+        popup.style.top = `${top}px`;
+        popup.style.left = `${left}px`;
+      },
+
+      closePopup() {
+        if (this.activePopup) { this.activePopup.classList.add('closing'); setTimeout(() => { if (this.activePopup) { this.activePopup.remove(); this.activePopup = null; } }, 150); }
+        if (this.activeTrigger) { this.activeTrigger.classList.remove('active'); this.activeTrigger = null; }
+      },
+
+      getIcon(iconName) {
+        const icons = {
+          file: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+          check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+          ai: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/></svg>',
+          source: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+          status: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+          flow: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>'
+        };
+        return icons[iconName] || icons.file;
+      }
+    };
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => { TipsManager.init(); HelpManager.init(); });
+  </script>
 </body>
 </html>

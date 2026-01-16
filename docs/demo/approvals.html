@@ -131,9 +131,12 @@
       <!-- Header -->
       <header class="page-header">
         <div class="flex items-center justify-between">
-          <div>
-            <h2>Підтвердження (Approvals)</h2>
-            <p class="text-sm text-muted">Human Approval Gates — 3 очікують рішення</p>
+          <div style="display: flex; align-items: center;">
+            <div>
+              <h2>Підтвердження (Approvals)</h2>
+              <p class="text-sm text-muted">Human Approval Gates — 3 очікують рішення</p>
+            </div>
+            <span class="help-trigger" data-help="approvals-page" style="margin-left: 12px;">?</span>
           </div>
           <div class="btn-group">
             <button class="btn btn-secondary">
@@ -150,6 +153,7 @@
       <div class="page-content">
         <!-- Info Banner -->
         <div class="info-banner">
+          <span class="help-trigger" data-help="approval-gates">?</span>
           <div class="info-banner-content">
             <div class="info-banner-icon" style="background: var(--accent); color: white;">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -179,11 +183,13 @@
               </svg>
               Очікують рішення (PENDING)
               <span class="inbox-section-count">3</span>
+              <span class="help-trigger" data-help="pending-section">?</span>
             </h3>
           </div>
 
           <!-- Approval 1: Quote -->
           <div class="approval-item">
+            <span class="help-trigger" data-help="quote-approval">?</span>
             <div class="approval-header">
               <div class="approval-type">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -258,6 +264,7 @@
 
           <!-- Approval 2: Dims Change -->
           <div class="approval-item">
+            <span class="help-trigger" data-help="dims-approval">?</span>
             <div class="approval-header">
               <div class="approval-type">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -324,6 +331,7 @@
 
           <!-- Approval 3: BL Draft -->
           <div class="approval-item">
+            <span class="help-trigger" data-help="bl-approval">?</span>
             <div class="approval-header">
               <div class="approval-type">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -409,6 +417,7 @@
               </svg>
               Нещодавно вирішені
               <span class="inbox-section-count">5</span>
+              <span class="help-trigger" data-help="history-section">?</span>
             </h3>
           </div>
 
@@ -507,6 +516,7 @@
                 <line x1="12" y1="8" x2="12.01" y2="8"/>
               </svg>
               Типи Approvals (F1_SEA_IMPORT)
+              <span class="help-trigger" data-help="approval-types">?</span>
             </h4>
           </div>
           <div class="card-body">
@@ -560,5 +570,412 @@
       </div>
     </main>
   </div>
+
+  <style>
+    /* ===== Onboarding Tips System ===== */
+    .tip {
+      position: absolute;
+      background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+      color: white;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 12px;
+      max-width: 280px;
+      box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3);
+      z-index: 100;
+      animation: tipPulse 0.4s ease-out, tipGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes tipPulse {
+      0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes tipGlow {
+      0%, 100% { box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3); }
+      50% { box-shadow: 0 8px 40px rgba(0, 120, 212, 0.5); }
+    }
+
+    .tip.hiding { animation: tipHide 0.3s ease-in forwards; }
+
+    @keyframes tipHide {
+      to { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    }
+
+    .tip-content { display: flex; gap: 10px; align-items: flex-start; }
+    .tip-icon { flex-shrink: 0; width: 24px; height: 24px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .tip-icon svg { width: 14px; height: 14px; }
+    .tip-text { flex: 1; }
+    .tip-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+    .tip-description { opacity: 0.9; line-height: 1.4; }
+
+    .tip-close {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255, 255, 255, 0.2); border: none; color: white;
+      width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+    }
+    .tip-close:hover { background: rgba(255, 255, 255, 0.35); }
+    .tip-close svg { width: 12px; height: 12px; }
+
+    .tip::before { content: ''; position: absolute; width: 12px; height: 12px; background: inherit; transform: rotate(45deg); }
+    .tip.arrow-top::before { top: -6px; left: 24px; }
+    .tip.arrow-bottom::before { bottom: -6px; left: 24px; }
+    .tip.arrow-left::before { left: -6px; top: 16px; }
+    .tip.arrow-right::before { right: -6px; top: 16px; }
+
+    .tip-step { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; opacity: 0.75; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+    .tip-step-dots { display: flex; gap: 4px; }
+    .tip-step-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); }
+    .tip-step-dot.active { background: white; }
+
+    .tip-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .tip-btn { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+    .tip-btn-primary { background: white; color: #005a9e; }
+    .tip-btn-primary:hover { background: rgba(255, 255, 255, 0.9); }
+    .tip-btn-secondary { background: rgba(255, 255, 255, 0.15); color: white; }
+    .tip-btn-secondary:hover { background: rgba(255, 255, 255, 0.25); }
+
+    .tips-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .tips-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .tip-highlight { position: relative; z-index: 101; box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.4); border-radius: var(--radius-md); }
+
+    .show-tips-btn {
+      position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: white; border: none;
+      padding: 10px 16px; border-radius: var(--radius-lg); font-size: 12px; font-weight: 500; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md); transition: all 0.2s; z-index: 50;
+    }
+    .show-tips-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-popup); }
+    .show-tips-btn svg { width: 16px; height: 16px; }
+
+    /* ===== Static Help Triggers ===== */
+    .help-trigger {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; background: var(--bg-hover); border: 1px solid var(--divider);
+      border-radius: 50%; color: var(--text-muted); font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; margin-left: 6px; flex-shrink: 0;
+    }
+    .help-trigger:hover { background: var(--accent); border-color: var(--accent); color: white; transform: scale(1.1); }
+    .help-trigger.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    .help-popup {
+      position: absolute; background: var(--bg-editor); border: 1px solid var(--divider);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-popup); padding: 12px 14px;
+      font-size: 12px; max-width: 300px; z-index: 200; animation: helpPopupIn 0.2s ease;
+    }
+    @keyframes helpPopupIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .help-popup.closing { animation: helpPopupOut 0.15s ease forwards; }
+    @keyframes helpPopupOut { to { opacity: 0; transform: translateY(-8px); } }
+
+    .help-popup::before {
+      content: ''; position: absolute; top: -6px; left: 20px; width: 10px; height: 10px;
+      background: var(--bg-editor); border-left: 1px solid var(--divider); border-top: 1px solid var(--divider); transform: rotate(45deg);
+    }
+    .help-popup.arrow-bottom::before { top: auto; bottom: -6px; border-left: none; border-top: none; border-right: 1px solid var(--divider); border-bottom: 1px solid var(--divider); }
+
+    .help-popup-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--divider); }
+    .help-popup-icon { width: 24px; height: 24px; background: var(--accent-light); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+    .help-popup-icon svg { width: 14px; height: 14px; }
+    .help-popup-title { font-weight: 600; color: var(--text); }
+    .help-popup-content { color: var(--text-secondary); line-height: 1.5; }
+    .help-popup-content ul { margin: 8px 0 0 0; padding-left: 16px; }
+    .help-popup-content li { margin-bottom: 4px; }
+    .help-popup-content code { background: var(--bg-panel); padding: 1px 4px; border-radius: 3px; font-size: 11px; font-family: var(--font-mono); }
+
+    /* Positioning */
+    .approval-item { position: relative; }
+    .approval-item .help-trigger { position: absolute; top: 12px; right: 12px; }
+    .info-banner { position: relative; }
+    .info-banner .help-trigger { position: absolute; top: 12px; right: 12px; }
+    .inbox-section-title .help-trigger { margin-left: 8px; }
+  </style>
+
+  <script>
+    // ===== ONBOARDING TIPS SYSTEM =====
+    const TipsManager = {
+      storageKey: 'imcp_approvals_tips',
+      tips: [],
+      currentStep: 0,
+      tourMode: false,
+
+      init() {
+        this.loadState();
+        this.createTips();
+        this.createShowTipsButton();
+        setTimeout(() => { if (!this.allTipsDismissed()) this.showInitialTips(); }, 500);
+      },
+
+      loadState() {
+        try { const saved = localStorage.getItem(this.storageKey); this.dismissedTips = saved ? JSON.parse(saved) : {}; }
+        catch (e) { this.dismissedTips = {}; }
+      },
+
+      saveState() {
+        try { localStorage.setItem(this.storageKey, JSON.stringify(this.dismissedTips)); } catch (e) {}
+      },
+
+      allTipsDismissed() { return this.tips.every(tip => this.dismissedTips[tip.id]); },
+
+      createTips() {
+        this.tips = [
+          { id: 'tip-info-banner', targetSelector: '.info-banner', title: 'Human Approval Gates', description: 'Контрольні точки, де система потребує людського рішення. Кожне рішення фіксується в аудит-логу.', position: 'bottom-left', arrow: 'top', icon: 'info' },
+          { id: 'tip-pending', targetSelector: '.approval-item:first-of-type', title: 'Approval Request', description: 'Картка запиту на підтвердження. Містить snapshot даних та кнопки дій: Approve, Edit, Reject.', position: 'inside-top', arrow: 'none', icon: 'check' },
+          { id: 'tip-actions', targetSelector: '.approval-actions', title: 'Дії підтвердження', description: 'Approve — підтвердити як є. Edit & Approve — змінити та підтвердити. Reject — відхилити з причиною.', position: 'bottom-left', arrow: 'top', icon: 'bolt' },
+          { id: 'tip-history', targetSelector: '.inbox-section:nth-of-type(2)', title: 'Історія рішень', description: 'Всі минулі рішення з інформацією хто і коли прийняв рішення. Повний аудит-трейл.', position: 'inside-top', arrow: 'none', icon: 'clock' }
+        ];
+      },
+
+      createShowTipsButton() {
+        const btn = document.createElement('button');
+        btn.className = 'show-tips-btn';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Підказки`;
+        btn.onclick = () => this.startTour();
+        document.body.appendChild(btn);
+      },
+
+      showInitialTips() {
+        const firstActiveTip = this.tips.find(tip => !this.dismissedTips[tip.id]);
+        if (firstActiveTip) this.showTip(firstActiveTip, false);
+      },
+
+      showTip(tipConfig, isTour = false) {
+        const target = document.querySelector(tipConfig.targetSelector);
+        if (!target) return;
+        this.hideAllTips();
+
+        const tip = document.createElement('div');
+        tip.className = `tip arrow-${tipConfig.arrow}`;
+        tip.dataset.tipId = tipConfig.id;
+
+        const iconSvg = this.getIcon(tipConfig.icon);
+        const stepIndicator = isTour ? this.getStepIndicator() : '';
+
+        tip.innerHTML = `
+          <button class="tip-close" onclick="TipsManager.dismissTip('${tipConfig.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="tip-content">
+            <div class="tip-icon">${iconSvg}</div>
+            <div class="tip-text">
+              <div class="tip-title">${tipConfig.title}</div>
+              <div class="tip-description">${tipConfig.description}</div>
+              ${isTour ? `<div class="tip-actions">${this.currentStep > 0 ? '<button class="tip-btn tip-btn-secondary" onclick="TipsManager.prevStep()">← Назад</button>' : ''}${this.currentStep < this.tips.length - 1 ? '<button class="tip-btn tip-btn-primary" onclick="TipsManager.nextStep()">Далі →</button>' : '<button class="tip-btn tip-btn-primary" onclick="TipsManager.endTour()">Готово ✓</button>'}</div>` : ''}
+              ${stepIndicator}
+            </div>
+          </div>`;
+
+        document.body.appendChild(tip);
+        this.positionTip(tip, target, tipConfig.position);
+        if (isTour) target.classList.add('tip-highlight');
+      },
+
+      positionTip(tip, target, position) {
+        const targetRect = target.getBoundingClientRect();
+        const tipRect = tip.getBoundingClientRect();
+        let top, left;
+
+        switch (position) {
+          case 'bottom-right': top = targetRect.bottom + 12; left = targetRect.right - tipRect.width; break;
+          case 'bottom-left': top = targetRect.bottom + 12; left = targetRect.left; break;
+          case 'inside-top': top = targetRect.top + 60; left = targetRect.left + 20; break;
+          case 'right': top = targetRect.top; left = targetRect.right + 12; break;
+          case 'left': top = targetRect.top; left = targetRect.left - tipRect.width - 12; break;
+          default: top = targetRect.bottom + 12; left = targetRect.left;
+        }
+
+        const padding = 16;
+        left = Math.max(padding, Math.min(left, window.innerWidth - tipRect.width - padding));
+        top = Math.max(padding, Math.min(top, window.innerHeight - tipRect.height - padding));
+
+        tip.style.position = 'fixed';
+        tip.style.top = `${top}px`;
+        tip.style.left = `${left}px`;
+      },
+
+      getIcon(iconName) {
+        const icons = {
+          info: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+          check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+          bolt: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+          clock: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+        };
+        return icons[iconName] || icons.info;
+      },
+
+      getStepIndicator() {
+        if (!this.tourMode) return '';
+        const dots = this.tips.map((_, i) => `<span class="tip-step-dot ${i === this.currentStep ? 'active' : ''}"></span>`).join('');
+        return `<div class="tip-step"><div class="tip-step-dots">${dots}</div><span>${this.currentStep + 1} з ${this.tips.length}</span></div>`;
+      },
+
+      dismissTip(tipId) {
+        const tip = document.querySelector(`[data-tip-id="${tipId}"]`);
+        if (tip) { tip.classList.add('hiding'); setTimeout(() => tip.remove(), 300); }
+        this.dismissedTips[tipId] = true;
+        this.saveState();
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        if (this.tourMode) this.endTour();
+      },
+
+      hideAllTips() {
+        document.querySelectorAll('.tip').forEach(tip => tip.remove());
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+      },
+
+      startTour() {
+        this.tourMode = true;
+        this.currentStep = 0;
+        let overlay = document.querySelector('.tips-overlay');
+        if (!overlay) { overlay = document.createElement('div'); overlay.className = 'tips-overlay'; overlay.onclick = () => this.endTour(); document.body.appendChild(overlay); }
+        overlay.classList.add('active');
+        this.showCurrentTourStep();
+      },
+
+      showCurrentTourStep() {
+        if (this.currentStep >= 0 && this.currentStep < this.tips.length) {
+          this.showTip(this.tips[this.currentStep], true);
+          const target = document.querySelector(this.tips[this.currentStep].targetSelector);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+
+      nextStep() {
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        this.currentStep++;
+        if (this.currentStep < this.tips.length) this.showCurrentTourStep(); else this.endTour();
+      },
+
+      prevStep() {
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        if (this.currentStep > 0) { this.currentStep--; this.showCurrentTourStep(); }
+      },
+
+      endTour() {
+        this.tourMode = false;
+        this.hideAllTips();
+        const overlay = document.querySelector('.tips-overlay');
+        if (overlay) overlay.classList.remove('active');
+      },
+
+      resetAllTips() { this.dismissedTips = {}; this.saveState(); this.showInitialTips(); }
+    };
+
+    // ===== STATIC HELP SYSTEM =====
+    const HelpManager = {
+      activePopup: null,
+      activeTrigger: null,
+
+      helpContent: {
+        'approvals-page': {
+          title: 'Сторінка Approvals',
+          icon: 'check',
+          content: `<p>Централізоване управління всіма Human Approval Gates.</p><ul><li>Перегляд pending approvals</li><li>Швидке прийняття рішень</li><li>Історія всіх рішень</li></ul>`
+        },
+        'approval-gates': {
+          title: 'Human Approval Gates',
+          icon: 'info',
+          content: `<p>Контрольні точки в бізнес-процесі, де система підготувала рішення, але потрібне підтвердження людини.</p><p><strong>Принцип:</strong> AI/система готує, людина перевіряє та підтверджує.</p>`
+        },
+        'quote-approval': {
+          title: 'QUOTE_APPROVAL',
+          icon: 'dollar',
+          content: `<p>Підтвердження калькуляції ціни перед відправкою клієнту.</p><p><strong>Request snapshot містить:</strong></p><ul><li>Breakdown собівартості</li><li>Маржа та total</li><li>Умови та ризики</li></ul>`
+        },
+        'dims-approval': {
+          title: 'DIMS_CHANGE_APPROVAL',
+          icon: 'box',
+          content: `<p>Підтвердження зміни габаритів вантажу.</p><p>Виникає коли склад виміряв інші габарити ніж заявив клієнт.</p><p><strong>Важливо:</strong> зміна >10% впливає на ціну.</p>`
+        },
+        'bl-approval': {
+          title: 'BL_DRAFT_APPROVAL',
+          icon: 'file',
+          content: `<p>Перевірка драфту коносаменту (Bill of Lading).</p><p><strong>AI перевіряє:</strong></p><ul><li>Відповідність контракту</li><li>Правильність назв</li><li>Коректність даних</li></ul>`
+        },
+        'pending-section': {
+          title: 'Pending Approvals',
+          icon: 'clock',
+          content: `<p>Запити, що очікують вашого рішення.</p><p><strong>Пріоритет:</strong></p><ul><li>🔴 SLA < 24h — критично</li><li>🟡 SLA < 48h — увага</li><li>🟢 Інші — стандартно</li></ul>`
+        },
+        'history-section': {
+          title: 'Історія рішень',
+          icon: 'history',
+          content: `<p>Всі минулі approval рішення.</p><p><strong>Зберігається:</strong></p><ul><li>Тип approval</li><li>Рішення (Approved/Rejected)</li><li>Хто прийняв</li><li>Час рішення</li></ul>`
+        },
+        'approval-types': {
+          title: 'Типи Approvals',
+          icon: 'info',
+          content: `<p>Довідник всіх типів approval gates для F1_SEA_IMPORT.</p><p>Кожен тип має свій SLA, рівень ризику та структуру даних.</p>`
+        }
+      },
+
+      init() { this.bindEvents(); },
+
+      bindEvents() {
+        document.addEventListener('click', (e) => {
+          const trigger = e.target.closest('.help-trigger');
+          if (trigger) { e.preventDefault(); e.stopPropagation(); const helpId = trigger.dataset.help; if (helpId) this.togglePopup(helpId, trigger); return; }
+          if (this.activePopup && !e.target.closest('.help-popup')) this.closePopup();
+        });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.activePopup) this.closePopup(); });
+      },
+
+      togglePopup(helpId, trigger) {
+        if (this.activeTrigger === trigger) { this.closePopup(); return; }
+        this.closePopup();
+
+        const content = this.helpContent[helpId];
+        if (!content) return;
+
+        const popup = document.createElement('div');
+        popup.className = 'help-popup';
+        popup.innerHTML = `<div class="help-popup-header"><div class="help-popup-icon">${this.getIcon(content.icon)}</div><div class="help-popup-title">${content.title}</div></div><div class="help-popup-content">${content.content}</div>`;
+
+        document.body.appendChild(popup);
+        this.positionPopup(popup, trigger);
+
+        this.activePopup = popup;
+        this.activeTrigger = trigger;
+        trigger.classList.add('active');
+      },
+
+      positionPopup(popup, trigger) {
+        const triggerRect = trigger.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+
+        let top = triggerRect.bottom + 8;
+        let left = triggerRect.left - 10;
+
+        if (left + popupRect.width > window.innerWidth - 16) left = window.innerWidth - popupRect.width - 16;
+        if (top + popupRect.height > window.innerHeight - 16) { top = triggerRect.top - popupRect.height - 8; popup.classList.add('arrow-bottom'); }
+        left = Math.max(16, left);
+
+        popup.style.position = 'fixed';
+        popup.style.top = `${top}px`;
+        popup.style.left = `${left}px`;
+      },
+
+      closePopup() {
+        if (this.activePopup) { this.activePopup.classList.add('closing'); setTimeout(() => { if (this.activePopup) { this.activePopup.remove(); this.activePopup = null; } }, 150); }
+        if (this.activeTrigger) { this.activeTrigger.classList.remove('active'); this.activeTrigger = null; }
+      },
+
+      getIcon(iconName) {
+        const icons = {
+          info: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+          check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+          clock: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+          dollar: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+          box: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',
+          file: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+          history: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>'
+        };
+        return icons[iconName] || icons.info;
+      }
+    };
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => { TipsManager.init(); HelpManager.init(); });
+  </script>
 </body>
 </html>
