@@ -289,7 +289,7 @@
                 <div class="flex items-center gap-3">
                   <span class="badge badge-danger">LOW CONFIDENCE</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-ghost" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02448" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx">View</button>
+                    <button class="btn btn-sm btn-ghost" data-doc-view data-doc-name="BL_Draft_MSKU1234567890.pdf" data-doc-type="BL_DRAFT" data-doc-source="ZED" data-doc-case="F1-SEA-2026-02445" data-doc-confidence="76">View</button>
                     <button class="btn btn-sm btn-success">Verify</button>
                   </div>
                 </div>
@@ -1375,10 +1375,169 @@
       }
     };
 
+    // ===== DOCUMENT TYPE SCHEMAS =====
+    // Конфігурація полів для різних типів документів
+    // В production це може бути завантажено з API або таблиці doc_type_configs
+    const DOC_TYPE_SCHEMAS = {
+      // Packing List — пакувальний лист
+      PACKING_LIST: {
+        name: 'Packing List',
+        fields: [
+          { key: 'packages_count', label: 'Кількість місць', type: 'number', required: true, payloadPath: 'payload.cargo.packages_count' },
+          { key: 'total_weight_kg', label: 'Загальна вага (кг)', type: 'number', required: true, payloadPath: 'payload.cargo.total_weight_kg' },
+          { key: 'volume_cbm', label: "Загальний об'єм (CBM)", type: 'number', required: false, payloadPath: 'payload.cargo.volume_cbm' },
+          { key: 'dimensions', label: 'Розміри (L×W×H см)', type: 'text', required: true, payloadPath: 'payload.cargo.dimensions' },
+          { key: 'package_type', label: 'Тип упаковки', type: 'text', required: false, payloadPath: 'payload.cargo.package_type' }
+        ],
+        // Demo mock values (в production це прийде з AI extraction)
+        mockValues: {
+          packages_count: '10',
+          total_weight_kg: '255',
+          volume_cbm: '0.222',
+          dimensions: '60×40×50',
+          package_type: 'Картонні коробки'
+        }
+      },
+
+      // Invoice — інвойс
+      INVOICE: {
+        name: 'Invoice',
+        fields: [
+          { key: 'invoice_number', label: 'Номер інвойсу', type: 'text', required: true, payloadPath: 'payload.invoice.number' },
+          { key: 'invoice_date', label: 'Дата', type: 'date', required: true, payloadPath: 'payload.invoice.date' },
+          { key: 'amount', label: 'Сума', type: 'currency', required: true, payloadPath: 'payload.invoice.amount' },
+          { key: 'currency', label: 'Валюта', type: 'select', options: ['USD', 'EUR', 'CNY', 'UAH'], required: true, payloadPath: 'payload.invoice.currency' },
+          { key: 'supplier', label: 'Постачальник', type: 'text', required: true, payloadPath: 'payload.invoice.supplier' },
+          { key: 'items_count', label: 'Кількість позицій', type: 'number', required: false, payloadPath: 'payload.invoice.items_count' }
+        ],
+        mockValues: {
+          invoice_number: 'INV2026-0451',
+          invoice_date: '2026-01-12',
+          amount: '$12,450.00',
+          currency: 'USD',
+          supplier: 'ACME Supplies',
+          items_count: '15'
+        }
+      },
+
+      // BL Draft — драфт коносаменту
+      BL_DRAFT: {
+        name: 'Bill of Lading Draft',
+        fields: [
+          { key: 'bl_number', label: 'BL Number', type: 'text', required: true, payloadPath: 'payload.bl.number' },
+          { key: 'shipper', label: 'Shipper', type: 'text', required: true, payloadPath: 'payload.bl.shipper' },
+          { key: 'consignee', label: 'Consignee', type: 'text', required: true, payloadPath: 'payload.bl.consignee' },
+          { key: 'notify_party', label: 'Notify Party', type: 'text', required: false, payloadPath: 'payload.bl.notify_party' },
+          { key: 'port_of_loading', label: 'Port of Loading', type: 'text', required: true, payloadPath: 'payload.bl.pol' },
+          { key: 'port_of_discharge', label: 'Port of Discharge', type: 'text', required: true, payloadPath: 'payload.bl.pod' },
+          { key: 'vessel_name', label: 'Vessel Name', type: 'text', required: false, payloadPath: 'payload.bl.vessel' },
+          { key: 'voyage_number', label: 'Voyage Number', type: 'text', required: false, payloadPath: 'payload.bl.voyage' }
+        ],
+        mockValues: {
+          bl_number: 'MSKU1234567890',
+          shipper: 'ACME Supplies Co.',
+          consignee: 'TechImport LLC',
+          notify_party: 'GT Import LLC',
+          port_of_loading: 'Shanghai, China',
+          port_of_discharge: 'Odessa, Ukraine',
+          vessel_name: 'MSC AURORA',
+          voyage_number: 'VY2026-15'
+        }
+      },
+
+      // POA — довіреність
+      POA: {
+        name: 'Power of Attorney',
+        fields: [
+          { key: 'poa_number', label: 'Номер довіреності', type: 'text', required: false, payloadPath: 'payload.poa.number' },
+          { key: 'issue_date', label: 'Дата видачі', type: 'date', required: true, payloadPath: 'payload.poa.issue_date' },
+          { key: 'expiry_date', label: 'Дійсна до', type: 'date', required: true, payloadPath: 'payload.poa.expiry_date' },
+          { key: 'principal', label: 'Довіритель', type: 'text', required: true, payloadPath: 'payload.poa.principal' },
+          { key: 'agent', label: 'Представник', type: 'text', required: true, payloadPath: 'payload.poa.agent' },
+          { key: 'notarized', label: 'Нотаріально завірено', type: 'boolean', required: false, payloadPath: 'payload.poa.notarized' }
+        ],
+        mockValues: {
+          poa_number: 'POA-2026-001',
+          issue_date: '2026-01-10',
+          expiry_date: '2026-12-31',
+          principal: 'TechImport LLC',
+          agent: 'GT Logistics Agent',
+          notarized: 'Так'
+        }
+      },
+
+      // CONTRACT — контракт
+      CONTRACT: {
+        name: 'Contract',
+        fields: [
+          { key: 'contract_number', label: 'Номер контракту', type: 'text', required: true, payloadPath: 'payload.contract.number' },
+          { key: 'contract_date', label: 'Дата контракту', type: 'date', required: true, payloadPath: 'payload.contract.date' },
+          { key: 'seller', label: 'Продавець', type: 'text', required: true, payloadPath: 'payload.contract.seller' },
+          { key: 'buyer', label: 'Покупець', type: 'text', required: true, payloadPath: 'payload.contract.buyer' },
+          { key: 'incoterms', label: 'Incoterms', type: 'select', options: ['FOB', 'CIF', 'CFR', 'EXW', 'DAP', 'DDP'], required: true, payloadPath: 'payload.contract.incoterms' },
+          { key: 'total_value', label: 'Сума контракту', type: 'currency', required: true, payloadPath: 'payload.contract.value' }
+        ],
+        mockValues: {
+          contract_number: 'CT-2026-0451',
+          contract_date: '2026-01-05',
+          seller: 'ACME Supplies Co.',
+          buyer: 'TechImport LLC',
+          incoterms: 'FOB',
+          total_value: '$12,450.00'
+        }
+      },
+
+      // EXPORT_DEC — експортна декларація
+      EXPORT_DEC: {
+        name: 'Export Declaration',
+        fields: [
+          { key: 'declaration_number', label: 'Номер декларації', type: 'text', required: true, payloadPath: 'payload.export_dec.number' },
+          { key: 'declaration_date', label: 'Дата', type: 'date', required: true, payloadPath: 'payload.export_dec.date' },
+          { key: 'customs_value', label: 'Митна вартість', type: 'currency', required: true, payloadPath: 'payload.export_dec.value' },
+          { key: 'hs_code', label: 'HS Code', type: 'text', required: false, payloadPath: 'payload.export_dec.hs_code' }
+        ],
+        mockValues: {
+          declaration_number: 'ED-2026-78543',
+          declaration_date: '2026-01-14',
+          customs_value: '$12,450.00',
+          hs_code: '8471.30.0000'
+        }
+      },
+
+      // CERTIFICATE — сертифікат
+      CERTIFICATE: {
+        name: 'Certificate',
+        fields: [
+          { key: 'cert_number', label: 'Номер сертифіката', type: 'text', required: true, payloadPath: 'payload.certificate.number' },
+          { key: 'cert_type', label: 'Тип сертифіката', type: 'text', required: true, payloadPath: 'payload.certificate.type' },
+          { key: 'issue_date', label: 'Дата видачі', type: 'date', required: true, payloadPath: 'payload.certificate.issue_date' },
+          { key: 'issuer', label: 'Ким видано', type: 'text', required: true, payloadPath: 'payload.certificate.issuer' }
+        ],
+        mockValues: {
+          cert_number: 'CERT-2026-001',
+          cert_type: 'Certificate of Origin',
+          issue_date: '2026-01-11',
+          issuer: 'China Chamber of Commerce'
+        }
+      },
+
+      // Default schema for unknown types
+      _DEFAULT: {
+        name: 'Document',
+        fields: [
+          { key: 'doc_type', label: 'Тип документа', type: 'text', required: false },
+          { key: 'source', label: 'Джерело', type: 'text', required: false },
+          { key: 'status', label: 'Статус', type: 'text', required: false }
+        ],
+        mockValues: {}
+      }
+    };
+
     // ===== DOCUMENT VIEWER =====
     const DocumentViewer = {
       currentDoc: null,
       extractedFields: {}, // Store extracted fields for editing
+      currentSchema: null, // Store current document schema
 
       init() {
         document.addEventListener('click', (e) => {
@@ -1567,41 +1726,26 @@
         else if (confidence >= 85) confidenceBadge.classList.add('medium');
         else confidenceBadge.classList.add('low');
 
-        // Mock extracted data based on document type
-        let extractedFields = {};
-        if (this.currentDoc.type === 'PACKING_LIST') {
-          extractedFields = {
-            'Кількість місць': '10',
-            'Загальна вага (кг)': '255',
-            'Загальний об\'єм (CBM)': '0.222',
-            'Розміри (L×W×H см)': '60×40×50',
-            'Тип упаковки': 'Картонні коробки'
-          };
-        } else if (this.currentDoc.type === 'INVOICE') {
-          extractedFields = {
-            'Номер інвойсу': 'INV2026-0451',
-            'Дата': '2026-01-12',
-            'Сума': '$12,450.00',
-            'Валюта': 'USD',
-            'Постачальник': 'ACME Supplies'
-          };
-        } else if (this.currentDoc.type === 'BL_DRAFT') {
-          extractedFields = {
-            'BL Number': 'MSKU1234567890',
-            'Shipper': 'ACME Supplies Co.',
-            'Consignee': 'TechImport LLC',
-            'Port of Loading': 'Shanghai, China',
-            'Port of Discharge': 'Odessa, Ukraine'
-          };
-        } else {
-          extractedFields = {
-            'Тип документа': this.currentDoc.type,
-            'Джерело': this.currentDoc.source,
-            'Статус': 'NEEDS_VERIFICATION'
-          };
-        }
+        // Get schema for document type (use DEFAULT if not found)
+        this.currentSchema = DOC_TYPE_SCHEMAS[this.currentDoc.type] || DOC_TYPE_SCHEMAS._DEFAULT;
+        
+        // Build extracted fields from schema
+        const extractedFields = {};
+        this.currentSchema.fields.forEach(field => {
+          // Get value from mock data or use placeholder for default schema
+          let value = this.currentSchema.mockValues[field.key];
+          
+          // For default schema, use document info
+          if (!value && this.currentDoc.type && this.currentSchema === DOC_TYPE_SCHEMAS._DEFAULT) {
+            if (field.key === 'doc_type') value = this.currentDoc.type;
+            else if (field.key === 'source') value = this.currentDoc.source;
+            else if (field.key === 'status') value = 'NEEDS_VERIFICATION';
+          }
+          
+          extractedFields[field.label] = value || '—';
+        });
 
-        // Store extracted fields for editing
+        // Store extracted fields for editing (with schema reference)
         this.extractedFields = extractedFields;
 
         // Render fields
@@ -1613,12 +1757,22 @@
       },
 
       renderExtractedFields(fields, container) {
-        container.innerHTML = Object.entries(fields).map(([label, value]) => `
-          <div class="extracted-field">
-            <div class="extracted-field-label">${label}</div>
-            <div class="extracted-field-value">${value}</div>
-          </div>
-        `).join('');
+        container.innerHTML = Object.entries(fields).map(([label, value]) => {
+          // Find field config from schema for styling
+          const fieldConfig = this.currentSchema?.fields.find(f => f.label === label);
+          const isRequired = fieldConfig?.required;
+          const fieldType = fieldConfig?.type || 'text';
+          
+          return `
+            <div class="extracted-field">
+              <div class="extracted-field-label">
+                ${label}
+                ${isRequired ? '<span style="color: var(--danger); margin-left: 2px;">*</span>' : ''}
+              </div>
+              <div class="extracted-field-value" data-field-type="${fieldType}">${value}</div>
+            </div>
+          `;
+        }).join('');
       },
 
       editExtracted() {
@@ -1630,23 +1784,95 @@
 
         docNameSpan.textContent = this.currentDoc.name;
 
-        // Render editable fields
+        // Render editable fields based on schema
         fieldsContainer.innerHTML = Object.entries(this.extractedFields).map(([label, value], index) => {
           const fieldId = `edit-field-${index}`;
-          return `
-            <div style="margin-bottom: 16px;">
-              <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
-                ${label}
+          const fieldConfig = this.currentSchema?.fields.find(f => f.label === label);
+          const fieldType = fieldConfig?.type || 'text';
+          const isRequired = fieldConfig?.required;
+          const options = fieldConfig?.options || [];
+
+          let inputHtml = '';
+          const baseStyle = 'width: 100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-family: inherit; font-size: 13px; transition: border-color 0.2s;';
+
+          if (fieldType === 'select' && options.length > 0) {
+            // Select dropdown
+            inputHtml = `
+              <select 
+                id="${fieldId}" 
+                data-field-label="${label}"
+                style="${baseStyle} cursor: pointer;"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--divider)'"
+              >
+                ${options.map(opt => `<option value="${opt}" ${opt === value ? 'selected' : ''}>${opt}</option>`).join('')}
+              </select>
+            `;
+          } else if (fieldType === 'boolean') {
+            // Checkbox for boolean
+            const isChecked = value === 'Так' || value === 'true' || value === true;
+            inputHtml = `
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input 
+                  type="checkbox" 
+                  id="${fieldId}" 
+                  data-field-label="${label}"
+                  data-field-type="boolean"
+                  ${isChecked ? 'checked' : ''}
+                  style="width: 18px; height: 18px; cursor: pointer;"
+                />
+                <span style="font-size: 13px; color: var(--text);">Так</span>
               </label>
+            `;
+          } else if (fieldType === 'date') {
+            // Date input
+            inputHtml = `
+              <input 
+                type="date" 
+                id="${fieldId}" 
+                value="${value}" 
+                data-field-label="${label}"
+                style="${baseStyle}"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--divider)'"
+              />
+            `;
+          } else if (fieldType === 'number') {
+            // Number input
+            inputHtml = `
+              <input 
+                type="number" 
+                id="${fieldId}" 
+                value="${value}" 
+                data-field-label="${label}"
+                step="any"
+                style="${baseStyle}"
+                onfocus="this.style.borderColor='var(--accent)'"
+                onblur="this.style.borderColor='var(--divider)'"
+              />
+            `;
+          } else {
+            // Default text input
+            inputHtml = `
               <input 
                 type="text" 
                 id="${fieldId}" 
                 value="${value}" 
                 data-field-label="${label}"
-                style="width: 100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-family: inherit; font-size: 13px; transition: border-color 0.2s;"
+                style="${baseStyle}"
                 onfocus="this.style.borderColor='var(--accent)'"
                 onblur="this.style.borderColor='var(--divider)'"
               />
+            `;
+          }
+
+          return `
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
+                ${label}
+                ${isRequired ? '<span style="color: var(--danger); margin-left: 2px;">*</span>' : ''}
+              </label>
+              ${inputHtml}
             </div>
           `;
         }).join('');
@@ -1663,14 +1889,27 @@
         const fieldsContainer = document.getElementById('editExtractedFields');
         if (!fieldsContainer) return;
 
-        // Collect edited values
+        // Collect edited values from all input types
         const editedFields = {};
-        const inputs = fieldsContainer.querySelectorAll('input[data-field-label]');
         
+        // Handle text, number, date inputs
+        const inputs = fieldsContainer.querySelectorAll('input[data-field-label]');
         inputs.forEach(input => {
           const label = input.dataset.fieldLabel;
-          const value = input.value.trim();
-          editedFields[label] = value;
+          const isBoolean = input.dataset.fieldType === 'boolean';
+          
+          if (isBoolean) {
+            editedFields[label] = input.checked ? 'Так' : 'Ні';
+          } else {
+            editedFields[label] = input.value.trim();
+          }
+        });
+
+        // Handle select dropdowns
+        const selects = fieldsContainer.querySelectorAll('select[data-field-label]');
+        selects.forEach(select => {
+          const label = select.dataset.fieldLabel;
+          editedFields[label] = select.value;
         });
 
         // Update stored fields
