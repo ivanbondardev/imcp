@@ -147,7 +147,7 @@
               </svg>
               Фільтри
             </button>
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" data-upload-trigger>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
@@ -718,10 +718,10 @@
           <button class="btn btn-secondary" onclick="DocumentViewer.download()">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            Завантажити
+            Скачати
           </button>
           <button class="btn btn-danger" style="background: transparent; border-color: var(--danger); color: var(--danger);" onclick="DocumentViewer.reject()">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -894,6 +894,55 @@
     .reject-reason-content { background: var(--bg-editor); border: 1px solid var(--divider); border-radius: var(--radius-lg); padding: 20px; max-width: 500px; width: 90%; box-shadow: var(--shadow-popup); }
     .reject-reason-content h4 { margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: var(--text); }
     .reject-reason-content textarea:focus { outline: none; border-color: var(--danger); }
+
+    /* ===== Upload Modal ===== */
+    .upload-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
+    .upload-modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+    .upload-modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-editor); border: 1px solid var(--divider); border-radius: var(--radius-lg); box-shadow: var(--shadow-popup); width: 90%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; }
+    .upload-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--divider); }
+    .upload-modal-header h3 { margin: 0; font-size: 18px; font-weight: 600; color: var(--text); }
+    .upload-modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: all 0.2s; }
+    .upload-modal-close:hover { background: var(--bg-hover); color: var(--text); }
+    .upload-modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .upload-modal-actions { display: flex; gap: 12px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--divider); }
+    .upload-modal-actions .btn { display: flex; align-items: center; gap: 6px; }
+
+    /* Upload Drop Zone */
+    .upload-drop-zone { border: 2px dashed var(--divider); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-panel); }
+    .upload-drop-zone:hover { border-color: var(--accent); background: var(--bg-hover); }
+    .upload-drop-zone.drag-over { border-color: var(--accent); background: var(--accent-bg); }
+    .upload-drop-content { pointer-events: none; }
+
+    /* Upload Fields */
+    .upload-field { margin-top: 20px; }
+    .upload-select { width: 100%; padding: 10px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-family: inherit; font-size: 13px; cursor: pointer; transition: border-color 0.2s; }
+    .upload-select:focus { outline: none; border-color: var(--accent); }
+    .upload-select:hover { border-color: var(--accent); }
+
+    /* Upload Files Preview */
+    .upload-files-preview { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--divider); }
+    .upload-files-list { display: flex; flex-direction: column; gap: 8px; }
+    .upload-file-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-panel); border: 1px solid var(--divider); border-radius: var(--radius-sm); }
+    .upload-file-info { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .upload-file-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--accent-bg); border-radius: var(--radius-sm); color: var(--accent); }
+    .upload-file-details { flex: 1; }
+    .upload-file-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .upload-file-size { font-size: 11px; color: var(--text-muted); }
+    .upload-file-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: all 0.2s; }
+    .upload-file-remove:hover { background: var(--bg-hover); color: var(--danger); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
   </style>
 
   <script>
@@ -1185,28 +1234,7 @@
               <li><strong>Якщо документ не верифікований</strong> → кейс може бути заблокований (<code>BLOCKED</code> status) до отримання всіх необхідних даних</li>
               <li><strong>Додаються risk flags</strong> якщо є розбіжності з іншими документами (наприклад, <code>DIMS_MISMATCH</code>)</li>
             </ul>
-            <p><em>💡 Приклад:</em> Після верифікації Packing List дані про габарити та вагу автоматично оновлюються в кейсі, і якщо це був останній required документ, кейс може перейти зі стану <code>WAITING_WAREHOUSE_DIMS</code> до <code>DIMS_CONFIRMED</code>.</p>
-            <hr style="border: none; border-top: 1px solid var(--divider); margin: 16px 0;">
-            <p><strong>✏️ Редагування AI Extracted Data:</strong></p>
-            <p>Під час верифікації менеджер може редагувати дані, якщо AI помилився:</p>
-            <ul>
-              <li><strong>AI extracted data</strong> — це те, що AI витягнув з документа (readonly)</li>
-              <li><strong>Редагувати можна</strong> фінальні значення, які підуть у <code>cases.payload</code></li>
-              <li><strong>AI може помилятися</strong> особливо при низькому confidence (&lt;85%)</li>
-            </ul>
-            <p><strong>Workflow верифікації:</strong></p>
-            <ol style="margin-left: 20px; padding-left: 0;">
-              <li>Менеджер відкриває документ (View)</li>
-              <li>Бачить: Document Preview + AI Extracted Data (side-by-side)</li>
-              <li>Варіанти:
-                <ul style="margin-top: 4px;">
-                  <li>✅ <strong>Дані коректні</strong> → Підтвердити → дані копіюються в payload</li>
-                  <li>✏️ <strong>Є помилки</strong> → Редагувати дані → виправити та підтвердити</li>
-                  <li>❌ <strong>Документ непридатний</strong> → Відхилити → потрібен новий документ</li>
-                </ul>
-              </li>
-            </ol>
-            <p><em>⚠️ Важливо:</em> Менеджер не редагує сам AI extraction — він редагує <strong>фінальні значення</strong>, які підуть у кейс. AI extraction залишається як є для аудиту.</p>`
+            <p><em>💡 Приклад:</em> Після верифікації Packing List дані про габарити та вагу автоматично оновлюються в кейсі, і якщо це був останній required документ, кейс може перейти зі стану <code>WAITING_WAREHOUSE_DIMS</code> до <code>DIMS_CONFIRMED</code>.</p>`
         },
         'verification-workflow': {
           title: 'Редагування AI Extracted Data',
@@ -1422,7 +1450,7 @@
                   <polyline points="14 2 14 8 20 8"/>
                 </svg>
                 <div style="font-size: 14px; margin-bottom: 8px;">Документ: ${this.currentDoc.name}</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Не вдалося завантажити файл. Використовуйте кнопку "Завантажити" для перегляду.</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Не вдалося завантажити файл. Використовуйте кнопку "Скачати" для перегляду.</div>
               </div>
             `;
           }
@@ -1516,7 +1544,7 @@
 
       download() {
         if (!this.currentDoc || !this.currentDoc.file) {
-          alert('Файл недоступний для завантаження');
+          alert('Файл недоступний для скачування');
           return;
         }
         const link = document.createElement('a');
@@ -1743,12 +1771,340 @@
       }
     };
 
+    // ===== UPLOAD MODAL =====
+    const UploadModal = {
+      selectedFiles: [],
+      dropZone: null,
+      fileInput: null,
+
+      init() {
+        const modal = document.getElementById('uploadModal');
+        if (!modal) return;
+
+        // Bind header button
+        const uploadBtn = document.querySelector('[data-upload-trigger]');
+        if (uploadBtn) {
+          uploadBtn.onclick = (e) => {
+            e.preventDefault();
+            this.open();
+          };
+        }
+
+        // Get elements
+        this.dropZone = document.getElementById('uploadDropZone');
+        this.fileInput = document.getElementById('uploadFileInput');
+
+        if (!this.dropZone || !this.fileInput) return;
+
+        // Click to select files
+        this.dropZone.onclick = () => this.fileInput.click();
+
+        // File input change
+        this.fileInput.onchange = (e) => {
+          this.handleFiles(Array.from(e.target.files));
+        };
+
+        // Drag and drop
+        this.dropZone.ondragover = (e) => {
+          e.preventDefault();
+          this.dropZone.classList.add('drag-over');
+        };
+
+        this.dropZone.ondragleave = () => {
+          this.dropZone.classList.remove('drag-over');
+        };
+
+        this.dropZone.ondrop = (e) => {
+          e.preventDefault();
+          this.dropZone.classList.remove('drag-over');
+          const files = Array.from(e.dataTransfer.files);
+          this.handleFiles(files);
+        };
+
+        // ESC to close
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.isOpen()) {
+            this.close();
+          }
+        });
+      },
+
+      open() {
+        const modal = document.getElementById('uploadModal');
+        if (modal) {
+          modal.style.display = 'block';
+          document.body.style.overflow = 'hidden';
+          this.selectedFiles = [];
+          this.renderFiles();
+        }
+      },
+
+      close() {
+        const modal = document.getElementById('uploadModal');
+        if (modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+          this.selectedFiles = [];
+          this.fileInput.value = '';
+          this.renderFiles();
+          // Reset form
+          document.getElementById('uploadCaseSelect').value = '';
+          document.getElementById('uploadDocTypeSelect').value = '';
+        }
+      },
+
+      isOpen() {
+        const modal = document.getElementById('uploadModal');
+        return modal && modal.style.display !== 'none';
+      },
+
+      handleFiles(files) {
+        const validFiles = files.filter(file => {
+          // Check file type
+          const validExtensions = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.png', '.jpg', '.jpeg'];
+          const extension = '.' + file.name.split('.').pop().toLowerCase();
+          if (!validExtensions.includes(extension)) {
+            alert(`Файл "${file.name}" має непідтримуваний формат. Підтримуються: PDF, XLSX, DOCX, PNG, JPG`);
+            return false;
+          }
+
+          // Check file size (10MB)
+          const maxSize = 10 * 1024 * 1024;
+          if (file.size > maxSize) {
+            alert(`Файл "${file.name}" занадто великий (${(file.size / 1024 / 1024).toFixed(2)}MB). Максимальний розмір: 10MB`);
+            return false;
+          }
+
+          return true;
+        });
+
+        // Add to selected files (avoid duplicates)
+        validFiles.forEach(file => {
+          if (!this.selectedFiles.find(f => f.name === file.name && f.size === file.size)) {
+            this.selectedFiles.push(file);
+          }
+        });
+
+        this.renderFiles();
+      },
+
+      removeFile(index) {
+        this.selectedFiles.splice(index, 1);
+        this.renderFiles();
+      },
+
+      renderFiles() {
+        const preview = document.getElementById('uploadFilesPreview');
+        const list = document.getElementById('uploadFilesList');
+
+        if (!preview || !list) return;
+
+        if (this.selectedFiles.length === 0) {
+          preview.style.display = 'none';
+          return;
+        }
+
+        preview.style.display = 'block';
+        list.innerHTML = this.selectedFiles.map((file, index) => {
+          const size = file.size < 1024 
+            ? `${file.size} B` 
+            : file.size < 1024 * 1024 
+            ? `${(file.size / 1024).toFixed(1)} KB` 
+            : `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+          
+          const extension = '.' + file.name.split('.').pop().toLowerCase();
+          const icon = extension === '.pdf' ? '📄' : 
+                      ['.xlsx', '.xls'].includes(extension) ? '📊' :
+                      ['.docx', '.doc'].includes(extension) ? '📝' :
+                      ['.png', '.jpg', '.jpeg'].includes(extension) ? '🖼️' : '📎';
+
+          return `
+            <div class="upload-file-item">
+              <div class="upload-file-info">
+                <div class="upload-file-icon">${icon}</div>
+                <div class="upload-file-details">
+                  <div class="upload-file-name">${file.name}</div>
+                  <div class="upload-file-size">${size}</div>
+                </div>
+              </div>
+              <button class="upload-file-remove" onclick="UploadModal.removeFile(${index})" title="Видалити">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          `;
+        }).join('');
+      },
+
+      upload() {
+        // Validation
+        if (this.selectedFiles.length === 0) {
+          alert('Будь ласка, виберіть файли для завантаження');
+          return;
+        }
+
+        const caseSelect = document.getElementById('uploadCaseSelect');
+        if (!caseSelect || !caseSelect.value) {
+          alert('Будь ласка, оберіть кейс');
+          return;
+        }
+
+        const docTypeSelect = document.getElementById('uploadDocTypeSelect');
+        const docType = docTypeSelect ? docTypeSelect.value : '';
+
+        // Demo upload simulation
+        const fileNames = this.selectedFiles.map(f => f.name).join(', ');
+        const caseNumber = caseSelect.value;
+        const docTypeText = docType ? ` (${docType})` : '';
+
+        console.log('Uploading files:', {
+          files: this.selectedFiles.map(f => ({ name: f.name, size: f.size })),
+          case: caseNumber,
+          docType: docType || 'AUTO'
+        });
+
+        // Show loading state
+        const uploadBtn = document.querySelector('.upload-modal-actions .btn-primary');
+        const originalText = uploadBtn.innerHTML;
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Завантаження...';
+
+        // Simulate upload delay
+        setTimeout(() => {
+          // Show toast notification
+          this.showToast(`Успішно завантажено ${this.selectedFiles.length} ${this.selectedFiles.length === 1 ? 'файл' : 'файлів'}`);
+
+          // Close modal
+          this.close();
+
+          // Reset button
+          uploadBtn.disabled = false;
+          uploadBtn.innerHTML = originalText;
+
+          // In real app, this would refresh the page or update the document list
+          // For demo, we'll just show a message
+          setTimeout(() => {
+            alert(`Демо: ${this.selectedFiles.length} файл(ів) "${fileNames}" завантажено для кейсу ${caseNumber}${docTypeText}.\n\nВ реальній системі:\n- Файли завантажаться на сервер\n- Статус = UPLOADED\n- n8n тригер → AI обробка\n- Статус → PROCESSING → NEEDS_VERIFICATION\n- Сторінка оновиться з новими документами`);
+          }, 300);
+        }, 1500);
+      },
+
+      showToast(message) {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          background: var(--success-bg, #10b981);
+          color: white;
+          padding: 12px 20px;
+          border-radius: var(--radius-md, 8px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 10000;
+          font-size: 14px;
+          animation: slideIn 0.3s ease-out;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          toast.style.animation = 'slideOut 0.3s ease-out';
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+    };
+
     // Init
     document.addEventListener('DOMContentLoaded', () => { 
       TipsManager.init(); 
       HelpManager.init(); 
       DocumentViewer.init();
+      UploadModal.init();
     });
   </script>
+
+  <!-- Upload Modal -->
+  <div id="uploadModal" class="upload-modal" style="display: none;">
+    <div class="upload-modal-overlay" onclick="UploadModal.close()"></div>
+    <div class="upload-modal-content" onclick="event.stopPropagation()">
+      <div class="upload-modal-header">
+        <h3>Завантажити документ</h3>
+        <button class="upload-modal-close" onclick="UploadModal.close()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="upload-modal-body">
+        <!-- Drag and Drop Zone -->
+        <div id="uploadDropZone" class="upload-drop-zone">
+          <input type="file" id="uploadFileInput" multiple accept=".pdf,.xlsx,.xls,.docx,.doc,.png,.jpg,.jpeg" style="display: none;">
+          <div class="upload-drop-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); margin-bottom: 12px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+            <div style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Перетягніть файли сюди</div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">або натисніть для вибору</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">PDF, XLSX, DOCX, PNG, JPG (до 10MB)</div>
+          </div>
+        </div>
+
+        <!-- Selected Files Preview -->
+        <div id="uploadFilesPreview" class="upload-files-preview" style="display: none;">
+          <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--text);">Вибрані файли:</div>
+          <div id="uploadFilesList" class="upload-files-list"></div>
+        </div>
+
+        <!-- Case Selection -->
+        <div class="upload-field">
+          <label style="font-size: 13px; font-weight: 500; margin-bottom: 8px; display: block; color: var(--text);">
+            Кейс <span style="color: var(--danger);">*</span>
+          </label>
+          <select id="uploadCaseSelect" class="upload-select" required>
+            <option value="">Оберіть кейс...</option>
+            <option value="F1-SEA-2026-02448">F1-SEA-2026-02448</option>
+            <option value="F1-SEA-2026-02451">F1-SEA-2026-02451</option>
+            <option value="F1-SEA-2026-02445">F1-SEA-2026-02445</option>
+            <option value="F1-SEA-2026-02452">F1-SEA-2026-02452</option>
+          </select>
+        </div>
+
+        <!-- Document Type Selection (Optional) -->
+        <div class="upload-field">
+          <label style="font-size: 13px; font-weight: 500; margin-bottom: 8px; display: block; color: var(--text);">
+            Тип документа <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">(опціонально)</span>
+          </label>
+          <select id="uploadDocTypeSelect" class="upload-select">
+            <option value="">AI визначить автоматично</option>
+            <option value="INVOICE">INVOICE</option>
+            <option value="PACKING_LIST">PACKING_LIST</option>
+            <option value="BL_DRAFT">BL_DRAFT</option>
+            <option value="POA">POA</option>
+            <option value="CERTIFICATE">CERTIFICATE</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+        </div>
+      </div>
+      <div class="upload-modal-actions">
+        <button class="btn btn-secondary" onclick="UploadModal.close()">Скасувати</button>
+        <button class="btn btn-primary" onclick="UploadModal.upload()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Завантажити
+        </button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
