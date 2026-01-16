@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Documents — IMCP</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel file reading -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="layout">
@@ -260,7 +262,7 @@
                 <div class="flex items-center gap-3">
                   <span class="badge badge-warning">NEEDS VERIFICATION</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-ghost" data-doc-view data-doc-name="Invoice_INV2026-0451.pdf" data-doc-type="INVOICE" data-doc-source="ZED" data-doc-case="F1-SEA-2026-02451" data-doc-confidence="92">View</button>
                     <button class="btn btn-sm btn-success">Verify</button>
                   </div>
                 </div>
@@ -287,7 +289,7 @@
                 <div class="flex items-center gap-3">
                   <span class="badge badge-danger">LOW CONFIDENCE</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-ghost" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02448" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx">View</button>
                     <button class="btn btn-sm btn-success">Verify</button>
                   </div>
                 </div>
@@ -314,7 +316,7 @@
                 <div class="flex items-center gap-3">
                   <span class="badge badge-warning">NEEDS VERIFICATION</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-ghost" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02448" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx">View</button>
                     <button class="btn btn-sm btn-success">Verify</button>
                   </div>
                 </div>
@@ -341,7 +343,7 @@
                 <div class="flex items-center gap-3">
                   <span class="badge badge-warning">NEEDS VERIFICATION</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-ghost">View</button>
+                    <button class="btn btn-sm btn-ghost" data-doc-view data-doc-name="POA_Scan_TechImport.pdf" data-doc-type="POA" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02445" data-doc-confidence="95">View</button>
                     <button class="btn btn-sm btn-success">Verify</button>
                   </div>
                 </div>
@@ -597,6 +599,68 @@
     </main>
   </div>
 
+  <!-- Document Viewer Modal -->
+  <div id="docViewerModal" class="doc-viewer-modal" style="display: none;">
+    <div class="doc-viewer-overlay" onclick="DocumentViewer.close()"></div>
+    <div class="doc-viewer-content">
+      <div class="doc-viewer-header">
+        <div class="doc-viewer-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span id="docViewerFileName"></span>
+        </div>
+        <button class="doc-viewer-close" onclick="DocumentViewer.close()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="doc-viewer-body">
+        <div class="doc-viewer-meta">
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Тип:</span>
+            <span class="doc-viewer-meta-value" id="docViewerType"></span>
+          </div>
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Джерело:</span>
+            <span class="doc-viewer-meta-value" id="docViewerSource"></span>
+          </div>
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Кейс:</span>
+            <a href="case-detail.html" class="doc-viewer-meta-value" id="docViewerCase" style="color: var(--accent); text-decoration: none;"></a>
+          </div>
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">AI Confidence:</span>
+            <span class="doc-viewer-meta-value" id="docViewerConfidence"></span>
+          </div>
+        </div>
+        <div class="doc-viewer-preview" id="docViewerPreview">
+          <!-- Preview content will be inserted here -->
+        </div>
+        <div class="doc-viewer-actions">
+          <button class="btn btn-secondary" onclick="DocumentViewer.download()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Завантажити
+          </button>
+          <button class="btn btn-primary" onclick="DocumentViewer.verify()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            Верифікувати
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <style>
     /* ===== Onboarding Tips System ===== */
     .tip {
@@ -620,6 +684,11 @@
     @keyframes tipGlow {
       0%, 100% { box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3); }
       50% { box-shadow: 0 8px 40px rgba(0, 120, 212, 0.5); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .tip.hiding { animation: tipHide 0.3s ease-in forwards; }
@@ -689,6 +758,30 @@
     .stat-card .help-trigger { position: absolute; top: 12px; right: 12px; }
     .inbox-section-title .help-trigger { margin-left: 8px; }
     .card { position: relative; }
+
+    /* ===== Document Viewer Modal ===== */
+    .doc-viewer-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
+    .doc-viewer-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+    .doc-viewer-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-editor); border: 1px solid var(--divider); border-radius: var(--radius-lg); box-shadow: var(--shadow-popup); width: 90%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; }
+    .doc-viewer-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--divider); }
+    .doc-viewer-title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; color: var(--text); }
+    .doc-viewer-title svg { color: var(--accent); }
+    .doc-viewer-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: var(--radius-sm); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .doc-viewer-close:hover { background: var(--bg-hover); color: var(--text); }
+    .doc-viewer-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .doc-viewer-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--divider); }
+    .doc-viewer-meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .doc-viewer-meta-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .doc-viewer-meta-value { font-size: 14px; color: var(--text); }
+    .doc-viewer-preview { background: var(--bg-panel); border: 1px solid var(--divider); border-radius: var(--radius-md); padding: 20px; min-height: 300px; max-height: 500px; overflow-y: auto; margin-bottom: 20px; }
+    .doc-viewer-preview table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .doc-viewer-preview table th, .doc-viewer-preview table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--divider); }
+    .doc-viewer-preview table th { background: var(--bg-hover); font-weight: 600; color: var(--text); }
+    .doc-viewer-preview table td { color: var(--text-secondary); }
+    .doc-viewer-preview .preview-info { text-align: center; padding: 40px; color: var(--text-muted); }
+    .doc-viewer-preview .preview-info svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
+    .doc-viewer-actions { display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--divider); }
+    .doc-viewer-actions .btn { display: flex; align-items: center; gap: 6px; }
   </style>
 
   <script>
@@ -965,8 +1058,197 @@
       }
     };
 
+    // ===== DOCUMENT VIEWER =====
+    const DocumentViewer = {
+      currentDoc: null,
+
+      init() {
+        document.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-doc-view]');
+          if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.open(btn);
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.isOpen()) this.close();
+        });
+      },
+
+      open(button) {
+        const modal = document.getElementById('docViewerModal');
+        if (!modal) return;
+
+        this.currentDoc = {
+          name: button.dataset.docName || '',
+          type: button.dataset.docType || '',
+          source: button.dataset.docSource || '',
+          case: button.dataset.docCase || '',
+          confidence: button.dataset.docConfidence || '',
+          file: button.dataset.docFile || ''
+        };
+
+        document.getElementById('docViewerFileName').textContent = this.currentDoc.name;
+        document.getElementById('docViewerType').textContent = this.currentDoc.type;
+        document.getElementById('docViewerSource').textContent = this.currentDoc.source;
+        document.getElementById('docViewerCase').textContent = this.currentDoc.case;
+        document.getElementById('docViewerConfidence').textContent = `${this.currentDoc.confidence}%`;
+
+        this.renderPreview();
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      },
+
+      async renderPreview() {
+        const preview = document.getElementById('docViewerPreview');
+        if (!preview || !this.currentDoc) return;
+
+        // Show loading state
+        preview.innerHTML = `
+          <div class="preview-info">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <div style="font-size: 14px; margin-top: 12px;">Завантаження документа...</div>
+          </div>
+        `;
+
+        // Check if it's an Excel file
+        const isExcel = this.currentDoc.name.endsWith('.xlsx') || this.currentDoc.name.endsWith('.xls');
+        const fileName = this.currentDoc.file || this.currentDoc.name;
+
+        if (isExcel && fileName) {
+          try {
+            await this.renderExcelFile(preview, fileName);
+          } catch (error) {
+            console.error('Error loading Excel file:', error);
+            preview.innerHTML = `
+              <div class="preview-info">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <div style="font-size: 14px; margin-bottom: 8px;">Документ: ${this.currentDoc.name}</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Не вдалося завантажити файл. Використовуйте кнопку "Завантажити" для перегляду.</div>
+              </div>
+            `;
+          }
+        } else {
+          preview.innerHTML = `
+            <div class="preview-info">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <div style="font-size: 14px; margin-bottom: 8px;">Документ: ${this.currentDoc.name}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Для перегляду повного вмісту завантажте файл</div>
+            </div>
+          `;
+        }
+      },
+
+      async renderExcelFile(container, fileName) {
+        // Check if SheetJS is available
+        if (typeof XLSX === 'undefined') {
+          throw new Error('SheetJS library not loaded');
+        }
+
+        // Fetch the Excel file
+        const response = await fetch(fileName);
+        if (!response.ok) {
+          throw new Error(`Failed to load file: ${response.statusText}`);
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+
+        // Get the first sheet
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        // Convert to HTML table
+        const html = XLSX.utils.sheet_to_html(worksheet, {
+          id: 'excel-table',
+          editable: false
+        });
+
+        // Style the table
+        container.innerHTML = `
+          <div style="overflow-x: auto;">
+            <style>
+              #excel-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+              }
+              #excel-table th {
+                background: var(--bg-hover);
+                font-weight: 600;
+                color: var(--text);
+                padding: 8px 12px;
+                text-align: left;
+                border-bottom: 2px solid var(--divider);
+                position: sticky;
+                top: 0;
+                z-index: 10;
+              }
+              #excel-table td {
+                padding: 8px 12px;
+                border-bottom: 1px solid var(--divider);
+                color: var(--text-secondary);
+              }
+              #excel-table tr:hover {
+                background: var(--bg-hover);
+              }
+              #excel-table tr:last-child td {
+                border-bottom: none;
+              }
+            </style>
+            ${html}
+          </div>
+        `;
+      },
+
+      close() {
+        const modal = document.getElementById('docViewerModal');
+        if (modal) modal.style.display = 'none';
+        document.body.style.overflow = '';
+        this.currentDoc = null;
+      },
+
+      isOpen() {
+        const modal = document.getElementById('docViewerModal');
+        return modal && modal.style.display !== 'none';
+      },
+
+      download() {
+        if (!this.currentDoc || !this.currentDoc.file) {
+          alert('Файл недоступний для завантаження');
+          return;
+        }
+        const link = document.createElement('a');
+        link.href = this.currentDoc.file;
+        link.download = this.currentDoc.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      },
+
+      verify() {
+        alert(`Відкривається модальне вікно верифікації для: ${this.currentDoc.name}`);
+        // Тут буде відкриття Verification Modal
+        this.close();
+      }
+    };
+
     // Init
-    document.addEventListener('DOMContentLoaded', () => { TipsManager.init(); HelpManager.init(); });
+    document.addEventListener('DOMContentLoaded', () => { 
+      TipsManager.init(); 
+      HelpManager.init(); 
+      DocumentViewer.init();
+    });
   </script>
 </body>
 </html>
