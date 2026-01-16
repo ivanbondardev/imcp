@@ -332,6 +332,16 @@ code {
   border: 0;
 }
 
+.video-wrap-developer {
+  margin-top: 2rem;
+  max-width: 800px;
+}
+
+.video-wrap-manager {
+  margin-top: 2rem;
+  max-width: 800px;
+}
+
 /* Problems Section */
 .problems-section {
   padding: 5rem 1.5rem;

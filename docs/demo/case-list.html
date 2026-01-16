@@ -134,9 +134,12 @@
       <!-- Header -->
       <header class="page-header">
         <div class="flex items-center justify-between">
-          <div>
-            <h2>Кейси</h2>
-            <p class="text-sm text-muted">Операційна черга — 12 активних кейсів</p>
+          <div class="header-with-help">
+            <div>
+              <h2>Кейси</h2>
+              <p class="text-sm text-muted">Операційна черга — 12 активних кейсів</p>
+            </div>
+            <span class="help-trigger" data-help="cases-page" style="margin-left: 12px;">?</span>
           </div>
           <div class="btn-group">
             <button class="btn btn-secondary">
@@ -161,6 +164,7 @@
         <!-- Stats -->
         <div class="stats-grid">
           <div class="stat-card">
+            <span class="help-trigger" data-help="approval-stat">?</span>
             <div class="stat-header">
               <span class="stat-label">Потребують approval</span>
               <div class="stat-icon warning">
@@ -175,6 +179,7 @@
           </div>
 
           <div class="stat-card">
+            <span class="help-trigger" data-help="sla-stat">?</span>
             <div class="stat-header">
               <span class="stat-label">SLA at risk</span>
               <div class="stat-icon danger">
@@ -189,6 +194,7 @@
           </div>
 
           <div class="stat-card">
+            <span class="help-trigger" data-help="active-stat">?</span>
             <div class="stat-header">
               <span class="stat-label">Активних кейсів</span>
               <div class="stat-icon primary">
@@ -202,6 +208,7 @@
           </div>
 
           <div class="stat-card">
+            <span class="help-trigger" data-help="completed-stat">?</span>
             <div class="stat-header">
               <span class="stat-label">Завершено цього місяця</span>
               <div class="stat-icon success">
@@ -226,6 +233,7 @@
               </svg>
               Потребують підтвердження
               <span class="inbox-section-count">3</span>
+              <span class="help-trigger" data-help="approval-section">?</span>
             </h3>
           </div>
           
@@ -234,11 +242,11 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th>Case ID</th>
+                    <th>Case ID <span class="help-trigger" data-help="case-id">?</span></th>
                     <th>Клієнт</th>
-                    <th>Стан</th>
-                    <th>Approval</th>
-                    <th>SLA</th>
+                    <th>Стан <span class="help-trigger" data-help="case-status">?</span></th>
+                    <th>Approval <span class="help-trigger" data-help="approval-type">?</span></th>
+                    <th>SLA <span class="help-trigger" data-help="sla-column">?</span></th>
                     <th>Owner</th>
                     <th></th>
                   </tr>
@@ -347,6 +355,7 @@
               </svg>
               В роботі
               <span class="inbox-section-count">6</span>
+              <span class="help-trigger" data-help="in-progress-section">?</span>
             </h3>
           </div>
           
@@ -507,6 +516,7 @@
               </svg>
               Очікують зовнішню відповідь
               <span class="inbox-section-count">3</span>
+              <span class="help-trigger" data-help="waiting-section">?</span>
             </h3>
           </div>
           
@@ -872,6 +882,489 @@
   </div>
 
   <style>
+    /* ===== Onboarding Tips System ===== */
+    .tip {
+      position: absolute;
+      background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+      color: white;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 12px;
+      max-width: 280px;
+      box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3);
+      z-index: 100;
+      animation: tipPulse 0.4s ease-out, tipGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes tipPulse {
+      0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes tipGlow {
+      0%, 100% {
+        box-shadow: 0 8px 32px rgba(0, 120, 212, 0.3);
+      }
+      50% {
+        box-shadow: 0 8px 40px rgba(0, 120, 212, 0.5);
+      }
+    }
+
+    .tip.hiding {
+      animation: tipHide 0.3s ease-in forwards;
+    }
+
+    @keyframes tipHide {
+      to {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+      }
+    }
+
+    .tip-content {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .tip-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tip-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .tip-text {
+      flex: 1;
+    }
+
+    .tip-title {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .tip-description {
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    .tip-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .tip-close:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .tip-close svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Tip arrows */
+    .tip::before {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: inherit;
+      transform: rotate(45deg);
+    }
+
+    .tip.arrow-top::before {
+      top: -6px;
+      left: 24px;
+    }
+
+    .tip.arrow-bottom::before {
+      bottom: -6px;
+      left: 24px;
+    }
+
+    .tip.arrow-left::before {
+      left: -6px;
+      top: 16px;
+    }
+
+    .tip.arrow-right::before {
+      right: -6px;
+      top: 16px;
+    }
+
+    /* Tip positions */
+    .tip-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Step indicator */
+    .tip-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      opacity: 0.75;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tip-step-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .tip-step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .tip-step-dot.active {
+      background: white;
+    }
+
+    /* Action buttons in tip */
+    .tip-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tip-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .tip-btn-primary {
+      background: white;
+      color: #005a9e;
+    }
+
+    .tip-btn-primary:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .tip-btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .tip-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Tips tour overlay */
+    .tips-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .tips-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Highlighted element during tour */
+    .tip-highlight {
+      position: relative;
+      z-index: 101;
+      box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.4);
+      border-radius: var(--radius-md);
+    }
+
+    /* Welcome tip (centered) */
+    .tip-welcome {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 360px;
+      text-align: center;
+      padding: 24px;
+      border-radius: var(--radius-xl);
+    }
+
+    .tip-welcome::before {
+      display: none;
+    }
+
+    .tip-welcome .tip-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+    }
+
+    .tip-welcome .tip-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    /* ===== Static Help Triggers (?) ===== */
+    .help-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: var(--bg-hover);
+      border: 1px solid var(--divider);
+      border-radius: 50%;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 6px;
+      flex-shrink: 0;
+    }
+
+    .help-trigger:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .help-trigger.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* Help tooltip popup */
+    .help-popup {
+      position: absolute;
+      background: var(--bg-editor);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-popup);
+      padding: 12px 14px;
+      font-size: 12px;
+      max-width: 300px;
+      z-index: 200;
+      animation: helpPopupIn 0.2s ease;
+    }
+
+    @keyframes helpPopupIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .help-popup.closing {
+      animation: helpPopupOut 0.15s ease forwards;
+    }
+
+    @keyframes helpPopupOut {
+      to {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+    }
+
+    .help-popup::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      width: 10px;
+      height: 10px;
+      background: var(--bg-editor);
+      border-left: 1px solid var(--divider);
+      border-top: 1px solid var(--divider);
+      transform: rotate(45deg);
+    }
+
+    .help-popup.arrow-bottom::before {
+      top: auto;
+      bottom: -6px;
+      border-left: none;
+      border-top: none;
+      border-right: 1px solid var(--divider);
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .help-popup-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .help-popup-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--accent-light);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .help-popup-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .help-popup-title {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .help-popup-content {
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .help-popup-content ul {
+      margin: 8px 0 0 0;
+      padding-left: 16px;
+    }
+
+    .help-popup-content li {
+      margin-bottom: 4px;
+    }
+
+    .help-popup-content code {
+      background: var(--bg-panel);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .help-popup-footer {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .help-popup-footer kbd {
+      background: var(--bg-panel);
+      border: 1px solid var(--divider);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    /* Header with help */
+    .header-with-help {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Stat card help positioning */
+    .stat-card {
+      position: relative;
+    }
+
+    .stat-card .help-trigger {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+    }
+
+    /* Section title with help */
+    .inbox-section-title {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Table header help */
+    th .help-trigger {
+      margin-left: 4px;
+    }
+
+    /* Show all tips button */
+    .show-tips-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s;
+      z-index: 50;
+    }
+
+    .show-tips-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-popup);
+    }
+
+    .show-tips-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
     /* Modal Styles */
     .modal-overlay {
       position: fixed;
@@ -1133,6 +1626,625 @@
           closeNewCaseModal();
         }
       }
+    });
+
+    // ===== ONBOARDING TIPS SYSTEM =====
+    const TipsManager = {
+      storageKey: 'imcp_onboarding_tips',
+      tips: [],
+      currentStep: 0,
+      tourMode: false,
+
+      init() {
+        this.loadState();
+        this.createTips();
+        this.createShowTipsButton();
+        
+        // Показати tips після невеликої затримки
+        setTimeout(() => {
+          if (!this.allTipsDismissed()) {
+            this.showInitialTips();
+          }
+        }, 500);
+      },
+
+      loadState() {
+        try {
+          const saved = localStorage.getItem(this.storageKey);
+          this.dismissedTips = saved ? JSON.parse(saved) : {};
+        } catch (e) {
+          this.dismissedTips = {};
+        }
+      },
+
+      saveState() {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(this.dismissedTips));
+        } catch (e) {
+          console.warn('Could not save tips state');
+        }
+      },
+
+      allTipsDismissed() {
+        return this.tips.every(tip => this.dismissedTips[tip.id]);
+      },
+
+      createTips() {
+        // Визначаємо підказки для сторінки
+        this.tips = [
+          {
+            id: 'tip-new-case',
+            targetSelector: '.btn-primary',
+            title: 'Створення нового кейсу',
+            description: 'Натисніть тут, щоб створити новий кейс. Система автоматично призначить номер та визначить перший крок.',
+            position: 'bottom-right',
+            arrow: 'top',
+            icon: 'plus'
+          },
+          {
+            id: 'tip-approval-section',
+            targetSelector: '.inbox-section:first-child',
+            title: 'Потребують вашої уваги',
+            description: 'Тут відображаються кейси, які очікують підтвердження. Червоний SLA означає терміновість.',
+            position: 'inside-top',
+            arrow: 'none',
+            icon: 'alert'
+          },
+          {
+            id: 'tip-stats',
+            targetSelector: '.stats-grid',
+            title: 'Статистика операцій',
+            description: 'Швидкий огляд ключових показників: approval requests, SLA at risk, активні кейси.',
+            position: 'bottom-left',
+            arrow: 'top',
+            icon: 'chart'
+          },
+          {
+            id: 'tip-filters',
+            targetSelector: '.sidebar-section:first-of-type',
+            title: 'Швидкі фільтри',
+            description: 'Використовуйте фільтри для швидкого пошуку потрібних кейсів: мої кейси, SLA скоро тощо.',
+            position: 'right',
+            arrow: 'left',
+            icon: 'filter'
+          }
+        ];
+      },
+
+      createShowTipsButton() {
+        const btn = document.createElement('button');
+        btn.className = 'show-tips-btn';
+        btn.id = 'showTipsBtn';
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Підказки
+        `;
+        btn.onclick = () => this.startTour();
+        document.body.appendChild(btn);
+      },
+
+      showInitialTips() {
+        // Показуємо перший не закритий tip
+        const firstActiveTip = this.tips.find(tip => !this.dismissedTips[tip.id]);
+        if (firstActiveTip) {
+          this.showTip(firstActiveTip, false);
+        }
+      },
+
+      showTip(tipConfig, isTour = false) {
+        const target = document.querySelector(tipConfig.targetSelector);
+        if (!target) return;
+
+        // Видаляємо попередні tips
+        this.hideAllTips();
+
+        const tip = document.createElement('div');
+        tip.className = `tip arrow-${tipConfig.arrow}`;
+        tip.id = tipConfig.id;
+        tip.dataset.tipId = tipConfig.id;
+
+        const iconSvg = this.getIcon(tipConfig.icon);
+        const stepIndicator = isTour ? this.getStepIndicator() : '';
+
+        tip.innerHTML = `
+          <button class="tip-close" onclick="TipsManager.dismissTip('${tipConfig.id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          <div class="tip-content">
+            <div class="tip-icon">${iconSvg}</div>
+            <div class="tip-text">
+              <div class="tip-title">${tipConfig.title}</div>
+              <div class="tip-description">${tipConfig.description}</div>
+              ${isTour ? `
+                <div class="tip-actions">
+                  ${this.currentStep > 0 ? '<button class="tip-btn tip-btn-secondary" onclick="TipsManager.prevStep()">← Назад</button>' : ''}
+                  ${this.currentStep < this.tips.length - 1 
+                    ? '<button class="tip-btn tip-btn-primary" onclick="TipsManager.nextStep()">Далі →</button>'
+                    : '<button class="tip-btn tip-btn-primary" onclick="TipsManager.endTour()">Готово ✓</button>'}
+                </div>
+              ` : ''}
+              ${stepIndicator}
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(tip);
+
+        // Позиціонування
+        this.positionTip(tip, target, tipConfig.position);
+
+        // Підсвітка target елемента в tour mode
+        if (isTour) {
+          target.classList.add('tip-highlight');
+        }
+      },
+
+      positionTip(tip, target, position) {
+        const targetRect = target.getBoundingClientRect();
+        const tipRect = tip.getBoundingClientRect();
+        
+        let top, left;
+
+        switch (position) {
+          case 'bottom-right':
+            top = targetRect.bottom + 12;
+            left = targetRect.right - tipRect.width;
+            break;
+          case 'bottom-left':
+            top = targetRect.bottom + 12;
+            left = targetRect.left;
+            break;
+          case 'inside-top':
+            top = targetRect.top + 60;
+            left = targetRect.left + 20;
+            break;
+          case 'right':
+            top = targetRect.top;
+            left = targetRect.right + 12;
+            break;
+          case 'left':
+            top = targetRect.top;
+            left = targetRect.left - tipRect.width - 12;
+            break;
+          default:
+            top = targetRect.bottom + 12;
+            left = targetRect.left;
+        }
+
+        // Переконуємось, що tip в межах екрану
+        const padding = 16;
+        left = Math.max(padding, Math.min(left, window.innerWidth - tipRect.width - padding));
+        top = Math.max(padding, Math.min(top, window.innerHeight - tipRect.height - padding));
+
+        tip.style.position = 'fixed';
+        tip.style.top = `${top}px`;
+        tip.style.left = `${left}px`;
+      },
+
+      getIcon(iconName) {
+        const icons = {
+          plus: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+          alert: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+          chart: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+          filter: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>',
+          info: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+        };
+        return icons[iconName] || icons.info;
+      },
+
+      getStepIndicator() {
+        if (!this.tourMode) return '';
+        
+        const dots = this.tips.map((_, i) => 
+          `<span class="tip-step-dot ${i === this.currentStep ? 'active' : ''}"></span>`
+        ).join('');
+        
+        return `
+          <div class="tip-step">
+            <div class="tip-step-dots">${dots}</div>
+            <span>${this.currentStep + 1} з ${this.tips.length}</span>
+          </div>
+        `;
+      },
+
+      dismissTip(tipId) {
+        const tip = document.querySelector(`[data-tip-id="${tipId}"]`);
+        if (tip) {
+          tip.classList.add('hiding');
+          setTimeout(() => tip.remove(), 300);
+        }
+
+        // Зберігаємо в localStorage
+        this.dismissedTips[tipId] = true;
+        this.saveState();
+
+        // Знімаємо підсвітку
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+
+        if (this.tourMode) {
+          this.endTour();
+        }
+      },
+
+      hideAllTips() {
+        document.querySelectorAll('.tip').forEach(tip => tip.remove());
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+      },
+
+      startTour() {
+        this.tourMode = true;
+        this.currentStep = 0;
+        
+        // Створюємо overlay
+        let overlay = document.querySelector('.tips-overlay');
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.className = 'tips-overlay';
+          overlay.onclick = () => this.endTour();
+          document.body.appendChild(overlay);
+        }
+        overlay.classList.add('active');
+
+        this.showCurrentTourStep();
+      },
+
+      showCurrentTourStep() {
+        if (this.currentStep >= 0 && this.currentStep < this.tips.length) {
+          this.showTip(this.tips[this.currentStep], true);
+          
+          // Скролимо до елемента
+          const target = document.querySelector(this.tips[this.currentStep].targetSelector);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      },
+
+      nextStep() {
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        this.currentStep++;
+        if (this.currentStep < this.tips.length) {
+          this.showCurrentTourStep();
+        } else {
+          this.endTour();
+        }
+      },
+
+      prevStep() {
+        document.querySelectorAll('.tip-highlight').forEach(el => el.classList.remove('tip-highlight'));
+        if (this.currentStep > 0) {
+          this.currentStep--;
+          this.showCurrentTourStep();
+        }
+      },
+
+      endTour() {
+        this.tourMode = false;
+        this.hideAllTips();
+        
+        const overlay = document.querySelector('.tips-overlay');
+        if (overlay) {
+          overlay.classList.remove('active');
+        }
+      },
+
+      resetAllTips() {
+        this.dismissedTips = {};
+        this.saveState();
+        this.showInitialTips();
+      }
+    };
+
+    // ===== STATIC HELP SYSTEM =====
+    const HelpManager = {
+      activePopup: null,
+      activeTrigger: null,
+
+      // Довідкова інформація для кожного компонента
+      helpContent: {
+        // Сторінка
+        'cases-page': {
+          title: 'Сторінка "Кейси"',
+          icon: 'folder',
+          content: `
+            <p>Центральна сторінка для управління всіма кейсами. Тут ви можете:</p>
+            <ul>
+              <li>Переглядати активні кейси за категоріями</li>
+              <li>Створювати нові кейси</li>
+              <li>Відстежувати SLA та статуси</li>
+              <li>Швидко переходити до потрібного кейсу</li>
+            </ul>
+          `,
+          shortcut: 'G → C'
+        },
+
+        // Статистичні картки
+        'approval-stat': {
+          title: 'Потребують Approval',
+          icon: 'check',
+          content: `
+            <p>Кейси, які очікують вашого підтвердження або рішення.</p>
+            <ul>
+              <li><strong>QUOTE_APPROVAL</strong> — підтвердження ціни</li>
+              <li><strong>DIMS_CHANGE</strong> — зміна габаритів</li>
+              <li><strong>BL_DRAFT</strong> — перевірка B/L</li>
+            </ul>
+            <p>Рекомендуємо обробляти approval запити щодня.</p>
+          `
+        },
+        'sla-stat': {
+          title: 'SLA at Risk',
+          icon: 'clock',
+          content: `
+            <p>Кейси, у яких залишилось менше 24 годин до порушення SLA.</p>
+            <p><strong>Кольори SLA:</strong></p>
+            <ul>
+              <li>🟢 Зелений — достатньо часу</li>
+              <li>🟡 Жовтий — менше 48 годин</li>
+              <li>🔴 Червоний — критично, менше 24 годин</li>
+            </ul>
+          `
+        },
+        'active-stat': {
+          title: 'Активні кейси',
+          icon: 'folder',
+          content: `
+            <p>Загальна кількість кейсів у статусах, що потребують роботи.</p>
+            <p>Не включає:</p>
+            <ul>
+              <li>Завершені кейси (COMPLETED)</li>
+              <li>Скасовані кейси (CANCELLED)</li>
+              <li>Архівовані кейси</li>
+            </ul>
+          `
+        },
+        'completed-stat': {
+          title: 'Завершено цього місяця',
+          icon: 'check',
+          content: `
+            <p>Кількість успішно закритих кейсів за поточний календарний місяць.</p>
+            <p>Порівняння <code>+15%</code> показує динаміку відносно попереднього місяця.</p>
+          `
+        },
+
+        // Секції таблиць
+        'approval-section': {
+          title: 'Секція підтверджень',
+          icon: 'alert',
+          content: `
+            <p>Кейси, які заблоковані і очікують вашого рішення.</p>
+            <p><strong>Типи approval:</strong></p>
+            <ul>
+              <li><strong>QUOTE_APPROVAL</strong> — клієнт отримав ціну, потрібно підтвердити або відхилити</li>
+              <li><strong>DIMS_CHANGE</strong> — склад виміряв інші габарити, впливає на ціну</li>
+              <li><strong>BL_DRAFT</strong> — перевірка чернетки коносаменту</li>
+            </ul>
+          `
+        },
+        'in-progress-section': {
+          title: 'Кейси в роботі',
+          icon: 'progress',
+          content: `
+            <p>Активні кейси, над якими зараз ведеться робота.</p>
+            <p><strong>NBA</strong> (Next Best Action) — показує наступний крок, який потрібно виконати.</p>
+            <p>Кейси автоматично сортуються за пріоритетом SLA.</p>
+          `
+        },
+        'waiting-section': {
+          title: 'Очікують відповідь',
+          icon: 'clock',
+          content: `
+            <p>Кейси, заблоковані очікуванням на зовнішню сторону:</p>
+            <ul>
+              <li><strong>Клієнт</strong> — очікуємо підтвердження або дані</li>
+              <li><strong>Склад</strong> — очікуємо габарити або фото</li>
+              <li><strong>Перевізник</strong> — очікуємо tracking або ETD</li>
+            </ul>
+            <p>SLA призупиняється на час очікування.</p>
+          `
+        },
+
+        // Колонки таблиці
+        'case-id': {
+          title: 'Case ID',
+          icon: 'info',
+          content: `
+            <p>Унікальний ідентифікатор кейсу.</p>
+            <p><strong>Формат:</strong> <code>F1-XXX-YYYY-NNNNN</code></p>
+            <ul>
+              <li><strong>F1</strong> — код компанії</li>
+              <li><strong>XXX</strong> — тип (SEA, AIR, RAIL, AUTO)</li>
+              <li><strong>YYYY</strong> — рік</li>
+              <li><strong>NNNNN</strong> — порядковий номер</li>
+            </ul>
+          `
+        },
+        'case-status': {
+          title: 'Статус кейсу',
+          icon: 'info',
+          content: `
+            <p>Поточний стан кейсу в бізнес-процесі.</p>
+            <p><strong>Основні групи статусів:</strong></p>
+            <ul>
+              <li>🔵 <strong>OPEN</strong> — в активній роботі</li>
+              <li>🟡 <strong>PENDING</strong> — очікує дії</li>
+              <li>🔴 <strong>BLOCKED</strong> — заблоковано</li>
+              <li>🟢 <strong>COMPLETED</strong> — завершено</li>
+            </ul>
+          `
+        },
+        'approval-type': {
+          title: 'Тип Approval',
+          icon: 'check',
+          content: `
+            <p>Вид підтвердження, яке очікує кейс.</p>
+            <ul>
+              <li><strong>QUOTE</strong> — підтвердження ціни клієнтом</li>
+              <li><strong>DIMS</strong> — підтвердження зміни габаритів</li>
+              <li><strong>BL</strong> — підтвердження коносаменту</li>
+              <li><strong>RELEASE</strong> — дозвіл на відправку</li>
+            </ul>
+          `
+        },
+        'sla-column': {
+          title: 'SLA (Service Level Agreement)',
+          icon: 'clock',
+          content: `
+            <p>Час, що залишився до дедлайну виконання поточного кроку.</p>
+            <p><strong>Як розраховується:</strong></p>
+            <ul>
+              <li>Кожен статус має свій SLA</li>
+              <li>Відлік починається при зміні статусу</li>
+              <li>Призупиняється на вихідні (опціонально)</li>
+            </ul>
+          `
+        }
+      },
+
+      init() {
+        this.bindEvents();
+      },
+
+      bindEvents() {
+        // Клік по help-trigger
+        document.addEventListener('click', (e) => {
+          const trigger = e.target.closest('.help-trigger');
+          
+          if (trigger) {
+            e.preventDefault();
+            e.stopPropagation();
+            const helpId = trigger.dataset.help;
+            if (helpId) {
+              this.togglePopup(helpId, trigger);
+            }
+            return;
+          }
+
+          // Закрити popup при кліку зовні
+          if (this.activePopup && !e.target.closest('.help-popup')) {
+            this.closePopup();
+          }
+        });
+
+        // Закрити при Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.activePopup) {
+            this.closePopup();
+          }
+        });
+      },
+
+      togglePopup(helpId, trigger) {
+        // Якщо відкритий той самий popup — закриваємо
+        if (this.activeTrigger === trigger) {
+          this.closePopup();
+          return;
+        }
+
+        // Закриваємо попередній
+        this.closePopup();
+
+        const content = this.helpContent[helpId];
+        if (!content) return;
+
+        // Створюємо popup
+        const popup = document.createElement('div');
+        popup.className = 'help-popup';
+        popup.innerHTML = `
+          <div class="help-popup-header">
+            <div class="help-popup-icon">${this.getIcon(content.icon)}</div>
+            <div class="help-popup-title">${content.title}</div>
+          </div>
+          <div class="help-popup-content">
+            ${content.content}
+          </div>
+          ${content.shortcut ? `
+            <div class="help-popup-footer">
+              <span>Швидкий доступ:</span>
+              <kbd>${content.shortcut}</kbd>
+            </div>
+          ` : ''}
+        `;
+
+        document.body.appendChild(popup);
+
+        // Позиціонування
+        this.positionPopup(popup, trigger);
+
+        // Зберігаємо стан
+        this.activePopup = popup;
+        this.activeTrigger = trigger;
+        trigger.classList.add('active');
+      },
+
+      positionPopup(popup, trigger) {
+        const triggerRect = trigger.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+
+        let top = triggerRect.bottom + 8;
+        let left = triggerRect.left - 10;
+
+        // Перевіряємо чи не виходить за праву межу
+        if (left + popupRect.width > window.innerWidth - 16) {
+          left = window.innerWidth - popupRect.width - 16;
+        }
+
+        // Перевіряємо чи не виходить за нижню межу
+        if (top + popupRect.height > window.innerHeight - 16) {
+          // Показуємо зверху
+          top = triggerRect.top - popupRect.height - 8;
+          popup.style.setProperty('--arrow-position', 'bottom');
+          popup.classList.add('arrow-bottom');
+        }
+
+        // Не виходимо за ліву межу
+        left = Math.max(16, left);
+
+        popup.style.position = 'fixed';
+        popup.style.top = `${top}px`;
+        popup.style.left = `${left}px`;
+      },
+
+      closePopup() {
+        if (this.activePopup) {
+          this.activePopup.classList.add('closing');
+          setTimeout(() => {
+            if (this.activePopup) {
+              this.activePopup.remove();
+              this.activePopup = null;
+            }
+          }, 150);
+        }
+        if (this.activeTrigger) {
+          this.activeTrigger.classList.remove('active');
+          this.activeTrigger = null;
+        }
+      },
+
+      getIcon(iconName) {
+        const icons = {
+          info: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+          check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+          clock: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+          folder: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',
+          alert: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+          progress: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>'
+        };
+        return icons[iconName] || icons.info;
+      }
+    };
+
+    // Ініціалізація при завантаженні сторінки
+    document.addEventListener('DOMContentLoaded', () => {
+      TipsManager.init();
+      HelpManager.init();
     });
   </script>
 </body>
