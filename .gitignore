@@ -127,3 +127,5 @@ credentials/
 # Local configuration
 config.local.*
 local.config.*
+
+docs/tmp
