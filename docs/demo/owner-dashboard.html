@@ -370,6 +370,230 @@
     .escalation-cards-container {
       padding: 16px;
     }
+    
+    /* Hero Notice (Top of page) */
+    .hero-notice {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 18px;
+      color: #e0e7ff;
+      line-height: 1.7;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-notice::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .hero-notice-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .hero-notice-header span {
+      font-size: 24px;
+    }
+    
+    .hero-notice-intro {
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: #c7d2fe;
+    }
+    
+    .hero-notice-intro strong {
+      color: #fff;
+    }
+    
+    .hero-notice-highlight {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #e0e7ff;
+    }
+    
+    .hero-notice-highlight span {
+      font-size: 20px;
+    }
+    
+    .hero-notice-highlight strong {
+      color: #fff;
+    }
+    
+    .hero-notice-benefits {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    
+    @media (max-width: 1000px) {
+      .hero-notice-benefits {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .hero-benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: #c7d2fe;
+    }
+    
+    .hero-benefit span {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .hero-benefit strong {
+      color: #fff;
+    }
+    
+    .hero-notice-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    
+    @media (max-width: 1200px) {
+      .hero-notice-features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-notice-features {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .hero-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: #a5b4fc;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    
+    .hero-feature span {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    
+    .hero-feature strong {
+      color: #e0e7ff;
+    }
+    
+    .hero-notice-result {
+      font-size: 13px;
+      color: #c7d2fe;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .hero-notice-result strong {
+      color: #fff;
+    }
+    
+    .hero-notice-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #a5f3fc;
+    }
+    
+    .hero-notice-footer span {
+      font-size: 18px;
+    }
+    
+    /* Section Notices */
+    .section-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-left: 3px solid #0ea5e9;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 12px 16px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #0c4a6e;
+    }
+    
+    .section-notice-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: #0ea5e9;
+    }
+    
+    .section-notice-text {
+      flex: 1;
+    }
+    
+    .section-notice-text strong {
+      color: #0369a1;
+    }
+    
+    .section-notice.tip {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-left-color: #22c55e;
+      color: #14532d;
+    }
+    
+    .section-notice.tip .section-notice-icon {
+      color: #22c55e;
+    }
+    
+    .section-notice.tip strong {
+      color: #15803d;
+    }
+    
+    .section-notice.warning {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border-left-color: #f59e0b;
+      color: #78350f;
+    }
+    
+    .section-notice.warning .section-notice-icon {
+      color: #f59e0b;
+    }
+    
+    .section-notice.warning strong {
+      color: #b45309;
+    }
+    
+    .kpi-section-notice {
+      margin: 0 0 16px 0;
+      border-radius: var(--radius-sm);
+    }
   </style>
 </head>
 <body>
@@ -415,7 +639,7 @@
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               </svg>
               Кейси
-              <span class="nav-badge">12</span>
+              <span class="nav-badge">32</span>
             </a>
           </li>
           <li>
@@ -524,6 +748,97 @@
 
       <!-- Content -->
       <div class="page-content">
+
+        <!-- Hero Notice -->
+        <div class="hero-notice">
+          <div class="hero-notice-header">
+            <span>🗼</span>
+            Owner Dashboard — контрольна вежа бізнес-операцій
+          </div>
+          
+          <div class="hero-notice-intro">
+            IMCP — це “костюм Iron Man” для кейс-менеджменту: <strong>людина — пілот</strong>, <strong>ШІ — екзоскелет</strong>, а система дає прозорість і контроль.
+            Owner Dashboard допомагає власнику за хвилину побачити <strong>здоров’я потоку кейсів</strong>, <strong>ризики</strong> та <strong>де потрібне рішення рівня власника</strong>,
+            не занурюючись у деталі кожного кейса.
+          </div>
+          
+          <div class="hero-notice-highlight">
+            <span>🎯</span>
+            <div>
+              <strong>Ціль дашборду:</strong> забезпечити <strong>пропускну здатність</strong>, <strong>SLA-дисципліну</strong> і <strong>керований ризик</strong>.<br>
+              Ви не “керуєте кожним кліком менеджера” — ви керуєте <strong>системою</strong>: де процес буксує, де зростає ризик, де потрібна ескалація, і які правила/пріоритети слід змінити.
+            </div>
+          </div>
+          
+          <div class="hero-notice-benefits">
+            <div class="hero-benefit">
+              <span>🚨</span>
+              <div><strong>Раннє попередження</strong> — бачите ризики до того, як вони стануть штрафами або зривом дедлайнів</div>
+            </div>
+            <div class="hero-benefit">
+              <span>⚖️</span>
+              <div><strong>Контроль високоризикових рішень</strong> — ескалації та винятки підтверджуються на рівні власника</div>
+            </div>
+            <div class="hero-benefit">
+              <span>📈</span>
+              <div><strong>Кероване масштабування</strong> — більше кейсів і клієнтів без втрати контролю завдяки метрикам і прозорим правилам</div>
+            </div>
+          </div>
+          
+          <div class="hero-notice-features">
+            <div class="hero-feature">
+              <span>📊</span>
+              <div><strong>KPI Tiles:</strong> активні кейси, частка at-risk, черга підтверджень, Time-to-Quote, Approval Latency, No-edit Rate (AI)</div>
+            </div>
+            <div class="hero-feature">
+              <span>🚦</span>
+              <div><strong>At Risk Queue:</strong> кейси, які потребують дії зараз (SLA, BLOCKED, конфлікти даних, спеціальні умови)</div>
+            </div>
+            <div class="hero-feature">
+              <span>⏱️</span>
+              <div><strong>Approvals Health:</strong> де гейти підтверджень гальмують потік і створюють накопичення</div>
+            </div>
+            <div class="hero-feature">
+              <span>🧩</span>
+              <div><strong>Top Bottlenecks:</strong> у яких бізнес-станах кейси “застрягають” — що блокує пропускну здатність</div>
+            </div>
+            <div class="hero-feature">
+              <span>🔐</span>
+              <div><strong>Escalations:</strong> рішення власника для високоризикових/нестандартних ситуацій (маржа, страхування, high value, небезпечні вантажі)</div>
+            </div>
+            <div class="hero-feature">
+              <span>🧭</span>
+              <div><strong>Рішення:</strong> ескалювати критичні кейси, перерозподілити пріоритети/навантаження, змінити політики SLA та критерії ескалацій</div>
+            </div>
+          </div>
+          
+          <div class="hero-notice-result">
+            ✅ <strong>Результат:</strong> не “статистика заради статистики”, а <strong>карта управлінських рішень</strong> — що зробити сьогодні, щоб потік кейсів ішов швидко й безпечно.
+          </div>
+          
+          <div class="hero-notice-footer">
+            <span>🧭</span>
+            <div>
+              Технічні метрики якості ШІ та інтеграцій винесені в
+              <a href="engineering-dashboard.html" style="color: #fff; text-decoration: underline;">Engineering Dashboard</a>,
+              щоб Owner Dashboard залишався бізнес-орієнтованим і фокусувався на рішеннях.
+            </div>
+          </div>
+        </div>
+        
+        <!-- KPI Notice -->
+        <div class="section-notice kpi-section-notice">
+          <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <div class="section-notice-text">
+            <strong>KPI Tiles</strong> — швидкий огляд здоров'я операцій за один погляд. 
+            Індикатори (🟢 ok / 🟡 warning / 🔴 critical) розраховуються автоматично на основі порогів SLA. 
+            Клікніть на будь-яку плитку, щоб перейти до деталізації (drill-down).
+          </div>
+        </div>
         
         <!-- KPI Tiles -->
         <div class="kpi-grid">
@@ -531,16 +846,16 @@
             <div class="kpi-header">
               <span class="kpi-label">Active Cases</span>
             </div>
-            <div class="kpi-value">48</div>
+            <div class="kpi-value">32</div>
             <div class="kpi-subvalue">OPEN + BLOCKED</div>
           </div>
           
           <div class="kpi-tile" onclick="alert('Drill-down: At Risk Queue')">
             <div class="kpi-header">
               <span class="kpi-label">At Risk</span>
-              <span class="kpi-indicator critical"></span>
+              <span class="kpi-indicator warning"></span>
             </div>
-            <div class="kpi-value">6</div>
+            <div class="kpi-value">4</div>
             <div class="kpi-subvalue">12.5% від активних</div>
           </div>
           
@@ -576,7 +891,7 @@
           <div class="kpi-tile" onclick="alert('Drill-down: No-edit Rate (AI)')">
             <div class="kpi-header">
               <span class="kpi-label">No-edit Rate (AI)</span>
-              <span class="kpi-indicator warning"></span>
+              <span class="kpi-indicator ok"></span>
             </div>
             <div class="kpi-value">63%</div>
             <div class="kpi-subvalue">AI drafts approved w/o edits • target &gt; 50%</div>
@@ -595,7 +910,17 @@
                 </svg>
                 At Risk Queue
               </div>
-              <a href="#" class="view-all-link">View all 6 →</a>
+              <a href="#" class="view-all-link">View all 4 →</a>
+            </div>
+            <div class="section-notice warning">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>At Risk Queue</strong> — кейси, що потребують негайної уваги. 
+                Потрапляють сюди за критеріями: SLA &lt; 24h, статус BLOCKED, конфлікти даних (DIMS_MISMATCH), 
+                або спеціальні умови (DANGEROUS_GOODS, HIGH_VALUE). Кожен рядок клікабельний — ведмет до Case Cockpit.
+              </div>
             </div>
             <div class="dashboard-card-body">
               <div class="risk-row" onclick="window.location='case-detail.html'">
@@ -664,6 +989,17 @@
               </div>
               <a href="approvals.html" class="view-all-link">View pending →</a>
             </div>
+            <div class="section-notice tip">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Approvals Health</strong> — здоров'я черги підтверджень за типами. 
+                Показує кількість pending-запитів, середній час відповіді та порогові значення (warn/crit). 
+                Якщо індикатор 🔴 — менеджери перевантажені або є проблема з конкретним типом approval.
+              </div>
+            </div>
             <div class="dashboard-card-body">
               <div class="approval-health-row">
                 <div class="approval-type-info">
@@ -730,6 +1066,16 @@
                 Top Bottlenecks (Avg time in state)
               </div>
             </div>
+            <div class="section-notice">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Top Bottlenecks</strong> — де кейси "застряють" найдовше. 
+                Система аналізує середній час у кожному бізнес-стані (state) і виводить топ-3. 
+                Це прямий сигнал для оптимізації процесів: якщо DOCS_REVIEW займає 1+ день — варто розглянути автоматизацію або перерозподіл навантаження.
+              </div>
+            </div>
             <div class="dashboard-card-body">
               <div class="bottleneck-item">
                 <div class="bottleneck-header">
@@ -777,6 +1123,18 @@
                 Escalations (Owner Decisions)
               </div>
               <span class="escalation-pending-count">2 pending</span>
+            </div>
+            <div class="section-notice warning">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Escalations</strong> — рішення, які потребують особистого підтвердження власника бізнесу. 
+                Сюди потрапляють кейси з високою вартістю (HIGH_VALUE), низькою маржею, небезпечними вантажами або нестандартними умовами. 
+                Approve/Reject логується в case_events з idempotency_key для уникнення дублювання.
+              </div>
             </div>
             <div class="escalation-cards-container">
               
