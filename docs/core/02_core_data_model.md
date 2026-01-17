@@ -346,10 +346,12 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
 
 | event_type | Опис | actor_type | metadata schema |
 |------------|------|------------|-----------------|
-| `APPROVAL_CREATED` | Створено запит на підтвердження | SYSTEM | `{approval_id, approval_type}` |
-| `APPROVAL_APPROVED` | Затверджено | HUMAN | `{approval_id, has_edits: bool}` |
+| `APPROVAL_CREATED` | Створено запит на підтвердження | SYSTEM | `{approval_id, approval_type, ai_generated?: bool}` |
+| `APPROVAL_APPROVED` | Затверджено | HUMAN | `{approval_id, has_edits: bool, edited_fields?: string[]}` |
 | `APPROVAL_REJECTED` | Відхилено | HUMAN | `{approval_id, reason}` |
 | `APPROVAL_CANCELLED` | Скасовано | SYSTEM | `{approval_id, reason}` |
+
+> **Примітка:** `ai_generated` вказує, чи approval був створений на основі AI-чернетки. `edited_fields` (optional) — список полів, які змінив користувач (для Quality Loop аналізу).
 
 ### 4.3 Document Events
 
@@ -366,7 +368,9 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
 |------------|------|------------|-----------------|
 | `INTEGRATION_STARTED` | Розпочато інтеграційну дію | SYSTEM | `{integration_id, type, action}` |
 | `INTEGRATION_SUCCESS` | Інтеграція успішна | INTEGRATION | `{integration_id, external_id}` |
-| `INTEGRATION_FAILED` | Інтеграція провалилась | INTEGRATION | `{integration_id, error, retry_count}` |
+| `INTEGRATION_FAILED` | Інтеграція провалилась | INTEGRATION | `{integration_id, error, error_code?, retry_count, retryable?: bool}` |
+
+> **Примітка:** `error_code` — нормалізований код помилки (TIMEOUT, AUTH, VALIDATION, RATE_LIMIT, UNKNOWN). `retryable` — чи можна автоматично повторити.
 
 ### 4.5 AI Events
 
@@ -383,7 +387,18 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
 | `NOTIFICATION_SENT` | Відправлено нотифікацію | SYSTEM | `{channel, recipient, type}` |
 | `COMMENT_ADDED` | Додано коментар | HUMAN | `{text, mentions?: []}` |
 
-### 4.7 Metadata Schema Examples
+### 4.7 Business Milestone Events
+
+| event_type | Опис | actor_type | metadata schema |
+|------------|------|------------|-----------------|
+| `QUOTE_SENT` | Ціна/пропозиція відправлена клієнту | SYSTEM/HUMAN | `{quote_id?, sent_to, channel?}` |
+| `CLIENT_CONFIRMED` | Клієнт підтвердив угоду | HUMAN/INTEGRATION | `{confirmation_ref?, channel}` |
+| `SHIPMENT_DEPARTED` | Відправлення виїхало | INTEGRATION | `{tracking_id?, carrier}` |
+| `SHIPMENT_ARRIVED` | Відправлення прибуло | INTEGRATION | `{arrival_date, location}` |
+
+> **Примітка:** Business milestone events фіксують ключові бізнес-події, які використовуються для метрик (Time-to-quote, SLA compliance).
+
+### 4.8 Metadata Schema Examples
 
 ```typescript
 // STATE_CHANGED
@@ -396,15 +411,24 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
 // APPROVAL_APPROVED
 {
   "approval_id": "uuid",
-  "has_edits": true  // human modified the draft
+  "has_edits": true,  // human modified the draft
+  "edited_fields": ["cargo.total_cbm", "quote.margin_usd"]  // optional, for Quality Loop
+}
+
+// QUOTE_SENT
+{
+  "quote_id": "uuid",
+  "sent_to": "client@example.com",
+  "channel": "EMAIL"
 }
 
 // INTEGRATION_FAILED
 {
   "integration_id": "uuid",
   "error": "Connection timeout",
+  "error_code": "TIMEOUT",  // normalized: TIMEOUT|AUTH|VALIDATION|RATE_LIMIT|UNKNOWN
   "retry_count": 2,
-  "will_retry": true
+  "retryable": true
 }
 ```
 
@@ -632,12 +656,16 @@ Organization (org_id)
 
 ### 7.2 Roles & Permissions
 
-| Role | Cases | Approvals | Documents | Events |
-|------|-------|-----------|-----------|--------|
-| `VIEWER` | Read own org | Read | Read | Read |
-| `OPERATOR` | Read/Write own | Approve assigned types | Upload | Write |
-| `MANAGER` | Read/Write team | Approve all types | All | Write |
-| `ADMIN` | All in org | All | All | All |
+| Role | Cases | Approvals | Documents | Events | Dashboard Access |
+|------|-------|-----------|-----------|--------|------------------|
+| `VIEWER` | Read own org | Read | Read | Read | — |
+| `OPERATOR` | Read/Write own | Approve assigned types | Upload | Write | — |
+| `MANAGER` | Read/Write team | Approve all types | All | Write | Owner Dashboard (read) |
+| `ADMIN` | All in org | All | All | All | Owner + Engineering Dashboards |
+| `OPS_LEAD` | Read/Write team | Approve escalations | All | Write | Owner Dashboard (full) |
+| `ENGINEER` | Read all (tech) | Read | Read | Read | Engineering Dashboard (full) |
+
+> **Примітка:** `OPS_LEAD` та `ENGINEER` — спеціалізовані ролі для дашбордів. `ENGINEER` має доступ до технічних метрик, але не до бізнес-рішень.
 
 ### 7.3 RLS Policies (Supabase)
 

@@ -16,12 +16,22 @@
 
 **Пов'язані документи:**  
 - [UI Style Reference](./ui_style_reference.md) — дизайн-токени  
+- [System/Engineering Dashboard Spec](./system_engineering_dashboard_spec.md) — технічні інсайти (AI quality loop, інтеграції)  
 
 ---
 
 ## 1. Purpose — Навіщо потрібен Owner Dashboard
 
 Owner Dashboard в IMCP — це **панель управління потоком кейсів, ризиками та якістю рішень** для бізнес-овнерів та операційних керівників.
+
+### 1.0 Scope / Boundary (важливо)
+
+Owner Dashboard відповідає на питання **"де буксує потік кейсів і що робити зараз"**.
+
+- **Owner/Ops**: бачать *операційні* bottlenecks, SLA, approvals health, at-risk чергу і виконують *дії* (escalations/reassign/policy changes).
+- **Engineering/System insights** (якість AI, quality loop, інтеграційні помилки, дебаг): **не є частиною Owner Dashboard v0/v1**, щоб не перевантажувати інтерфейс і не змішувати аудиторії.
+
+> Пропозиція: винести технічні інсайти в окремий **System/Engineering Dashboard** (див. `docs/uiux/system_engineering_dashboard_spec.md`).
 
 ### 1.1 Основні задачі бізнес-овнера
 
@@ -65,13 +75,17 @@ Owner Dashboard дотримується принципів [Shared Mental Model
 |--------|-----|----------|----------|
 | **`status`** | Технічний агрегат | Загальний стан кейса | `OPEN`, `BLOCKED`, `DONE`, `ARCHIVED` |
 | **`state`** | Бізнес-стан | Позиція в state machine | `WAITING_CLIENT_INFO`, `QUOTE_READY`, `BL_REVIEW_PENDING` |
+| **`substates`** | Паралельні підстани | Незалежні підпроцеси | `["INSURANCE_PENDING", "BROKER_DOCS_PENDING"]` |
 | **`block_reason`** | Причина блокування | Чому кейс заблоковано | `WAITING_CLIENT`, `WAITING_BROKER`, `WAITING_ZED` |
 
-**Для Owner Dashboard:**
-- **Active cases** = `status = 'OPEN'`
-- **Blocked cases** = `status = 'BLOCKED'` (підмножина at-risk)
+**Для Owner Dashboard (контракт):**
+- **Active cases** = `status IN ('OPEN', 'BLOCKED')` (обидва є "в роботі")
+- **Open cases** = `status = 'OPEN'`
+- **Blocked cases** = `status = 'BLOCKED'` (підмножина active; часто також at-risk)
 - **At Risk** визначається комбінацією: SLA, pending approvals, `computed.risks`, `status = 'BLOCKED'`
 - **Bottlenecks** аналізуються по `state` (бізнес-стани)
+
+> **Примітка (substates):** У v0 Owner Dashboard не показує substates окремо. У v1+ substates враховуються при bottleneck-аналізі та можуть відображатись як "паралельні процеси" в At Risk Queue.
 
 ### 2.3 Що Owner Dashboard показує
 
@@ -98,7 +112,8 @@ Owner Dashboard дотримується принципів [Shared Mental Model
 | **At Risk** | ✅ | ✅ | Черга кейсів під ризиком |
 | **Approvals** | — | ✅ | Pending approvals health |
 | **Escalations** | — | ✅ | Owner-level рішення |
-| **Insights** | — | v2 | Аналітика ефективності |
+| **Insights** | — | v2 | Бізнес/операційні інсайти (без дебагу) |
+| **System / Engineering** | — | v2 | Окремий дашборд технічної якості/надійності (див. `system_engineering_dashboard_spec.md`) |
 
 > **PoC:** може мати лише 1 сторінку Overview з усіма блоками.
 
@@ -176,13 +191,16 @@ LIMIT 5;
 
 | Metric | Definition | Source | Formula |
 |--------|------------|--------|---------|
-| **Active cases** | Кейси в роботі | `cases.status = 'OPEN'` | `COUNT(*)` |
+| **Active cases** | Кейси в роботі | `cases.status IN ('OPEN','BLOCKED')` | `COUNT(*)` |
 | **At risk** | Кейси з ризиком SLA/блокування | View `v_cases_at_risk` | `COUNT(*)` |
 | **Time-to-quote** | Час від створення до відправки ціни | `case_events` | `QUOTE_SENT.created_at - CASE_CREATED.created_at` |
 | **Approval latency P50** | Медіана часу до рішення | `approvals` | `percentile_cont(0.5) OVER (decided_at - requested_at)` |
 | **Approval latency P90** | 90-й перцентиль часу до рішення | `approvals` | `percentile_cont(0.9) OVER (decided_at - requested_at)` |
-| **No-edit rate** | % approvals без змін | `approvals` | `COUNT(decision_snapshot = request_snapshot) / COUNT(*)` |
-| **AI acceptance rate** | % AI drafts прийнятих (з edits або без) | `approvals` + `ai_runs` | `COUNT(APPROVED where ai_generated) / COUNT(ai_generated)` |
+| **No-edit rate (AI)** | % AI approvals без правок | `case_events` (APPROVAL_APPROVED) | `COUNT(where ai_generated=true AND has_edits=false) / COUNT(where ai_generated=true)` |
+| **No-edit rate (overall)** | % approvals без правок (усі) | `case_events` (APPROVAL_APPROVED) | `COUNT(where has_edits=false) / COUNT(*)` |
+| **AI acceptance rate** | % AI drafts прийнятих (з edits або без) | `case_events` (APPROVAL_*) | `COUNT(APPROVED where ai_generated=true) / COUNT(CREATED where ai_generated=true)` |
+
+> **Примітка:** `ai_generated` та `has_edits` беруться з `case_events.metadata` (подія `APPROVAL_APPROVED`). Див. [02_core_data_model.md](../core/02_core_data_model.md) Sec 4.2.
 
 ### 5.1 Event Types для метрик
 
@@ -206,6 +224,8 @@ decision_snapshot IS NOT DISTINCT FROM request_snapshot
 
 > **Рекомендація:** використовувати `has_edits` флаг в `case_events.metadata` при `APPROVAL_APPROVED`.
 
+> **Owner Dashboard KPI:** використовуємо **No-edit rate (AI)** як основну метрику якості AI-чернеток.
+
 ---
 
 ## 6. Dashboard Blocks Specification
@@ -221,9 +241,10 @@ decision_snapshot IS NOT DISTINCT FROM request_snapshot
 | **Pending approvals** | Approvals зі `status = 'PENDING'` | > threshold для типу | Sec. 5 |
 | **Time-to-quote (avg)** | Середній час до відправки ціни | > 4h | Sec. 5 |
 | **Approval latency P90** | 90-й перцентиль часу до рішення | > 2h | Sec. 5 |
-| **No-edit rate** | % approvals прийнятих без правок | < 50% | Sec. 5 |
+| **No-edit rate (AI)** | % AI approvals прийнятих без правок | < 50% | Sec. 5 |
+| **AI acceptance rate** | % AI drafts/чернеток прийнятих (з/без правок) | < policy threshold | Sec. 5 |
 
-> **Примітка:** Замість "AI drafts accepted w/o edits" використовуємо **No-edit rate** — універсальна метрика для всіх approvals (включаючи AI-generated drafts).
+> **Примітка:** Для Owner Dashboard ключова метрика якості — **No-edit rate (AI)**. Якщо потрібна загальна якість процесу — додаємо окремо **No-edit rate (overall)** (не обовʼязково для v0).
 
 **UX:**
 - Кожна плитка клікабельна → drill-down
@@ -284,6 +305,8 @@ decision_snapshot IS NOT DISTINCT FROM request_snapshot
 | `BL_DRAFT_APPROVAL` | > 1h | > 4h |
 | `DIMS_CHANGE_APPROVAL` | > 1h | > 4h |
 | `ONEC_DEAL_CREATE_APPROVAL` | > 15m | > 1h |
+
+> **Важливо:** у всіх місцях UI/alerting використовуємо **per-approval_type thresholds**, а не “один поріг на все”.
 
 ---
 
@@ -407,7 +430,7 @@ Escalation — це approval, який потребує рішення business 
 | Поріг | Default | Customizable |
 |-------|---------|--------------|
 | SLA warning | < 24h | ✅ |
-| Pending approval warning | > 60m | ✅ per type |
+| Pending approval warning | ✅ per type | ✅ per type |
 | Conflict detected | auto | — |
 | At risk % threshold | > 10% | ✅ |
 
@@ -731,10 +754,34 @@ CREATE POLICY "owner_dashboard_read" ON cases
   USING (
     org_id = auth.jwt() ->> 'org_id'
     AND (
-      auth.jwt() ->> 'role' IN ('ADMIN', 'OWNER', 'OPS_LEAD')
+      auth.jwt() ->> 'role' IN ('ADMIN', 'OWNER', 'OPS_LEAD', 'MANAGER')
     )
   );
 ```
+
+> **Примітка:** Ролі `MANAGER`, `OPS_LEAD`, `ADMIN` мають доступ до Owner Dashboard. Роль `ENGINEER` має доступ до Engineering Dashboard (див. [02_core_data_model.md](../core/02_core_data_model.md) Sec 7.2).
+
+### 14.4 Idempotency для Escalation Approvals
+
+При виконанні Owner-level рішень (Approve/Reject escalation) використовується `idempotency_key`:
+
+```sql
+-- Escalation approval decision
+UPDATE approvals 
+SET 
+  status = 'APPROVED',
+  decided_by = $owner_user_id,
+  decided_at = now(),
+  decision_snapshot = $snapshot,
+  decision_comment = $comment
+WHERE 
+  id = $approval_id 
+  AND status = 'PENDING'
+  AND idempotency_key = $expected_key  -- додаткова перевірка
+RETURNING *;
+```
+
+> **Контракт:** `idempotency_key` забезпечує захист від дублювання рішень (див. [02_core_data_model.md](../core/02_core_data_model.md) Sec 6.4).
 
 ---
 

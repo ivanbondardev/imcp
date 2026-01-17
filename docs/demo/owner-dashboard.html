@@ -156,8 +156,9 @@
     /* Risk Queue */
     .risk-row {
       display: grid;
-      grid-template-columns: 140px 90px 1fr 120px 100px 80px;
+      grid-template-columns: 130px 70px 80px 1fr 110px 90px 60px;
       align-items: center;
+      gap: 8px;
       padding: 12px 16px;
       border-bottom: 1px solid var(--divider);
       font-size: 12px;
@@ -179,6 +180,8 @@
       padding: 2px 6px;
       border-radius: var(--radius-sm);
       font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
     }
     
     .risk-badge.sla { background: #FEE2E2; color: #DC2626; }
@@ -186,28 +189,35 @@
     .risk-badge.conflict { background: #DBEAFE; color: #2563EB; }
     .risk-badge.missing { background: #F3E8FF; color: #9333EA; }
     
-    .risk-case-id {
-      font-weight: 600;
-      color: var(--accent);
-    }
-    
     .risk-state {
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
       font-size: 11px;
       color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     
     .risk-owner {
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
     
     .risk-sla {
       font-weight: 500;
+      text-align: right;
+      white-space: nowrap;
     }
     
     .risk-sla.danger { color: var(--danger); }
     .risk-sla.warning { color: var(--warning); }
+    
+    .risk-case-id {
+      font-weight: 600;
+      color: var(--accent);
+    }
     
     /* Approvals Health */
     .approval-health-row {
@@ -392,6 +402,14 @@
             </a>
           </li>
           <li>
+            <a href="engineering-dashboard.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              Engineering
+            </a>
+          </li>
+          <li>
             <a href="case-list.html">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
@@ -555,13 +573,13 @@
             <div class="kpi-subvalue">P90: 1h 40m</div>
           </div>
           
-          <div class="kpi-tile" onclick="alert('Drill-down: No-edit Rate')">
+          <div class="kpi-tile" onclick="alert('Drill-down: No-edit Rate (AI)')">
             <div class="kpi-header">
-              <span class="kpi-label">No-edit Rate</span>
+              <span class="kpi-label">No-edit Rate (AI)</span>
               <span class="kpi-indicator warning"></span>
             </div>
             <div class="kpi-value">63%</div>
-            <div class="kpi-subvalue">AI drafts w/o edits</div>
+            <div class="kpi-subvalue">AI drafts approved w/o edits • target &gt; 50%</div>
           </div>
         </div>
         
@@ -582,6 +600,7 @@
             <div class="dashboard-card-body">
               <div class="risk-row" onclick="window.location='case-detail.html'">
                 <span class="risk-case-id">#F1-SEA-02451</span>
+                <span class="risk-badge" style="background: #e0e7ff; color: #4338ca;">SEA FCL</span>
                 <span class="risk-badge sla">SLA &lt;24h</span>
                 <span class="risk-state">WAITING_CLIENT_INFO</span>
                 <span class="risk-owner">
@@ -594,6 +613,7 @@
               
               <div class="risk-row" onclick="window.location='case-detail.html'">
                 <span class="risk-case-id">#F1-SEA-02477</span>
+                <span class="risk-badge" style="background: #e0e7ff; color: #4338ca;">SEA LCL</span>
                 <span class="risk-badge conflict">CONFLICT</span>
                 <span class="risk-state">DOCS_REVIEW</span>
                 <span class="risk-owner">
@@ -606,6 +626,7 @@
               
               <div class="risk-row" onclick="window.location='case-detail.html'">
                 <span class="risk-case-id">#F1-SEA-02480</span>
+                <span class="risk-badge" style="background: #fef3c7; color: #92400e;">AIR</span>
                 <span class="risk-badge blocked">BLOCKED</span>
                 <span class="risk-state">WAITING_BROKER</span>
                 <span class="risk-owner">
@@ -618,6 +639,7 @@
               
               <div class="risk-row" onclick="window.location='case-detail.html'">
                 <span class="risk-case-id">#F1-SEA-02485</span>
+                <span class="risk-badge" style="background: #dcfce7; color: #166534;">RAIL</span>
                 <span class="risk-badge missing">MISSING</span>
                 <span class="risk-state">CLIENT_INFO</span>
                 <span class="risk-owner">
@@ -648,6 +670,7 @@
                   <span class="approval-type-name">QUOTE</span>
                   <span class="approval-count">4</span>
                   <span class="approval-avg">(avg 18m)</span>
+                  <span class="approval-threshold" style="font-size:10px;color:var(--text-muted);margin-left:4px;">warn &gt;30m, crit &gt;2h</span>
                 </div>
                 <span class="kpi-indicator ok"></span>
               </div>
@@ -657,6 +680,7 @@
                   <span class="approval-type-name">BL</span>
                   <span class="approval-count">3</span>
                   <span class="approval-avg">(avg 55m)</span>
+                  <span class="approval-threshold" style="font-size:10px;color:var(--text-muted);margin-left:4px;">warn &gt;1h, crit &gt;4h</span>
                 </div>
                 <span class="kpi-indicator warning"></span>
               </div>
@@ -666,6 +690,7 @@
                   <span class="approval-type-name">DIMS</span>
                   <span class="approval-count">1</span>
                   <span class="approval-avg">(avg 2h)</span>
+                  <span class="approval-threshold" style="font-size:10px;color:var(--text-muted);margin-left:4px;">warn &gt;1h, crit &gt;4h</span>
                 </div>
                 <span class="kpi-indicator critical"></span>
               </div>
@@ -675,6 +700,7 @@
                   <span class="approval-type-name">1C</span>
                   <span class="approval-count">1</span>
                   <span class="approval-avg">(avg 10m)</span>
+                  <span class="approval-threshold" style="font-size:10px;color:var(--text-muted);margin-left:4px;">warn &gt;15m, crit &gt;1h</span>
                 </div>
                 <span class="kpi-indicator ok"></span>
               </div>
@@ -822,7 +848,7 @@
             </div>
             <div>
               <h4>Owner Dashboard — Control Tower</h4>
-              <p>Це демо-концепт панелі для бізнес-овнера. Всі метрики оновлюються в реальному часі (real-time subscriptions) або через polling кожні 30 секунд. Кожен елемент клікабельний для drill-down до конкретного кейса.</p>
+              <p>Це демо-концепт панелі для бізнес-овнера. Фокус на бізнес-метриках, ризиках та ескалаціях. Технічні метрики (AI Quality, Integration Errors, Data Freshness) виведено на окремий <a href="engineering-dashboard.html" style="color: var(--accent);">Engineering Dashboard</a>. Всі метрики оновлюються в реальному часі (real-time subscriptions) або через polling кожні 30 секунд.</p>
             </div>
           </div>
         </div>

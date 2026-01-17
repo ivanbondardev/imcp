@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engineering Dashboard — IMCP</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Engineering Dashboard specific styles */
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .period-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .period-selector select {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-editor);
+      font-size: 12px;
+      color: var(--text);
+    }
+    
+    .last-updated {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    /* System Status Banner */
+    .system-status-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      font-size: 12px;
+    }
+    
+    .system-status-banner.ok {
+      background: var(--success-bg);
+      border: 1px solid #b7e4b7;
+    }
+    
+    .system-status-banner.warning {
+      background: var(--warning-bg);
+      border: 1px solid #ffeaa7;
+    }
+    
+    .system-status-banner.critical {
+      background: var(--danger-bg);
+      border: 1px solid #f8c6c6;
+    }
+    
+    .system-status-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .system-status-banner.ok .system-status-icon {
+      background: var(--success);
+      color: white;
+    }
+    
+    .system-status-banner.warning .system-status-icon {
+      background: var(--warning);
+      color: white;
+    }
+    
+    .system-status-banner.critical .system-status-icon {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .system-status-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    .system-status-text {
+      flex: 1;
+    }
+    
+    .system-status-text strong {
+      color: var(--text);
+    }
+    
+    .system-status-text span {
+      color: var(--text-secondary);
+    }
+    
+    /* KPI Tiles Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    @media (max-width: 1400px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    .kpi-tile {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .kpi-tile:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .kpi-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .kpi-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    .kpi-indicator.ok { background: #22C55E; }
+    .kpi-indicator.warning { background: #F59E0B; }
+    .kpi-indicator.critical { background: #EF4444; }
+    
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    
+    .kpi-subvalue {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    .kpi-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      margin-top: 6px;
+    }
+    
+    .kpi-trend.up {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+    
+    .kpi-trend.down {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+    
+    .kpi-trend svg {
+      width: 10px;
+      height: 10px;
+    }
+    
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .dashboard-card {
+      background: var(--bg-editor);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    
+    .dashboard-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--divider);
+    }
+    
+    .dashboard-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .dashboard-card-title svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .dashboard-card-body {
+      padding: 0;
+    }
+    
+    .view-all-link {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .view-all-link:hover {
+      text-decoration: underline;
+    }
+    
+    /* Full width section */
+    .full-width-section {
+      margin-bottom: 20px;
+    }
+    
+    /* AI Quality Section */
+    .ai-quality-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px;
+      border-bottom: 1px solid var(--divider);
+    }
+    
+    .ai-metric {
+      text-align: center;
+    }
+    
+    .ai-metric-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .ai-metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    
+    .sparkline-container {
+      flex: 1;
+      height: 60px;
+      background: var(--bg-panel);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+    }
+    
+    .sparkline-bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 2px;
+      min-width: 8px;
+      transition: height 0.3s ease;
+    }
+    
+    .sparkline-bar.low {
+      background: var(--warning);
+    }
+    
+    .sparkline-bar.critical {
+      background: var(--danger);
+    }
+    
+    /* Risk Flags Table */
+    .risk-flags-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 80px 80px 80px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--divider);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    
+    .risk-flags-row:hover {
+      background: var(--bg-hover);
+    }
+    
+    .risk-flags-row:last-child {
+      border-bottom: none;
+    }
+    
+    .risk-flag-code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    
+    .risk-flag-bar {
+      height: 6px;
+      background: var(--bg-panel);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-right: 16px;
+    }
+    
+    .risk-flag-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+    
+    .risk-flag-count {
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .severity-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    
+    .severity-badge.high {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+    }
+    
+    .severity-badge.medium {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+    
+    .severity-badge.low {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+    
+    /* Quality Loop Table */
+    .quality-loop-row {
+      display: grid;
+      grid-template-columns: 1fr 100px 100px 120px 80px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--divider);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    
+    .quality-loop-row:hover {
+      background: var(--bg-hover);
+    }
+    
+    .quality-loop-row:last-child {
+      border-bottom: none;
+    }
+    
+    .field-path {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text);
+    }
+    
+    .edit-frequency {
+      font-weight: 600;
+      color: var(--warning);
+    }
+    
+    .case-types {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .case-type-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--bg-panel);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+    }
+    
+    /* Integration Errors */
+    .integration-error-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 80px 80px 80px 80px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--divider);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    
+    .integration-error-row:hover {
+      background: var(--bg-hover);
+    }
+    
+    .integration-error-row:last-child {
+      border-bottom: none;
+    }
+    
+    .error-code-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+    
+    .error-code-badge.timeout {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+    
+    .error-code-badge.auth {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+    }
+    
+    .error-code-badge.validation {
+      background: #F3E8FF;
+      color: #9333EA;
+    }
+    
+    .error-code-badge.rate_limit {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+    
+    .error-code-badge.unknown {
+      background: var(--bg-panel);
+      color: var(--text-secondary);
+    }
+    
+    .integration-name {
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    .retryable-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    
+    .retryable-badge.yes {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+    
+    .retryable-badge.no {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+    }
+    
+    /* Heatmap */
+    .heatmap-container {
+      padding: 16px;
+    }
+    
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 60px repeat(24, 1fr);
+      gap: 2px;
+    }
+    
+    .heatmap-row {
+      display: contents;
+    }
+    
+    .heatmap-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+    
+    .heatmap-cell {
+      height: 18px;
+      border-radius: 2px;
+      background: var(--bg-panel);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    
+    .heatmap-cell:hover {
+      transform: scale(1.2);
+      z-index: 1;
+    }
+    
+    .heatmap-cell.level-0 { background: #f0f0f0; }
+    .heatmap-cell.level-1 { background: #fde68a; }
+    .heatmap-cell.level-2 { background: #fbbf24; }
+    .heatmap-cell.level-3 { background: #f59e0b; }
+    .heatmap-cell.level-4 { background: #dc2626; }
+    
+    .heatmap-hours {
+      display: grid;
+      grid-template-columns: 60px repeat(24, 1fr);
+      gap: 2px;
+      margin-top: 4px;
+    }
+    
+    .heatmap-hour-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 12px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    
+    .heatmap-legend-cell {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+    
+    /* Data Freshness */
+    .freshness-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--divider);
+    }
+    
+    .freshness-item:last-child {
+      border-bottom: none;
+    }
+    
+    .freshness-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .freshness-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .freshness-icon.ok {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+    
+    .freshness-icon.warning {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+    
+    .freshness-icon.critical {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+    
+    .freshness-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .freshness-name {
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--text);
+    }
+    
+    .freshness-status {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .freshness-lag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .freshness-lag.ok { color: var(--success); }
+    .freshness-lag.warning { color: var(--warning); }
+    .freshness-lag.critical { color: var(--danger); }
+    
+    /* AI Runs Log */
+    .ai-runs-row {
+      display: grid;
+      grid-template-columns: 140px 120px 100px 80px 1fr 80px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--divider);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    
+    .ai-runs-row:hover {
+      background: var(--bg-hover);
+    }
+    
+    .ai-runs-row:last-child {
+      border-bottom: none;
+    }
+    
+    .run-timestamp {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .run-case-id {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    
+    .run-type-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+    }
+    
+    .run-confidence {
+      font-weight: 600;
+    }
+    
+    .run-confidence.high { color: var(--success); }
+    .run-confidence.medium { color: var(--warning); }
+    .run-confidence.low { color: var(--danger); }
+    
+    .run-flags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    
+    .run-flag-chip {
+      font-size: 9px;
+      padding: 2px 5px;
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      border-radius: var(--radius-sm);
+    }
+    
+    .run-duration {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    
+    /* Navigation Tabs */
+    .eng-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 0 20px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--divider);
+    }
+    
+    .eng-tab {
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all var(--transition);
+    }
+    
+    .eng-tab:hover {
+      color: var(--text);
+      background: var(--bg-hover);
+    }
+    
+    .eng-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    
+    .eng-tab svg {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    
+    /* Table Headers */
+    .table-header {
+      display: grid;
+      align-items: center;
+      padding: 8px 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--divider);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .table-header span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .table-header.risk-flags {
+      grid-template-columns: 160px 1fr 80px 80px 80px;
+      gap: 12px;
+    }
+    
+    .table-header.quality-loop {
+      grid-template-columns: 1fr 100px 100px 120px 80px;
+      gap: 12px;
+    }
+    
+    .table-header.integration-errors {
+      grid-template-columns: 120px 1fr 80px 80px 80px 80px;
+      gap: 12px;
+    }
+    
+    .table-header.ai-runs {
+      grid-template-columns: 140px 120px 100px 80px 1fr 80px;
+      gap: 12px;
+    }
+    
+    /* Hero Notice (Top of page) */
+    .hero-notice {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      color: #e0e7ff;
+      line-height: 1.7;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-notice::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .hero-notice-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .hero-notice-header span {
+      font-size: 24px;
+    }
+    
+    .hero-notice-intro {
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: #c7d2fe;
+    }
+    
+    .hero-notice-intro strong {
+      color: #fff;
+    }
+    
+    .hero-notice-highlight {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #e0e7ff;
+    }
+    
+    .hero-notice-highlight span {
+      font-size: 20px;
+    }
+    
+    .hero-notice-highlight strong {
+      color: #fff;
+    }
+    
+    .hero-notice-benefits {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 1000px) {
+      .hero-notice-benefits {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .hero-benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: #c7d2fe;
+    }
+    
+    .hero-benefit span {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .hero-benefit strong {
+      color: #fff;
+    }
+    
+    .hero-notice-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 1200px) {
+      .hero-notice-features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-notice-features {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .hero-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: #a5b4fc;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    
+    .hero-feature span {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    
+    .hero-feature strong {
+      color: #e0e7ff;
+    }
+    
+    .hero-notice-result {
+      font-size: 13px;
+      color: #c7d2fe;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .hero-notice-result strong {
+      color: #fff;
+    }
+    
+    .hero-notice-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #a5f3fc;
+    }
+    
+    .hero-notice-footer span {
+      font-size: 18px;
+    }
+    
+    /* Section Notices */
+    .section-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-left: 3px solid #0ea5e9;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #0c4a6e;
+    }
+    
+    .section-notice-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: #0ea5e9;
+    }
+    
+    .section-notice-text {
+      flex: 1;
+    }
+    
+    .section-notice-text strong {
+      color: #0369a1;
+    }
+    
+    .section-notice.tip {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-left-color: #22c55e;
+      color: #14532d;
+    }
+    
+    .section-notice.tip .section-notice-icon {
+      color: #22c55e;
+    }
+    
+    .section-notice.tip strong {
+      color: #15803d;
+    }
+    
+    .section-notice.warning {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border-left-color: #f59e0b;
+      color: #78350f;
+    }
+    
+    .section-notice.warning .section-notice-icon {
+      color: #f59e0b;
+    }
+    
+    .section-notice.warning strong {
+      color: #b45309;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <a href="../index.html" class="sidebar-logo" style="text-decoration: none; color: inherit;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <h1>IMCP</h1>
+          <span>Case Platform</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="sidebar-nav">
+          <li>
+            <a href="owner-dashboard.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              Owner Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="engineering-dashboard.html" class="active">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              Engineering
+              <span class="nav-badge" style="background: var(--danger);">3</span>
+            </a>
+          </li>
+          <li>
+            <a href="case-list.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              Кейси
+              <span class="nav-badge">12</span>
+            </a>
+          </li>
+          <li>
+            <a href="approvals.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 11 12 14 22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+              Підтвердження
+              <span class="nav-badge">9</span>
+            </a>
+          </li>
+          <li>
+            <a href="documents.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Документи
+            </a>
+          </li>
+          <li>
+            <a href="timeline.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Таймлайн
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Engineering Tools</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                AI Runs Log
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                  <polyline points="2 17 12 22 22 17"/>
+                  <polyline points="2 12 12 17 22 12"/>
+                </svg>
+                Integration Logs
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Pipeline Status
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Налаштування</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="personal-settings.html">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Персональні
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div class="dashboard-header">
+          <div>
+            <h2>Engineering Dashboard</h2>
+            <p class="text-sm text-muted">Platform Health • AI Quality • Integration Monitoring</p>
+          </div>
+          <div class="period-selector">
+            <span class="last-updated">Оновлено: 5 сек. тому</span>
+            <select>
+              <option>Останні 24 години</option>
+              <option>Останні 7 днів</option>
+              <option selected>Останні 30 днів</option>
+              <option>Довільний період...</option>
+            </select>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Section Tabs -->
+      <div class="eng-tabs">
+        <a href="#" class="eng-tab active">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Overview
+        </a>
+        <a href="#" class="eng-tab">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          AI Quality
+        </a>
+        <a href="#" class="eng-tab">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          Quality Loop
+        </a>
+        <a href="#" class="eng-tab">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          Integrations
+        </a>
+        <a href="#" class="eng-tab">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          Data Freshness
+        </a>
+      </div>
+
+      <!-- Content -->
+      <div class="page-content">
+        
+        <!-- Hero Notice -->
+        <div class="hero-notice">
+          <div class="hero-notice-header">
+            <span>🚀</span>
+            Engineering Dashboard — контрольна панель безперервного вдосконалення
+          </div>
+          
+          <div class="hero-notice-intro">
+            IMCP — це не «раз зробили і забули». Це <strong>жива система</strong>, яка щодня стає кращою, точнішою і стабільнішою. 
+            Архітектура платформи побудована так, щоб якість її роботи можна було <strong>постійно відстежувати</strong>, 
+            а покращення — <strong>впроваджувати без зупинки процесів</strong>. 🔄
+          </div>
+          
+          <div class="hero-notice-highlight">
+            <span>🤝</span>
+            <div>
+              У центрі підходу — проста і дуже потужна ідея: <strong>ШІ підсилює людину, а людина навчає ШІ.</strong><br>
+              Кожне рішення менеджера, кожне підтвердження, кожна правка чернетки — це не просто операційна дія, а <strong>цінний сигнал</strong> для розвитку системи. ✨
+            </div>
+          </div>
+          
+          <div class="hero-notice-benefits">
+            <div class="hero-benefit">
+              <span>🎯</span>
+              <div><strong>Бачити, де ШІ працює ідеально</strong> — і масштабувати ці сценарії</div>
+            </div>
+            <div class="hero-benefit">
+              <span>🔧</span>
+              <div><strong>Розуміти, де потрібні точкові покращення</strong> — промпти, правила, перевірки</div>
+            </div>
+            <div class="hero-benefit">
+              <span>📈</span>
+              <div><strong>Перетворювати щоденну роботу на зростання якості</strong> — без додаткового навантаження</div>
+            </div>
+          </div>
+          
+          <div class="hero-notice-features">
+            <div class="hero-feature">
+              <span>🧪</span>
+              <div><strong>Якість ШІ:</strong> наскільки впевнено працює система, де з'являється невпевненість</div>
+            </div>
+            <div class="hero-feature">
+              <span>🚩</span>
+              <div><strong>Ризики та попередження:</strong> що саме «ламається» або дає аномалії</div>
+            </div>
+            <div class="hero-feature">
+              <span>♻️</span>
+              <div><strong>Петля якості:</strong> які поля найчастіше редагують люди</div>
+            </div>
+            <div class="hero-feature">
+              <span>🔌</span>
+              <div><strong>Інтеграції:</strong> де виникають збої, що потребує втручання</div>
+            </div>
+            <div class="hero-feature">
+              <span>⏱️</span>
+              <div><strong>Свіжість даних:</strong> чи система бачить актуальну картину</div>
+            </div>
+            <div class="hero-feature">
+              <span>🧾</span>
+              <div><strong>Журнал ШІ:</strong> що запускалось, з яким результатом</div>
+            </div>
+          </div>
+          
+          <div class="hero-notice-result">
+            ✅ <strong>Результат:</strong> ви отримуєте не просто «моніторинг», а <strong>механізм еволюції</strong> — 
+            система сама підсвічує, що покращити, де це дасть найбільший ефект, і як це вплине на якість та стабільність.
+          </div>
+          
+          <div class="hero-notice-footer">
+            <span>🌱</span>
+            IMCP масштабується разом із вами: більше кейсів, більше інтеграцій, більше сценаріїв — без втрати контролю.
+          </div>
+        </div>
+        
+        <!-- System Status Banner -->
+        <div class="system-status-banner warning">
+          <div class="system-status-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <div class="system-status-text">
+            <strong>System Degraded</strong> — 
+            <span>1C Integration experiencing elevated error rates (12%). AI confidence dropped below threshold on DIMS extraction.</span>
+          </div>
+          <button class="btn btn-sm btn-secondary">View Details</button>
+        </div>
+        
+        <!-- KPI Tiles -->
+        <div class="kpi-grid">
+          <div class="kpi-tile" onclick="alert('Drill-down: Integration Failures')">
+            <div class="kpi-header">
+              <span class="kpi-label">Failures (24h)</span>
+              <span class="kpi-indicator critical"></span>
+            </div>
+            <div class="kpi-value">23</div>
+            <div class="kpi-subvalue">INTEGRATION_FAILED</div>
+            <div class="kpi-trend up">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+              +8 vs yesterday
+            </div>
+          </div>
+          
+          <div class="kpi-tile" onclick="alert('Drill-down: Failure Rate by Integration')">
+            <div class="kpi-header">
+              <span class="kpi-label">Top Failure Source</span>
+              <span class="kpi-indicator warning"></span>
+            </div>
+            <div class="kpi-value">1C</div>
+            <div class="kpi-subvalue">12% failure rate</div>
+          </div>
+          
+          <div class="kpi-tile" onclick="alert('Drill-down: AI Confidence')">
+            <div class="kpi-header">
+              <span class="kpi-label">AI Confidence</span>
+              <span class="kpi-indicator warning"></span>
+            </div>
+            <div class="kpi-value">0.78</div>
+            <div class="kpi-subvalue">avg / P10: 0.52</div>
+            <div class="kpi-trend down">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+              -0.05 vs last week
+            </div>
+          </div>
+          
+          <div class="kpi-tile" onclick="alert('Drill-down: LOW_CONFIDENCE flags')">
+            <div class="kpi-header">
+              <span class="kpi-label">LOW_CONFIDENCE</span>
+              <span class="kpi-indicator warning"></span>
+            </div>
+            <div class="kpi-value">18</div>
+            <div class="kpi-subvalue">flagged in 24h</div>
+          </div>
+          
+          <div class="kpi-tile" onclick="alert('Drill-down: AI Acceptance Rate')">
+            <div class="kpi-header">
+              <span class="kpi-label">AI Acceptance</span>
+              <span class="kpi-indicator ok"></span>
+            </div>
+            <div class="kpi-value">87%</div>
+            <div class="kpi-subvalue">drafts approved</div>
+          </div>
+          
+          <div class="kpi-tile" onclick="alert('Drill-down: No-edit Rate')">
+            <div class="kpi-header">
+              <span class="kpi-label">No-edit Rate</span>
+              <span class="kpi-indicator ok"></span>
+            </div>
+            <div class="kpi-value">63%</div>
+            <div class="kpi-subvalue">AI drafts w/o edits</div>
+          </div>
+        </div>
+        
+        <!-- KPI Tiles Notice -->
+        <div class="section-notice" style="margin-bottom: 20px; border-radius: var(--radius-sm);">
+          <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <div class="section-notice-text">
+            <strong>Ключові метрики системи</strong> — оперативний моніторинг для інженерів. <strong>Failures</strong> — кількість помилок інтеграцій за 24 години. 
+            <strong>AI Confidence</strong> — середня впевненість ШІ (target ≥ 0.7). <strong>No-edit Rate</strong> — відсоток чернеток, прийнятих без правок (target ≥ 50%). 
+            Кожна плитка клікабельна для детального drill-down.
+          </div>
+        </div>
+        
+        <!-- Two Column Grid: AI Quality + Risk Flags -->
+        <div class="dashboard-grid">
+          
+          <!-- AI Quality -->
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9333EA;">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                AI Confidence (30 days)
+              </div>
+              <a href="#" class="view-all-link">View AI Runs →</a>
+            </div>
+            <div class="section-notice">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>AI Confidence</strong> — середній рівень впевненості ШІ при екстракції даних з документів. 
+                Значення <strong>&lt; 0.7</strong> сигналізує про потребу в перегляді промптів або моделі. 
+                <strong>P10</strong> показує найгірші 10% випадків — саме їх варто аналізувати першочергово.
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="ai-quality-header">
+                <div class="ai-metric">
+                  <div class="ai-metric-value">0.78</div>
+                  <div class="ai-metric-label">Avg</div>
+                </div>
+                <div class="ai-metric">
+                  <div class="ai-metric-value" style="color: var(--warning);">0.52</div>
+                  <div class="ai-metric-label">P10</div>
+                </div>
+                <div class="sparkline-container">
+                  <!-- Sparkline bars representing confidence over time -->
+                  <div class="sparkline-bar" style="height: 75%;"></div>
+                  <div class="sparkline-bar" style="height: 82%;"></div>
+                  <div class="sparkline-bar" style="height: 80%;"></div>
+                  <div class="sparkline-bar" style="height: 78%;"></div>
+                  <div class="sparkline-bar" style="height: 85%;"></div>
+                  <div class="sparkline-bar" style="height: 88%;"></div>
+                  <div class="sparkline-bar" style="height: 82%;"></div>
+                  <div class="sparkline-bar" style="height: 79%;"></div>
+                  <div class="sparkline-bar" style="height: 76%;"></div>
+                  <div class="sparkline-bar" style="height: 72%;"></div>
+                  <div class="sparkline-bar low" style="height: 65%;"></div>
+                  <div class="sparkline-bar low" style="height: 68%;"></div>
+                  <div class="sparkline-bar" style="height: 74%;"></div>
+                  <div class="sparkline-bar" style="height: 78%;"></div>
+                  <div class="sparkline-bar" style="height: 80%;"></div>
+                  <div class="sparkline-bar" style="height: 82%;"></div>
+                  <div class="sparkline-bar" style="height: 85%;"></div>
+                  <div class="sparkline-bar" style="height: 83%;"></div>
+                  <div class="sparkline-bar" style="height: 80%;"></div>
+                  <div class="sparkline-bar" style="height: 78%;"></div>
+                  <div class="sparkline-bar low" style="height: 62%;"></div>
+                  <div class="sparkline-bar low" style="height: 58%;"></div>
+                  <div class="sparkline-bar critical" style="height: 52%;"></div>
+                  <div class="sparkline-bar low" style="height: 60%;"></div>
+                  <div class="sparkline-bar low" style="height: 68%;"></div>
+                  <div class="sparkline-bar" style="height: 72%;"></div>
+                  <div class="sparkline-bar" style="height: 75%;"></div>
+                  <div class="sparkline-bar" style="height: 78%;"></div>
+                  <div class="sparkline-bar" style="height: 76%;"></div>
+                  <div class="sparkline-bar" style="height: 78%;"></div>
+                </div>
+              </div>
+              
+              <!-- Breakdown by draft type -->
+              <div style="padding: 12px 16px; border-top: 1px solid var(--divider); font-size: 11px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--text-muted);">
+                  <span>By Draft Type:</span>
+                </div>
+                <div style="display: flex; gap: 16px;">
+                  <div><span style="font-weight: 600;">QUOTE:</span> <span style="color: var(--success);">0.85</span></div>
+                  <div><span style="font-weight: 600;">BL:</span> <span style="color: var(--success);">0.82</span></div>
+                  <div><span style="font-weight: 600;">DIMS:</span> <span style="color: var(--warning);">0.68</span></div>
+                  <div><span style="font-weight: 600;">1C:</span> <span style="color: var(--warning);">0.71</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Risk Flags -->
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warning);">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Top Risk Flags (30 days)
+              </div>
+            </div>
+            <div class="section-notice warning">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Risk Flags</strong> — автоматично згенеровані попередження від ШІ під час обробки кейсів. 
+                <strong>LOW_CONFIDENCE</strong> означає невпевненість в екстракції, <strong>DOC_PARSE_FAILED</strong> — помилка парсингу документа, 
+                <strong>CONFLICT_DETECTED</strong> — розбіжності в даних. Клікніть на рядок для перегляду конкретних кейсів.
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="table-header risk-flags">
+                <span>Flag Code</span>
+                <span>Distribution</span>
+                <span>Count</span>
+                <span>Severity</span>
+                <span>Action</span>
+              </div>
+              
+              <div class="risk-flags-row" onclick="alert('Drill-down: LOW_CONFIDENCE cases')">
+                <span class="risk-flag-code">LOW_CONFIDENCE</span>
+                <div class="risk-flag-bar">
+                  <div class="risk-flag-bar-fill" style="width: 100%; background: var(--warning);"></div>
+                </div>
+                <span class="risk-flag-count">42</span>
+                <span class="severity-badge medium">Medium</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="risk-flags-row" onclick="alert('Drill-down: DOC_PARSE_FAILED cases')">
+                <span class="risk-flag-code">DOC_PARSE_FAILED</span>
+                <div class="risk-flag-bar">
+                  <div class="risk-flag-bar-fill" style="width: 60%; background: var(--danger);"></div>
+                </div>
+                <span class="risk-flag-count">25</span>
+                <span class="severity-badge high">High</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="risk-flags-row" onclick="alert('Drill-down: CONFLICT_DETECTED cases')">
+                <span class="risk-flag-code">CONFLICT_DETECTED</span>
+                <div class="risk-flag-bar">
+                  <div class="risk-flag-bar-fill" style="width: 35%; background: var(--danger);"></div>
+                </div>
+                <span class="risk-flag-count">15</span>
+                <span class="severity-badge high">High</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="risk-flags-row" onclick="alert('Drill-down: NEEDS_REVIEW cases')">
+                <span class="risk-flag-code">NEEDS_REVIEW</span>
+                <div class="risk-flag-bar">
+                  <div class="risk-flag-bar-fill" style="width: 20%; background: var(--info);"></div>
+                </div>
+                <span class="risk-flag-count">8</span>
+                <span class="severity-badge low">Low</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quality Loop Section -->
+        <div class="full-width-section">
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--info);">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Quality Loop — Most Edited Fields
+              </div>
+              <span style="font-size: 11px; color: var(--text-muted);">request_snapshot vs decision_snapshot</span>
+            </div>
+            <div class="section-notice tip">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="16 12 12 8 8 12"/>
+                <line x1="12" y1="16" x2="12" y2="8"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Quality Loop</strong> — ключовий інструмент для покращення ШІ. Система порівнює <strong>request_snapshot</strong> 
+                (що запропонував ШІ) з <strong>decision_snapshot</strong> (що затвердив менеджер). Поля з високою частотою редагування — 
+                пріоритетні кандидати для доналаштування промптів. Це і є «навчання» системи через дії людини.
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="table-header quality-loop">
+                <span>Field Path</span>
+                <span>Edit Frequency</span>
+                <span>Avg Delta</span>
+                <span>Top Case Types</span>
+                <span>Action</span>
+              </div>
+              
+              <div class="quality-loop-row" onclick="alert('Drill-down: quote.total_cost edits')">
+                <span class="field-path">quote.total_cost</span>
+                <span class="edit-frequency">38%</span>
+                <span style="color: var(--text-secondary);">±$120</span>
+                <div class="case-types">
+                  <span class="case-type-tag">F1-SEA</span>
+                  <span class="case-type-tag">F1-AIR</span>
+                </div>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="quality-loop-row" onclick="alert('Drill-down: dims.weight edits')">
+                <span class="field-path">dims.weight</span>
+                <span class="edit-frequency">28%</span>
+                <span style="color: var(--text-secondary);">±15 kg</span>
+                <div class="case-types">
+                  <span class="case-type-tag">F1-SEA</span>
+                </div>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="quality-loop-row" onclick="alert('Drill-down: bl.consignee edits')">
+                <span class="field-path">bl.consignee</span>
+                <span class="edit-frequency">22%</span>
+                <span style="color: var(--text-secondary);">text diff</span>
+                <div class="case-types">
+                  <span class="case-type-tag">F1-SEA</span>
+                  <span class="case-type-tag">F1-RAIL</span>
+                </div>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="quality-loop-row" onclick="alert('Drill-down: quote.transit_days edits')">
+                <span class="field-path">quote.transit_days</span>
+                <span class="edit-frequency">18%</span>
+                <span style="color: var(--text-secondary);">±3 days</span>
+                <div class="case-types">
+                  <span class="case-type-tag">F1-AIR</span>
+                </div>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="quality-loop-row" onclick="alert('Drill-down: 1c.article edits')">
+                <span class="field-path">1c.article</span>
+                <span class="edit-frequency">15%</span>
+                <span style="color: var(--text-secondary);">text diff</span>
+                <div class="case-types">
+                  <span class="case-type-tag">F1-SEA</span>
+                </div>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Two Column Grid: Integrations + Heatmap -->
+        <div class="dashboard-grid">
+          
+          <!-- Integration Errors -->
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                  <polyline points="2 17 12 22 22 17"/>
+                  <polyline points="2 12 12 17 22 12"/>
+                </svg>
+                Integration Errors (24h)
+              </div>
+              <a href="#" class="view-all-link">View all 23 →</a>
+            </div>
+            <div class="section-notice">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Integration Errors</strong> — помилки зовнішніх інтеграцій (1С, брокери, сховища). 
+                <strong>TIMEOUT</strong> — перевищено час очікування, <strong>AUTH</strong> — проблема авторизації, 
+                <strong>RATE_LIMIT</strong> — ліміт запитів. Колонка <strong>Retryable</strong> показує, чи можна автоматично повторити запит.
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="table-header integration-errors">
+                <span>Error Code</span>
+                <span>Integration</span>
+                <span>Count</span>
+                <span>Retry</span>
+                <span>Retryable</span>
+                <span>Action</span>
+              </div>
+              
+              <div class="integration-error-row" onclick="alert('Drill-down: 1C TIMEOUT errors')">
+                <span class="error-code-badge timeout">TIMEOUT</span>
+                <span class="integration-name">1C API</span>
+                <span style="font-weight: 600;">12</span>
+                <span style="color: var(--text-muted);">avg: 3</span>
+                <span class="retryable-badge yes">Yes</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="integration-error-row" onclick="alert('Drill-down: ZED VALIDATION errors')">
+                <span class="error-code-badge validation">VALIDATION</span>
+                <span class="integration-name">ZED</span>
+                <span style="font-weight: 600;">5</span>
+                <span style="color: var(--text-muted);">—</span>
+                <span class="retryable-badge no">No</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="integration-error-row" onclick="alert('Drill-down: BROKER AUTH errors')">
+                <span class="error-code-badge auth">AUTH</span>
+                <span class="integration-name">Broker API</span>
+                <span style="font-weight: 600;">3</span>
+                <span style="color: var(--text-muted);">—</span>
+                <span class="retryable-badge no">No</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="integration-error-row" onclick="alert('Drill-down: STORAGE RATE_LIMIT errors')">
+                <span class="error-code-badge rate_limit">RATE_LIMIT</span>
+                <span class="integration-name">Storage</span>
+                <span style="font-weight: 600;">2</span>
+                <span style="color: var(--text-muted);">avg: 1</span>
+                <span class="retryable-badge yes">Yes</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+              
+              <div class="integration-error-row" onclick="alert('Drill-down: 1C UNKNOWN errors')">
+                <span class="error-code-badge unknown">UNKNOWN</span>
+                <span class="integration-name">1C API</span>
+                <span style="font-weight: 600;">1</span>
+                <span style="color: var(--text-muted);">—</span>
+                <span class="retryable-badge no">No</span>
+                <button class="btn btn-sm btn-secondary">View</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Failures Heatmap -->
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warning);">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="3" y1="9" x2="21" y2="9"/>
+                  <line x1="3" y1="15" x2="21" y2="15"/>
+                  <line x1="9" y1="3" x2="9" y2="21"/>
+                  <line x1="15" y1="3" x2="15" y2="21"/>
+                </svg>
+                Failures by Hour (7 days)
+              </div>
+            </div>
+            <div class="section-notice">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Теплова карта помилок</strong> — візуалізація кількості збоїв по днях тижня та годинах. 
+                Допомагає виявити патерни: наприклад, якщо більшість помилок відбувається о 9:00 — можливо, перевантаження 
+                системи на початку робочого дня. Червоні клітинки потребують негайної уваги.
+              </div>
+            </div>
+            <div class="heatmap-container">
+              <div class="heatmap-grid">
+                <!-- Row: Mon -->
+                <div class="heatmap-label">Mon</div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-1" title="1 failure"></div>
+                <div class="heatmap-cell level-1" title="2 failures"></div>
+                <div class="heatmap-cell level-2" title="3 failures"></div>
+                <div class="heatmap-cell level-2" title="4 failures"></div>
+                <div class="heatmap-cell level-1" title="2 failures"></div>
+                <div class="heatmap-cell level-1" title="1 failure"></div>
+                <div class="heatmap-cell level-2" title="3 failures"></div>
+                <div class="heatmap-cell level-3" title="6 failures"></div>
+                <div class="heatmap-cell level-2" title="4 failures"></div>
+                <div class="heatmap-cell level-1" title="2 failures"></div>
+                <div class="heatmap-cell level-1" title="1 failure"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                <div class="heatmap-cell level-0" title="0 failures"></div>
+                
+                <!-- Row: Tue -->
+                <div class="heatmap-label">Tue</div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-3"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                
+                <!-- Row: Wed -->
+                <div class="heatmap-label">Wed</div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-4"></div>
+                <div class="heatmap-cell level-4"></div>
+                <div class="heatmap-cell level-3"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                
+                <!-- Row: Thu -->
+                <div class="heatmap-label">Thu</div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                
+                <!-- Row: Fri -->
+                <div class="heatmap-label">Fri</div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-2"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                
+                <!-- Row: Sat -->
+                <div class="heatmap-label">Sat</div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-1"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                
+                <!-- Row: Sun -->
+                <div class="heatmap-label">Sun</div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+                <div class="heatmap-cell level-0"></div>
+              </div>
+              
+              <div class="heatmap-hours">
+                <div></div>
+                <div class="heatmap-hour-label">0</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">3</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">6</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">9</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">12</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">15</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">18</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label">21</div>
+                <div class="heatmap-hour-label"></div>
+                <div class="heatmap-hour-label"></div>
+              </div>
+              
+              <div class="heatmap-legend">
+                <span>Less</span>
+                <div class="heatmap-legend-cell level-0"></div>
+                <div class="heatmap-legend-cell level-1"></div>
+                <div class="heatmap-legend-cell level-2"></div>
+                <div class="heatmap-legend-cell level-3"></div>
+                <div class="heatmap-legend-cell level-4"></div>
+                <span>More</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Data Freshness Section -->
+        <div class="full-width-section">
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--success);">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Data Freshness / Pipeline Health
+              </div>
+            </div>
+            <div class="section-notice tip">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>Data Freshness</strong> — моніторинг актуальності даних та здоров'я пайплайнів. 
+                <strong>Real-time Subscriptions</strong> оновлюють UI миттєво, <strong>Aggregates</strong> — кожні 30 сек. 
+                Затримка понад 5 хвилин сигналізує про проблему в n8n-воркфлоу або базі даних.
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="freshness-item">
+                <div class="freshness-info">
+                  <div class="freshness-icon ok">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="freshness-name">Real-time Subscriptions</div>
+                    <div class="freshness-status">Supabase Realtime — all channels healthy</div>
+                  </div>
+                </div>
+                <span class="freshness-lag ok">OK — &lt; 1s</span>
+              </div>
+              
+              <div class="freshness-item">
+                <div class="freshness-info">
+                  <div class="freshness-icon ok">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="freshness-name">Cases Aggregate</div>
+                    <div class="freshness-status">Dashboard KPIs, computed fields</div>
+                  </div>
+                </div>
+                <span class="freshness-lag ok">Lag: 12s</span>
+              </div>
+              
+              <div class="freshness-item">
+                <div class="freshness-info">
+                  <div class="freshness-icon warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                      <line x1="12" y1="9" x2="12" y2="13"/>
+                      <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="freshness-name">1C Sync Pipeline</div>
+                    <div class="freshness-status">Batch sync — last run had errors</div>
+                  </div>
+                </div>
+                <span class="freshness-lag warning">Lag: 8m 45s</span>
+              </div>
+              
+              <div class="freshness-item">
+                <div class="freshness-info">
+                  <div class="freshness-icon ok">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="freshness-name">AI Runs Queue</div>
+                    <div class="freshness-status">n8n workflow queue processing</div>
+                  </div>
+                </div>
+                <span class="freshness-lag ok">Lag: 3s</span>
+              </div>
+              
+              <div class="freshness-item">
+                <div class="freshness-info">
+                  <div class="freshness-icon ok">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="freshness-name">Document Processing</div>
+                    <div class="freshness-status">OCR + extraction pipeline</div>
+                  </div>
+                </div>
+                <span class="freshness-lag ok">Lag: 45s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI Runs Log (Recent) -->
+        <div class="full-width-section">
+          <div class="dashboard-card">
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #9333EA;">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Recent AI Runs (AI_RUN_COMPLETED)
+              </div>
+              <a href="#" class="view-all-link">View all runs →</a>
+            </div>
+            <div class="section-notice">
+              <svg class="section-notice-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <div class="section-notice-text">
+                <strong>AI Runs Log</strong> — журнал усіх запусків ШІ-нод (екстракція, генерація, верифікація). 
+                Кожен запис містить <strong>Confidence</strong> (рівень впевненості), <strong>Flags</strong> (попередження), 
+                та <strong>Duration</strong> (тривалість). Клікніть на рядок для переходу до відповідного кейса.
+              </div>
+            </div>
+            <div class="dashboard-card-body">
+              <div class="table-header ai-runs">
+                <span>Timestamp</span>
+                <span>Case ID</span>
+                <span>Run Type</span>
+                <span>Confidence</span>
+                <span>Flags</span>
+                <span>Duration</span>
+              </div>
+              
+              <div class="ai-runs-row" onclick="window.location='case-detail.html'">
+                <span class="run-timestamp">2026-01-17 14:32:18</span>
+                <span class="run-case-id">#F1-SEA-02451</span>
+                <span class="run-type-badge">QUOTE</span>
+                <span class="run-confidence high">0.92</span>
+                <div class="run-flags">—</div>
+                <span class="run-duration">1.2s</span>
+              </div>
+              
+              <div class="ai-runs-row" onclick="window.location='case-detail.html'">
+                <span class="run-timestamp">2026-01-17 14:28:45</span>
+                <span class="run-case-id">#F1-SEA-02488</span>
+                <span class="run-type-badge">DIMS</span>
+                <span class="run-confidence low">0.54</span>
+                <div class="run-flags">
+                  <span class="run-flag-chip">LOW_CONFIDENCE</span>
+                  <span class="run-flag-chip">NEEDS_REVIEW</span>
+                </div>
+                <span class="run-duration">2.8s</span>
+              </div>
+              
+              <div class="ai-runs-row" onclick="window.location='case-detail.html'">
+                <span class="run-timestamp">2026-01-17 14:25:03</span>
+                <span class="run-case-id">#F1-AIR-01203</span>
+                <span class="run-type-badge">BL</span>
+                <span class="run-confidence high">0.88</span>
+                <div class="run-flags">—</div>
+                <span class="run-duration">1.5s</span>
+              </div>
+              
+              <div class="ai-runs-row" onclick="window.location='case-detail.html'">
+                <span class="run-timestamp">2026-01-17 14:21:32</span>
+                <span class="run-case-id">#F1-SEA-02477</span>
+                <span class="run-type-badge">1C</span>
+                <span class="run-confidence medium">0.72</span>
+                <div class="run-flags">
+                  <span class="run-flag-chip">CONFLICT_DETECTED</span>
+                </div>
+                <span class="run-duration">3.1s</span>
+              </div>
+              
+              <div class="ai-runs-row" onclick="window.location='case-detail.html'">
+                <span class="run-timestamp">2026-01-17 14:18:55</span>
+                <span class="run-case-id">#F1-SEA-02480</span>
+                <span class="run-type-badge">QUOTE</span>
+                <span class="run-confidence high">0.95</span>
+                <div class="run-flags">—</div>
+                <span class="run-duration">0.9s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Info Banner -->
+        <div class="info-banner">
+          <div class="info-banner-content">
+            <div class="info-banner-icon" style="background: #F3E8FF; color: #9333EA;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <div>
+              <h4>Engineering Dashboard — Platform Control Tower</h4>
+              <p>Це демо-концепт інженерного дашборду для моніторингу здоров'я платформи, якості AI та інтеграцій. Доступ обмежено ролями ENGINEER та ADMIN. Кожен елемент клікабельний для drill-down до конкретного кейса, AI-рану або події інтеграції.</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+  </div>
+</body>
+</html>
