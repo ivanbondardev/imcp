@@ -160,6 +160,75 @@ System Overview → Problem Area (AI/Integration) → Top offenders → конк
 - `polling_fallback_rate`
 - `max_lag_seconds` по ключових агрегатах
 
+### 4.6 Human Expertise Signals (Patterns, not people)
+
+Мета: зробити **експертний людський досвід видимим** через повторювані патерни, але **без персоналізації** (щоб не перетворити дашборд на “контроль людей”).
+
+Цей блок відповідає на питання:
+- Де саме люди “рятують” систему (які поля/кроки найчастіше виправляються)
+- У яких контекстах це відбувається (case_type / approval_type / state)
+- Чи є “гарячі зони” для покращень (топ комбінації field × case_type × approval_type)
+
+**Data Sources (v0):**
+- `case_events` з `event_type='APPROVAL_APPROVED'`
+  - `metadata.has_edits` (bool)
+  - `metadata.edited_fields[]` (optional)
+  - `metadata.approval_type`
+  - `metadata.ai_generated` (bool, з `APPROVAL_CREATED`)
+- `approvals` (для агрегатів по approval_type / latency) — за доступом
+- `cases.case_type`, `cases.state`, `cases.status`
+
+**Візуалізація (v0):**
+- KPI mini-cards: “Human overrides (30d)”, “Top edited field”, “Edits concentrated in (case_type)”
+- Таблиця: **Field** / **Edit rate** / **Top contexts** / **Drill-down**
+
+**RLS / Privacy:**
+- ENGINEER/ADMIN: агрегати + drill-down до кейсів/подій
+- OPS_LEAD: лише агрегати (без raw payload/logs)
+- Не показувати персональні імена/рейтинги. Дозволені лише агрегати “по команді/ролі”, якщо це справді потрібно.
+
+### 4.7 Decision Reasons (Why humans changed / rejected)
+
+Мета: зрозуміти **чому** люди відхиляють/правлять (це найбільш цінний сигнал для покращення AI та правил).
+
+**Контракт (рекомендовано для v1):**
+- `case_events` з `event_type in ('APPROVAL_APPROVED','APPROVAL_REJECTED')`
+  - `metadata.reason_code` (string) — нормалізована причина (taxonomy)
+  - `metadata.reason_note` (string, optional) — короткий коментар (sanitize/limits)
+  - `metadata.edited_fields[]` (optional)
+
+**Reason taxonomy (proposal):**
+- `MISSING_CONTEXT` — бракує контексту/вхідних даних
+- `POLICY_EXCEPTION` — нестандартний кейс/виняток з політики
+- `DATA_CONFLICT` — конфлікт між джерелами
+- `CLIENT_REQUEST` — рішення через побажання клієнта/партнера
+- `RISK_TOO_HIGH` — ризик/комплаєнс/небезпечний вантаж
+- `PRICE_ADJUSTMENT` — корекція ціни/маржі
+- `DOC_ISSUE` — проблема документа (формат/помилки)
+- `INTEGRATION_ERROR` — наслідок збою інтеграції
+- `OTHER` — інше
+
+**Візуалізація:**
+- Donut/бар-чарт “Reasons distribution (30d)”
+- Top reasons by approval_type / case_type
+- Drill-down: reason_code → список кейсів/подій (з обмеженнями RLS)
+
+### 4.8 Improvement Impact (Release / Prompt / Rule changes)
+
+Мета: перетворити дашборд на **механізм еволюції**: бачити, які покращення дали ефект, і де регресії.
+
+**Data Sources (v0):**
+- Lightweight “changelog” (може бути таблиця в DB або навіть конфіг/лог подій):
+  - `change_id`, `change_type` (PROMPT/RULE/INTEGRATION), `owner`, `created_at`
+  - `notes` (коротко: що змінено)
+- Метрики до/після по ключових KPI:
+  - No-edit rate (AI), AI acceptance, risk flags rate, integration failures, approval latency
+
+**Візуалізація (v0):**
+- Список останніх змін з бейджем “+/- impact” (7–14 днів)
+- Mini-metrics: “No-edit ↑”, “LOW_CONFIDENCE ↓”, “Failures ↓”
+- “Regressions” block: що погіршилось після зміни
+
 ---
 
 ## 5. UI/UX Look & Feel (узгоджено з Style Reference)
