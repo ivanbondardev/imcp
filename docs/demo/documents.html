@@ -268,9 +268,9 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <span class="badge badge-warning" data-flag="needs-review">NEEDS REVIEW</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="Invoice_INV2026-0451.pdf" data-doc-type="INVOICE" data-doc-source="ZED" data-doc-case="F1-SEA-2026-02451" data-doc-confidence="92" data-doc-file="Invoice_INV2026-0451.pdf" data-doc-status="NEEDS_VERIFICATION">Review</button>
+                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="Invoice_INV2026-0451.pdf" data-doc-type="INVOICE" data-doc-source="ZED" data-doc-case="F1-SEA-2026-02451" data-doc-confidence="92" data-doc-file="Invoice_INV2026-0451.pdf" data-doc-status="UPLOADED" data-needs-review="true">Review</button>
                   </div>
                 </div>
               </li>
@@ -294,9 +294,9 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="badge badge-danger">LOW CONFIDENCE</span>
+                  <span class="badge badge-danger" data-flag="low-confidence">LOW CONFIDENCE</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-warning" data-doc-view data-doc-name="BL_Draft_MSKU1234567890.pdf" data-doc-type="BL_DRAFT" data-doc-source="ZED" data-doc-case="F1-SEA-2026-02445" data-doc-confidence="76" data-doc-file="BL_Draft_MSKU1234567890.pdf" data-doc-status="LOW_CONFIDENCE">Review</button>
+                    <button class="btn btn-sm btn-warning" data-doc-view data-doc-name="BL_Draft_MSKU1234567890.pdf" data-doc-type="BL_DRAFT" data-doc-source="ZED" data-doc-case="F1-SEA-2026-02445" data-doc-confidence="76" data-doc-file="BL_Draft_MSKU1234567890.pdf" data-doc-status="UPLOADED" data-low-confidence="true">Review</button>
                   </div>
                 </div>
               </li>
@@ -320,9 +320,9 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <span class="badge badge-warning" data-flag="needs-review">NEEDS REVIEW</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02448" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx" data-doc-status="NEEDS_VERIFICATION">Review</button>
+                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02448" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx" data-doc-status="UPLOADED" data-needs-review="true">Review</button>
                   </div>
                 </div>
               </li>
@@ -346,9 +346,9 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <span class="badge badge-warning" data-flag="needs-review">NEEDS REVIEW</span>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="POA_Scan_TechImport.pdf" data-doc-type="POA" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02445" data-doc-confidence="91" data-doc-file="POA_Scan_TechImport.pdf" data-doc-status="NEEDS_VERIFICATION">Review</button>
+                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="POA_Scan_TechImport.pdf" data-doc-type="POA" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02445" data-doc-confidence="91" data-doc-file="POA_Scan_TechImport.pdf" data-doc-status="UPLOADED" data-needs-review="true">Review</button>
                   </div>
                 </div>
               </li>
@@ -1193,8 +1193,8 @@
             <p><strong>Пороги confidence:</strong></p>
             <ul>
               <li>🟢 <strong>≥95%</strong> — висока впевненість, можна автоматично verified (Quick Verify доступний)</li>
-              <li>🟡 <strong>85-94%</strong> — стандартна верифікація рекомендована (NEEDS VERIFICATION)</li>
-              <li>🔴 <strong>&lt;85%</strong> — низька впевненість, обов'язкова перевірка людиною (LOW CONFIDENCE)</li>
+              <li>🟡 <strong>85-94%</strong> — стандартна верифікація рекомендована (прапорець «needs review»)</li>
+              <li>🔴 <strong>&lt;85%</strong> — низька впевненість, обов'язкова перевірка людиною (прапорець «low confidence»)</li>
             </ul>
             <p><strong>Що впливає на confidence:</strong></p>
             <ul>
@@ -1224,7 +1224,7 @@
               <li>Завантаження → статус <code>UPLOADED</code></li>
               <li>Автоматична обробка AI → статус <code>PROCESSING</code></li>
               <li>AI витягує дані та встановлює confidence</li>
-              <li>Якщо confidence &lt;95% → статус <code>NEEDS_VERIFICATION</code></li>
+              <li>Якщо confidence &lt;95% → документ отримує прапорець «needs review» (статус залишається <code>UPLOADED</code>)</li>
               <li>Менеджер перевіряє та верифікує → статус <code>VERIFIED</code></li>
             </ol>
             <hr style="border: none; border-top: 1px solid var(--divider); margin: 16px 0;">
@@ -1273,7 +1273,7 @@
         'doc-statuses': {
           title: 'Статуси документів',
           icon: 'status',
-          content: `<p>Етапи обробки документа:</p><ul><li>📤 <strong>UPLOADED</strong> — завантажено</li><li>⚙️ <strong>PROCESSING</strong> — AI обробляє</li><li>⚠️ <strong>NEEDS VERIFICATION</strong> — потрібна перевірка</li><li>✅ <strong>VERIFIED</strong> — підтверджено</li></ul>`
+          content: `<p><strong>Core статуси документа:</strong></p><ul><li>📤 <strong>UPLOADED</strong> — завантажено</li><li>⚙️ <strong>PROCESSING</strong> — AI обробляє</li><li>✅ <strong>VERIFIED</strong> — підтверджено</li><li>🔄 <strong>REPLACED</strong> — замінено новою версією</li><li>📦 <strong>ARCHIVED</strong> — архівовано</li></ul><hr><p><strong>Похідні прапорці (не статуси):</strong></p><ul><li>🟡 <strong>NEEDS REVIEW</strong> — confidence 85-94%, потребує перевірки</li><li>🔴 <strong>LOW CONFIDENCE</strong> — confidence &lt;85%, пріоритетна перевірка</li></ul>`
         },
         'doc-types': {
           title: 'Типи документів',
@@ -1568,7 +1568,9 @@
           case: button.dataset.docCase || '',
           confidence: button.dataset.docConfidence || '',
           file: button.dataset.docFile || '',
-          status: button.dataset.docStatus || 'NEEDS_VERIFICATION'
+          status: button.dataset.docStatus || 'UPLOADED',
+          needsReview: button.dataset.needsReview === 'true',
+          lowConfidence: button.dataset.lowConfidence === 'true'
         };
 
         document.getElementById('docViewerFileName').textContent = this.currentDoc.name;
@@ -1594,7 +1596,7 @@
       updateActionsForStatus() {
         const isVerified = this.currentDoc.status === 'VERIFIED';
         const isProcessing = this.currentDoc.status === 'PROCESSING';
-        const isLowConfidence = this.currentDoc.status === 'LOW_CONFIDENCE';
+        const isLowConfidence = this.currentDoc.lowConfidence || (parseInt(this.currentDoc.confidence) < 85);
         const isReadOnly = isVerified || isProcessing;
 
         // Get action elements
@@ -1651,7 +1653,21 @@
                 <line x1="12" y1="9" x2="12" y2="13"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
-              PRIORITY REVIEW
+              LOW CONFIDENCE
+            `;
+            extractedHeader.appendChild(statusBadge);
+          } else if (this.currentDoc.needsReview) {
+            // Needs review flag (confidence 85-94%)
+            const statusBadge = document.createElement('span');
+            statusBadge.className = 'status-indicator';
+            statusBadge.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding: 2px 8px; background: var(--warning-bg); color: var(--warning-text); border-radius: var(--radius-sm); font-size: 10px; font-weight: 500;';
+            statusBadge.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              NEEDS REVIEW
             `;
             extractedHeader.appendChild(statusBadge);
           }
@@ -1850,7 +1866,7 @@
           if (!value && this.currentDoc.type && this.currentSchema === DOC_TYPE_SCHEMAS._DEFAULT) {
             if (field.key === 'doc_type') value = this.currentDoc.type;
             else if (field.key === 'source') value = this.currentDoc.source;
-            else if (field.key === 'status') value = 'NEEDS_VERIFICATION';
+            else if (field.key === 'status') value = 'UPLOADED';
           }
           
           extractedFields[field.label] = value || '—';
@@ -2102,14 +2118,14 @@
           docName: this.currentDoc.name,
           docId: this.currentDoc.id,
           reason: reason,
-          action: 'REJECTED'
+          action: 'ARCHIVED'
         });
 
         // Симуляція успішного відхилення
         if (rejectModal) rejectModal.style.display = 'none';
         
-        // Показуємо повідомлення про успіх
-        alert(`Документ "${this.currentDoc.name}" відхилено.\n\nПричина: ${reason}\n\nДокумент потребує перезавантаження.`);
+        // Показуємо повідомлення про успіх (статус → ARCHIVED)
+        alert(`Документ "${this.currentDoc.name}" відхилено та архівовано.\n\nПричина: ${reason}\n\nСтатус документа змінено на ARCHIVED. Потрібно завантажити новий документ.`);
         
         // Закриваємо основне модальне вікно
         this.close();
@@ -2336,7 +2352,7 @@
           // In real app, this would refresh the page or update the document list
           // For demo, we'll just show a message
           setTimeout(() => {
-            alert(`Демо: ${this.selectedFiles.length} файл(ів) "${fileNames}" завантажено для кейсу ${caseNumber}${docTypeText}.\n\nВ реальній системі:\n- Файли завантажаться на сервер\n- Статус = UPLOADED\n- n8n тригер → AI обробка\n- Статус → PROCESSING → NEEDS_VERIFICATION\n- Сторінка оновиться з новими документами`);
+            alert(`Демо: ${this.selectedFiles.length} файл(ів) "${fileNames}" завантажено для кейсу ${caseNumber}${docTypeText}.\n\nВ реальній системі:\n- Файли завантажаться на сервер\n- Статус = UPLOADED\n- n8n тригер → AI обробка\n- Статус → PROCESSING → UPLOADED (з прапорцем «needs review» якщо confidence < 95%) або VERIFIED (якщо auto-verify)\n- Сторінка оновиться з новими документами`);
           }, 300);
         }, 1500);
       },

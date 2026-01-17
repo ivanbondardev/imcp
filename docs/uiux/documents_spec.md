@@ -57,7 +57,7 @@ Documents реалізує принципи [Shared Mental Model](../core/00_sha
 | **Confidence-Based Routing** | Документи з низьким confidence виділені |
 | **Fatigue-Aware Design** | Верифікаційна черга замість хаотичного списку |
 | **Actionable Interface** | View та Verify кнопки на кожному документі |
-| **Clear Status** | NEEDS VERIFICATION, VERIFIED, PROCESSING badges |
+| **Clear Status** | core status badges (UPLOADED/PROCESSING/VERIFIED/REPLACED/ARCHIVED) + похідні прапорці “needs human review / low confidence” |
 
 ---
 
@@ -169,7 +169,9 @@ Verify Button → Verification Modal → Documents Page (updated)
 SELECT COUNT(*) 
 FROM documents 
 WHERE org_id = $org_id
-  AND status = 'NEEDS_VERIFICATION';
+  AND status = 'UPLOADED'
+  AND extraction_confidence IS NOT NULL
+  AND extraction_confidence < 0.95;
 
 -- Завантажено сьогодні
 SELECT COUNT(*) 
@@ -188,7 +190,7 @@ WHERE org_id = $org_id
 SELECT ROUND(AVG((ai_extraction->>'confidence')::numeric), 0) as avg_confidence
 FROM documents 
 WHERE org_id = $org_id
-  AND ai_extraction IS NOT NULL
+  AND extraction_confidence IS NOT NULL
   AND created_at >= date_trunc('month', now());
 ```
 
@@ -199,9 +201,9 @@ WHERE org_id = $org_id
 ### 5.1 Status Lifecycle
 
 ```
-UPLOADED → PROCESSING → NEEDS_VERIFICATION → VERIFIED
-                ↓                 ↓
-            FAILED         REJECTED (re-upload)
+UPLOADED → PROCESSING → VERIFIED
+   ↓            ↓
+(needs human review / low confidence flags)   ARCHIVED (re-upload)
 ```
 
 ### 5.2 Status Definitions
@@ -210,19 +212,19 @@ UPLOADED → PROCESSING → NEEDS_VERIFICATION → VERIFIED
 |--------|------|--------------|
 | `UPLOADED` | Щойно завантажений, очікує обробки | 🔵 info badge |
 | `PROCESSING` | AI обробляє / екстрагує дані | 🔵 info badge + spinner |
-| `NEEDS_VERIFICATION` | AI extracted, потребує людської перевірки | 🟡 warning badge |
-| `LOW_CONFIDENCE` | AI confidence < 80%, пріоритетна перевірка | 🔴 danger badge |
 | `VERIFIED` | Людина підтвердила AI extraction | 🟢 success badge |
-| `REJECTED` | Документ відхилено (помилка, дублікат) | 🔴 danger badge |
-| `FAILED` | AI не зміг обробити | 🔴 danger badge |
+| `REPLACED` | Документ замінено новою версією | ⚪ secondary badge |
+| `ARCHIVED` | Документ архівовано (наприклад, відхилено/неактуально) | ⚪ secondary badge |
+
+> **Core contract:** “needs verification / low confidence” — це **не `documents.status`**. Це похідний стан для UX (прапорці), який визначається з `extraction_confidence` та/або `computed.risks[]`.
 
 ### 5.3 Confidence Thresholds
 
-| Confidence | Status | UI Treatment |
-|------------|--------|--------------|
-| ≥ 95% | Auto-verify candidate | 🟢 Can skip manual verification |
-| 85-94% | NEEDS_VERIFICATION | 🟡 Standard queue |
-| < 85% | LOW_CONFIDENCE | 🔴 Priority review, highlighted |
+| Confidence | Derived flag | UI Treatment |
+|------------|--------------|--------------|
+| ≥ 95% | `needs_human_review = false` | 🟢 можна “Quick Verify” або auto-verify |
+| 85-94% | `needs_human_review = true` | 🟡 стандартна черга верифікації |
+| < 85% | `low_confidence = true` | 🔴 пріоритетна перевірка, підсвічування |
 
 ---
 
@@ -243,7 +245,7 @@ UPLOADED → PROCESSING → NEEDS_VERIFICATION → VERIFIED
 ┌─────────────────────────────────────────────────────────────────┐
 │ [📄]  Invoice_INV2026-0451.pdf                                  │
 │       INVOICE • ZED • Case: F1-SEA-2026-02451 • AI: 92%         │
-│                                    [NEEDS VERIFICATION] [View] [Verify] │
+│                               [UPLOADED] [NEEDS REVIEW] [View] [Verify] │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -257,7 +259,7 @@ UPLOADED → PROCESSING → NEEDS_VERIFICATION → VERIFIED
 | Source | `source` | ZED, CLIENT, BROKER |
 | Case Link | `case_number` | F1-SEA-2026-02451 |
 | AI Confidence | `ai_extraction.confidence` | 92% |
-| Status Badge | `status` | NEEDS_VERIFICATION |
+| Status Badge | `status` | UPLOADED/PROCESSING/VERIFIED/... |
 | Actions | — | View, Verify buttons |
 
 ### 6.4 Confidence Indicator Colors
@@ -419,7 +421,7 @@ file               data                   extraction
    ↓
 7. n8n trigger → AI processing
    ↓
-8. Status → PROCESSING → NEEDS_VERIFICATION
+8. Status → PROCESSING → VERIFIED (auto) або назад в UPLOADED + прапорець “needs human review”
    ↓
 9. Modal closes, toast: "X файлів завантажено"
 10. Page refreshes, new docs in table
@@ -470,7 +472,7 @@ file               data                   extraction
 |--------|--------------|--------|
 | Підтвердити | `btn-success` | status → VERIFIED, ai_extraction.verified = true |
 | Редагувати дані | `btn-secondary` | Open extracted data edit form |
-| Відхилити | `btn-danger` (ghost) | status → REJECTED, requires reason |
+| Відхилити | `btn-danger` (ghost) | status → ARCHIVED, requires reason |
 
 ### 11.3 Quick Verify (High Confidence)
 
@@ -488,7 +490,7 @@ file               data                   extraction
 | Фільтр | Icon | Опис | Query |
 |--------|------|------|-------|
 | Нещодавно завантажені | Upload | Документи за останні 7 днів | `created_at > now() - 7d` |
-| Потребують верифікації | Checkbox | Pending verification | `status = 'NEEDS_VERIFICATION'` |
+| Потребують верифікації | Checkbox | Pending human review | `status='UPLOADED' AND extraction_confidence < 0.95` |
 | Верифіковані | Check Circle | Successfully verified | `status = 'VERIFIED'` |
 
 ### 12.2 Filter Behavior
@@ -577,7 +579,7 @@ file               data                   extraction
 
 | Tile | Action |
 |------|--------|
-| Потребують верифікації | Filter to NEEDS_VERIFICATION docs |
+| Потребують верифікації | Filter to docs with `needs_human_review=true` (derived) |
 | Завантажено сьогодні | Filter to today's uploads |
 | Верифіковано | Filter to VERIFIED docs |
 | AI Extraction Rate | Show AI stats modal (MVP) |
@@ -627,24 +629,24 @@ file               data                   extraction
 ```sql
 CREATE TABLE documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES orgs(id),
   case_id UUID NOT NULL REFERENCES cases(id),
   
   -- File info
   file_name TEXT NOT NULL,
-  file_path TEXT NOT NULL,       -- S3/Supabase Storage path
+  file_path TEXT NOT NULL,       -- Supabase Storage path (aka storage_path)
   file_size INTEGER,
   mime_type TEXT,
   
   -- Document classification
   doc_type TEXT,                  -- CONTRACT, INVOICE, BL_DRAFT, etc.
-  source TEXT,                    -- CLIENT, ZED, BROKER
+  source TEXT,                    -- CLIENT, ZED, BROKER, SYSTEM, AI
   
   -- Status
-  status TEXT NOT NULL DEFAULT 'UPLOADED',  -- UPLOADED, PROCESSING, NEEDS_VERIFICATION, VERIFIED, REJECTED, FAILED
+  status TEXT NOT NULL DEFAULT 'UPLOADED',  -- UPLOADED, PROCESSING, VERIFIED, REPLACED, ARCHIVED
   
   -- AI extraction
-  ai_extraction JSONB,            -- {confidence: 92, fields: {...}, extracted_at: ...}
+  extracted_data JSONB,           -- {fields: {...}}
+  extraction_confidence NUMERIC,  -- 0..1 or 0..100 (define one and keep consistent)
   
   -- Verification
   verified_by UUID REFERENCES auth.users(id),
@@ -895,13 +897,8 @@ CREATE POLICY "upload_documents" ON documents
 </ul>
 
 <!-- Status Badge -->
-<span 
-  class="badge badge-warning" 
-  role="status"
-  aria-label="Статус: потребує верифікації"
->
-  NEEDS VERIFICATION
-</span>
+<span class="badge badge-info" role="status" aria-label="Статус: UPLOADED">UPLOADED</span>
+<span class="badge badge-warning" role="status" aria-label="Потребує перевірки людиною">NEEDS REVIEW</span>
 
 <!-- Upload Modal -->
 <div 
@@ -1051,7 +1048,7 @@ Documents v0 вважається успішним, якщо:
 // 2. Call OpenAI Vision API
 // 3. Extract structured data
 // 4. Update document record with ai_extraction
-// 5. Set status = NEEDS_VERIFICATION or VERIFIED (if auto-verify enabled)
+// 5. Set status = VERIFIED (if auto-verify enabled) OR keep status=UPLOADED + mark needs_human_review (derived)
 ```
 
 ### 21.3 Real-time Updates

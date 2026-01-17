@@ -159,10 +159,10 @@
         </div>
         <div class="case-meta">
           <div class="case-meta-item">
-            <span class="status-badge status-pending">QUOTE_APPROVAL_PENDING</span>
+            <span class="status-badge status-pending" id="caseStateBadge">QUOTE_APPROVAL_PENDING</span>
           </div>
           <div class="case-meta-item">
-            <span class="status-badge status-open">OPEN</span>
+            <span class="status-badge status-open" id="caseStatusBadge">OPEN</span>
           </div>
           <div class="case-meta-item sla-warning">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -205,6 +205,11 @@
             <span class="nba-label">Next Best Action</span>
           </div>
           <h3 class="nba-title">Підтвердити калькуляцію (QUOTE_APPROVAL)</h3>
+          <div class="nba-meta" style="display:flex; gap:10px; align-items:center; font-size:12px; color: var(--text-muted); margin-bottom: 10px;">
+            <span>Approval ID: <code id="nbaApprovalId">APR-QUOTE-0001</code></span>
+            <span>•</span>
+            <button class="btn btn-sm btn-ghost" id="openApprovalDetailsBtn" type="button">Деталі →</button>
+          </div>
           <div class="nba-description">
             <ul>
               <li>Система підготувала розрахунок ціни</li>
@@ -221,20 +226,20 @@
             Ризик: габарити клієнта ще не верифіковані складом
           </div>
           <div class="nba-actions">
-            <button class="btn btn-lg">
+            <button class="btn btn-lg" id="nbaApproveBtn" type="button">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
               Approve
             </button>
-            <button class="btn btn-lg btn-secondary">
+            <button class="btn btn-lg btn-secondary" id="nbaEditApproveBtn" type="button">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 20h9"/>
                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
               </svg>
               Edit & Approve
             </button>
-            <button class="btn btn-lg btn-secondary">
+            <button class="btn btn-lg btn-secondary" id="nbaRejectBtn" type="button">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
@@ -248,6 +253,45 @@
         <div class="cockpit-grid">
           <!-- Main Panel -->
           <div class="main-panel">
+            <!-- Approvals (PoC: show pending approvals as first-class objects) -->
+            <div class="card mb-4" id="approvals">
+              <div class="card-header">
+                <h4 class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"/>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                  </svg>
+                  Approvals
+                  <span class="help-trigger" data-help="approvals-section">?</span>
+                </h4>
+                <span class="badge badge-warning" id="pendingApprovalsCount">1 PENDING</span>
+              </div>
+              <ul class="doc-list">
+                <li class="doc-item">
+                  <div class="doc-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 11 12 14 22 4"/>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                  </div>
+                  <div class="doc-info">
+                    <div class="doc-name">QUOTE_APPROVAL</div>
+                    <div class="doc-meta">
+                      <span>PENDING</span>
+                      <span>•</span>
+                      <span>requested by SYSTEM</span>
+                      <span>•</span>
+                      <span id="approvalRequestedAt">12:10 сьогодні</span>
+                    </div>
+                  </div>
+                  <span class="badge badge-warning">PENDING</span>
+                  <div class="doc-actions">
+                    <button class="btn btn-sm btn-primary" id="openApprovalFromListBtn" type="button">Review</button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
             <!-- Quote Draft -->
             <div class="quote-draft mb-4">
               <span class="help-trigger" data-help="quote-section">?</span>
@@ -365,9 +409,12 @@
                       <span>156 KB</span>
                     </div>
                   </div>
-                  <span class="badge badge-warning">NEEDS VERIFICATION</span>
+                  <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+                    <span class="badge badge-info">UPLOADED</span>
+                    <span class="badge badge-warning" style="font-size:10px; padding:2px 8px;">NEEDS HUMAN REVIEW</span>
+                  </div>
                   <div class="doc-actions">
-                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02451" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx" data-doc-status="NEEDS_VERIFICATION">Review</button>
+                    <button class="btn btn-sm btn-primary" data-doc-view data-doc-name="Packing_List_GT2026.xlsx" data-doc-type="PACKING_LIST" data-doc-source="CLIENT" data-doc-case="F1-SEA-2026-02451" data-doc-confidence="88" data-doc-file="Packing_List_GT2026.xlsx" data-doc-status="UPLOADED">Review</button>
                   </div>
                 </li>
                 <li class="doc-item">
@@ -409,7 +456,7 @@
                 <a href="timeline.html" class="btn btn-sm btn-ghost">Всі події →</a>
               </div>
               <div class="card-body">
-                <div class="timeline">
+                <div class="timeline" id="timelineList">
                   <div class="timeline-item">
                     <div class="timeline-marker system">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -648,6 +695,44 @@
               </div>
             </div>
 
+            <!-- Required Fields -->
+            <div class="card context-card">
+              <span class="help-trigger" data-help="required-fields">?</span>
+              <div class="context-card-header">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Required Fields (this state)
+              </div>
+              <div class="context-card-body" id="requiredFieldsCardBody">
+                <div class="required-field-row">
+                  <span class="required-field-label">Client name</span>
+                  <span class="required-field-status ok">✅ filled</span>
+                </div>
+                <div class="required-field-row">
+                  <span class="required-field-label">Origin warehouse</span>
+                  <span class="required-field-status ok">✅ filled</span>
+                </div>
+                <div class="required-field-row">
+                  <span class="required-field-label">Cargo ready date</span>
+                  <span class="required-field-status ok">✅ filled</span>
+                </div>
+                <div class="required-field-row">
+                  <span class="required-field-label">Dimensions</span>
+                  <span class="required-field-status warn">⚠️ needs verification</span>
+                </div>
+                <div class="required-field-row">
+                  <span class="required-field-label">Broker owner</span>
+                  <span class="required-field-status ok">✅ filled</span>
+                </div>
+                <div class="required-field-row">
+                  <span class="required-field-label">Dangerous goods</span>
+                  <span class="required-field-status ok">✅ no</span>
+                </div>
+              </div>
+            </div>
+
             <!-- Risk Flags -->
             <div class="card context-card">
               <span class="help-trigger" data-help="risk-flags">?</span>
@@ -686,7 +771,7 @@
                   <polyline points="16 18 22 12 16 6"/>
                   <polyline points="8 6 2 12 8 18"/>
                 </svg>
-                Integration IDs
+                Integrations
               </div>
               <div class="context-card-body">
                 <div class="context-item">
@@ -694,8 +779,16 @@
                   <span class="context-item-value"><code>REQ-2026-02451</code></span>
                 </div>
                 <div class="context-item">
+                  <span class="context-item-label">1C Sync</span>
+                  <span class="context-item-value"><span class="badge badge-warning" style="font-size:10px;">PENDING</span></span>
+                </div>
+                <div class="context-item">
                   <span class="context-item-label">Marking</span>
                   <span class="context-item-value"><code>ALEX-02451</code></span>
+                </div>
+                <div class="context-item">
+                  <span class="context-item-label">Last sync</span>
+                  <span class="context-item-value">—</span>
                 </div>
               </div>
             </div>
@@ -1062,6 +1155,31 @@
     .card-header .help-trigger {
       margin-left: auto;
     }
+
+    /* ===== Required Fields Checklist ===== */
+    .required-field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px dashed var(--divider);
+    }
+    .required-field-row:last-child { border-bottom: none; }
+    .required-field-label { color: var(--text-secondary); }
+    .required-field-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-hover);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .required-field-status.ok { background: var(--success-bg); color: var(--success-text); }
+    .required-field-status.warn { background: var(--warning-bg); color: var(--warning-text); }
+    .required-field-status.bad { background: var(--danger-bg); color: var(--danger-text); }
 
     /* ===== Document Viewer Modal ===== */
     .doc-viewer-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
@@ -1587,13 +1705,17 @@
           icon: 'file',
           content: `
             <p>Документи, прикріплені до кейсу. AI автоматично обробляє та витягує дані.</p>
-            <p><strong>Статуси документів:</strong></p>
+            <p><strong>Статуси документів (core):</strong></p>
             <ul>
-              <li>🟢 <strong>VERIFIED</strong> — перевірено та підтверджено</li>
-              <li>🟡 <strong>NEEDS VERIFICATION</strong> — AI обробив, потребує перевірки (confidence 85-94%)</li>
-              <li>🔴 <strong>LOW CONFIDENCE</strong> — пріоритетна перевірка (confidence &lt;85%)</li>
-              <li>🔵 <strong>PROCESSING</strong> — AI обробляє документ</li>
+              <li>🔵 <strong>UPLOADED</strong> — файл завантажено, чекає обробки/верифікації</li>
+              <li>🟡 <strong>PROCESSING</strong> — AI обробляє документ</li>
+              <li>🟢 <strong>VERIFIED</strong> — дані підтверджені</li>
+              <li>⚪ <strong>REPLACED</strong> — замінено новою версією</li>
+              <li>⚪ <strong>ARCHIVED</strong> — архівовано</li>
             </ul>
+            <p style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+              <strong>Needs human review</strong> — це не статус. Це похідний прапорець (наприклад, низька впевненість / ризик / невідповідність).
+            </p>
             <p style="margin-top: 12px;"><strong>Workflow верифікації:</strong></p>
             <ol style="padding-left: 16px;">
               <li>Натисніть <strong>View</strong> для перегляду</li>
@@ -1602,6 +1724,21 @@
               <li><strong>Верифікувати</strong> або <strong>Відхилити</strong></li>
             </ol>
             <p style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">⚡ ≥95% confidence → автоматична верифікація</p>
+          `
+        },
+        'approvals-section': {
+          title: 'Approvals (Human Approval Gates)',
+          icon: 'check',
+          content: `
+            <p><strong>Approval</strong> — це контрольна точка, де система підготувала чернетку рішення, а людина має прийняти фінальне рішення.</p>
+            <ul>
+              <li><strong>request_snapshot</strong> — що пропонує система (immutable)</li>
+              <li><strong>decision_snapshot</strong> — що підтвердила людина (може відрізнятися)</li>
+              <li><strong>decision_comment</strong> — пояснення/причина (опціонально)</li>
+            </ul>
+            <p style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+              Після <strong>APPROVED/REJECTED/CANCELLED</strong> approval не змінюється (immutable decision).
+            </p>
           `
         },
         'timeline-section': {
@@ -1656,6 +1793,21 @@
             </ul>
           `
         },
+        'required-fields': {
+          title: 'Required Fields Checklist',
+          icon: 'check',
+          content: `
+            <p>Чекліст полів, які потрібні для переходу зі state, а також поля, що потребують верифікації.</p>
+            <ul>
+              <li>✅ filled — поле заповнено</li>
+              <li>⚠️ needs verification — поле є, але потрібна перевірка (ризик/невідповідність)</li>
+              <li>❌ missing — поле відсутнє і блокує перехід</li>
+            </ul>
+            <p style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+              Це реалізує core-принцип: “UI завжди показує, що блокує перехід”.
+            </p>
+          `
+        },
         'integration-ids': {
           title: 'Integration IDs',
           icon: 'code',
@@ -1666,6 +1818,9 @@
               <li><strong>Marking</strong> — маркування на складі</li>
             </ul>
             <p>Використовуйте для пошуку в інших системах.</p>
+            <p style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+              У production також показується стан інтеграції (<strong>PENDING/SYNCED/FAILED</strong>) + остання помилка/ретраї.
+            </p>
           `
         }
       },
@@ -1856,7 +2011,7 @@
           case: button.dataset.docCase || '',
           confidence: button.dataset.docConfidence || '',
           file: button.dataset.docFile || '',
-          status: button.dataset.docStatus || 'NEEDS_VERIFICATION'
+          status: button.dataset.docStatus || 'UPLOADED'
         };
 
         document.getElementById('docViewerFileName').textContent = this.currentDoc.name;
@@ -2002,7 +2157,29 @@
       verify() {
         const checkbox = document.getElementById('extractedDataCorrect');
         if (!checkbox.checked) { alert('Підтвердіть коректність даних'); return; }
-        alert(`✅ Документ "${this.currentDoc.name}" верифіковано!`);
+        // PoC: simulate status transition + audit event
+        this.currentDoc.status = 'VERIFIED';
+        TimelineManager?.addEvent?.({
+          actorType: 'HUMAN',
+          actorLabel: 'HUMAN (Іван П.)',
+          eventType: 'DOC_VERIFIED',
+          details: `${this.currentDoc.type} • ${this.currentDoc.name}`
+        });
+
+        // Update list badge if exists
+        const btn = document.querySelector(`[data-doc-view][data-doc-name="${CSS.escape(this.currentDoc.name)}"]`);
+        const item = btn ? btn.closest('.doc-item') : null;
+        if (item) {
+          // Best-effort: replace any existing badge container with VERIFIED badge
+          const existingBadges = item.querySelectorAll('.badge');
+          existingBadges.forEach(b => b.remove());
+          const verifiedBadge = document.createElement('span');
+          verifiedBadge.className = 'badge badge-success';
+          verifiedBadge.textContent = 'VERIFIED';
+          item.insertBefore(verifiedBadge, item.querySelector('.doc-actions'));
+        }
+
+        alert(`✅ Документ "${this.currentDoc.name}" верифіковано! Подію додано в Timeline.`);
         this.close();
       },
 
@@ -2241,7 +2418,7 @@
           uploadBtn.innerHTML = originalText;
 
           setTimeout(() => {
-            alert(`Демо: ${this.selectedFiles.length} файл(ів) "${fileNames}" завантажено для кейсу ${this.caseId}${docTypeText}.\n\nВ реальній системі:\n- Файли завантажаться на сервер\n- Статус = UPLOADED\n- n8n тригер → AI обробка\n- Статус → PROCESSING → NEEDS_VERIFICATION\n- Документи з'являться в списку`);
+            alert(`Демо: ${this.selectedFiles.length} файл(ів) "${fileNames}" завантажено для кейсу ${this.caseId}${docTypeText}.\n\nВ реальній системі:\n- Файли завантажаться на сервер\n- documents.status = UPLOADED\n- n8n тригер → AI обробка\n- status → PROCESSING → VERIFIED (якщо confidence ≥ threshold) або назад в UPLOADED + прапорець "needs human review"\n- Документи з'являться в списку`);
           }, 300);
         }, 1500);
       },
@@ -2271,12 +2448,349 @@
       }
     };
 
+    // ===== TIMELINE MANAGER (append-only event log in UI) =====
+    const TimelineManager = {
+      listEl: null,
+
+      init() {
+        this.listEl = document.getElementById('timelineList');
+      },
+
+      addEvent({ actorType, actorLabel, eventType, details }) {
+        if (!this.listEl) return;
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+
+        const markerClass =
+          actorType === 'HUMAN' ? 'human' :
+          actorType === 'AI' ? 'ai' :
+          actorType === 'INTEGRATION' ? 'system' :
+          'system';
+
+        const iconSvg =
+          actorType === 'HUMAN'
+            ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+            : actorType === 'AI'
+            ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/></svg>'
+            : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>';
+
+        item.innerHTML = `
+          <div class="timeline-marker ${markerClass}">
+            ${iconSvg}
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-actor">${actorLabel}</span>
+              <span class="timeline-time">щойно</span>
+            </div>
+            <div class="timeline-event">${eventType}</div>
+            <div class="timeline-details">${details || ''}</div>
+          </div>
+        `;
+
+        this.listEl.insertBefore(item, this.listEl.firstChild);
+      }
+    };
+
+    // ===== REQUIRED FIELDS CHECKLIST (PoC) =====
+    const RequiredFieldsManager = {
+      el: null,
+      init() {
+        this.el = document.getElementById('requiredFieldsCardBody');
+      },
+      setDimensionsNeedsVerification(isNeedsVerification) {
+        if (!this.el) return;
+        const rows = Array.from(this.el.querySelectorAll('.required-field-row'));
+        const dimsRow = rows.find(r => (r.textContent || '').includes('Dimensions'));
+        if (!dimsRow) return;
+        const statusEl = dimsRow.querySelector('.required-field-status');
+        if (!statusEl) return;
+        if (isNeedsVerification) {
+          statusEl.className = 'required-field-status warn';
+          statusEl.textContent = '⚠️ needs verification';
+        } else {
+          statusEl.className = 'required-field-status ok';
+          statusEl.textContent = '✅ verified';
+        }
+      }
+    };
+
+    // ===== APPROVAL MANAGER (Draft-first + immutable decision) =====
+    const ApprovalManager = {
+      approval: {
+        id: 'APR-QUOTE-0001',
+        type: 'QUOTE_APPROVAL',
+        status: 'PENDING',
+        requested_by: 'SYSTEM',
+        requested_at: '12:10 сьогодні',
+        request_snapshot: {
+          quote_version: 1,
+          base_cost_usd: 2450,
+          margin_usd: 350,
+          total_usd: 2800,
+          validity_days: 7,
+          assumptions: ['Stackable cargo', 'No dangerous goods', 'Standard container load', 'Yiwu → Shenzhen → Odessa → Kyiv'],
+          risks: ['Dimensions not verified by warehouse yet']
+        },
+        decision_snapshot: null,
+        decision_comment: null
+      },
+
+      init() {
+        const openDetails = () => this.openDetails();
+        const openFromList = () => this.openDetails();
+
+        const openBtn = document.getElementById('openApprovalDetailsBtn');
+        if (openBtn) openBtn.onclick = openDetails;
+
+        const openFromListBtn = document.getElementById('openApprovalFromListBtn');
+        if (openFromListBtn) openFromListBtn.onclick = openFromList;
+
+        const nbaApproveBtn = document.getElementById('nbaApproveBtn');
+        const nbaEditBtn = document.getElementById('nbaEditApproveBtn');
+        const nbaRejectBtn = document.getElementById('nbaRejectBtn');
+
+        if (nbaApproveBtn) nbaApproveBtn.onclick = () => this.openConfirm();
+        if (nbaEditBtn) nbaEditBtn.onclick = () => this.openEdit();
+        if (nbaRejectBtn) nbaRejectBtn.onclick = () => this.openReject();
+
+        this.syncUi();
+      },
+
+      isPending() {
+        return this.approval.status === 'PENDING';
+      },
+
+      syncUi() {
+        const idEl = document.getElementById('nbaApprovalId');
+        if (idEl) idEl.textContent = this.approval.id;
+
+        const requestedAt = document.getElementById('approvalRequestedAt');
+        if (requestedAt) requestedAt.textContent = this.approval.requested_at;
+
+        const countEl = document.getElementById('pendingApprovalsCount');
+        if (countEl) countEl.textContent = this.isPending() ? '1 PENDING' : '0 PENDING';
+
+        // disable actions if decided
+        ['nbaApproveBtn', 'nbaEditApproveBtn', 'nbaRejectBtn'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.disabled = !this.isPending();
+        });
+
+        // Update approval list badge
+        const listBadge = document.querySelector('#approvals .badge.badge-warning');
+        if (listBadge) listBadge.textContent = this.isPending() ? 'PENDING' : this.approval.status;
+      },
+
+      openDetails() {
+        const modal = document.getElementById('approvalModal');
+        if (!modal) return;
+        document.getElementById('approvalTypeTitle').textContent = this.approval.type;
+        document.getElementById('approvalIdValue').textContent = this.approval.id;
+        document.getElementById('approvalStatusValue').textContent = this.approval.status;
+        document.getElementById('approvalRequestedValue').textContent = `${this.approval.requested_by} • ${this.approval.requested_at}`;
+        document.getElementById('approvalRequestSnapshot').textContent = JSON.stringify(this.approval.request_snapshot, null, 2);
+        document.getElementById('approvalDecisionComment').value = this.approval.decision_comment || '';
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      },
+
+      closeDetails() {
+        const modal = document.getElementById('approvalModal');
+        if (modal) modal.style.display = 'none';
+        document.body.style.overflow = '';
+      },
+
+      openConfirm() {
+        if (!this.isPending()) return UploadModal.showToast('Approval вже вирішено');
+        const modal = document.getElementById('approvalConfirmModal');
+        if (!modal) return;
+        document.getElementById('confirmApprovalTitle').textContent = this.approval.type;
+        modal.style.display = 'flex';
+      },
+
+      closeConfirm() {
+        const modal = document.getElementById('approvalConfirmModal');
+        if (modal) modal.style.display = 'none';
+      },
+
+      openReject() {
+        if (!this.isPending()) return UploadModal.showToast('Approval вже вирішено');
+        const modal = document.getElementById('approvalRejectModal');
+        if (!modal) return;
+        document.getElementById('rejectApprovalTitle').textContent = this.approval.type;
+        document.getElementById('approvalRejectReasonInput').value = '';
+        modal.style.display = 'flex';
+      },
+
+      closeReject() {
+        const modal = document.getElementById('approvalRejectModal');
+        if (modal) modal.style.display = 'none';
+      },
+
+      openEdit() {
+        if (!this.isPending()) return UploadModal.showToast('Approval вже вирішено');
+        const modal = document.getElementById('quoteEditModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+      },
+
+      closeEdit() {
+        const modal = document.getElementById('quoteEditModal');
+        if (modal) modal.style.display = 'none';
+      },
+
+      confirmApprove() {
+        if (!this.isPending()) return;
+        this.approve({ hasEdits: false });
+      },
+
+      saveEditAndApprove() {
+        if (!this.isPending()) return;
+        const base = parseFloat(document.getElementById('editQuoteBaseCost').value || '0');
+        const margin = parseFloat(document.getElementById('editQuoteMargin').value || '0');
+        const validity = parseInt(document.getElementById('editQuoteValidity').value || '0', 10);
+        const assumptionsRaw = (document.getElementById('editQuoteAssumptions').value || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+        const snapshot = {
+          ...this.approval.request_snapshot,
+          base_cost_usd: base,
+          margin_usd: margin,
+          total_usd: base + margin,
+          validity_days: validity,
+          assumptions: assumptionsRaw
+        };
+        this.approve({ hasEdits: true, decisionSnapshot: snapshot });
+      },
+
+      approve({ hasEdits, decisionSnapshot }) {
+        this.closeConfirm();
+        this.closeReject();
+        this.closeEdit();
+
+        const comment = (document.getElementById('approvalDecisionComment')?.value || '').trim() || null;
+
+        this.approval.status = 'APPROVED';
+        this.approval.decision_comment = comment;
+        this.approval.decision_snapshot = decisionSnapshot || this.approval.request_snapshot;
+
+        TimelineManager.addEvent({
+          actorType: 'HUMAN',
+          actorLabel: 'HUMAN (Іван П.)',
+          eventType: 'APPROVAL_APPROVED',
+          details: `${this.approval.type} • has_edits=${hasEdits ? 'true' : 'false'}`
+        });
+
+        // Simulate workflow reaction (system updates state)
+        this.setCaseState('QUOTE_SENT');
+        TimelineManager.addEvent({
+          actorType: 'SYSTEM',
+          actorLabel: 'SYSTEM',
+          eventType: 'STATE_CHANGED',
+          details: 'QUOTE_APPROVAL_PENDING → QUOTE_SENT'
+        });
+        TimelineManager.addEvent({
+          actorType: 'SYSTEM',
+          actorLabel: 'SYSTEM',
+          eventType: 'EMAIL_SENT',
+          details: 'Quote sent to client'
+        });
+
+        UploadModal.showToast('Approval підтверджено');
+        this.closeDetails();
+        this.syncUi();
+      },
+
+      confirmReject() {
+        if (!this.isPending()) return;
+        const reason = (document.getElementById('approvalRejectReasonInput').value || '').trim();
+        if (!reason) return alert('Вкажіть причину відхилення');
+
+        const comment = (document.getElementById('approvalDecisionComment')?.value || '').trim() || null;
+
+        this.approval.status = 'REJECTED';
+        this.approval.decision_comment = comment || reason;
+        this.approval.decision_snapshot = this.approval.request_snapshot;
+
+        TimelineManager.addEvent({
+          actorType: 'HUMAN',
+          actorLabel: 'HUMAN (Іван П.)',
+          eventType: 'APPROVAL_REJECTED',
+          details: `${this.approval.type} • reason: ${reason}`
+        });
+
+        this.setCaseState('QUOTE_READY');
+        TimelineManager.addEvent({
+          actorType: 'SYSTEM',
+          actorLabel: 'SYSTEM',
+          eventType: 'STATE_CHANGED',
+          details: 'QUOTE_APPROVAL_PENDING → QUOTE_READY'
+        });
+
+        UploadModal.showToast('Approval відхилено');
+        this.closeReject();
+        this.closeDetails();
+        this.syncUi();
+      },
+
+      setCaseState(newState) {
+        const stateBadge = document.getElementById('caseStateBadge');
+        if (stateBadge) {
+          stateBadge.textContent = newState;
+          stateBadge.className = 'status-badge ' + (
+            newState.endsWith('_PENDING') ? 'status-pending' :
+            newState.endsWith('_READY') ? 'status-ready' :
+            newState.startsWith('WAITING_') ? 'status-waiting' :
+            'status-open'
+          );
+        }
+
+        this.updateNbaForState(newState);
+      },
+
+      updateNbaForState(state) {
+        const indicator = document.querySelector('.nba-indicator');
+        const title = document.querySelector('.nba-title');
+        const list = document.querySelector('.nba-description ul');
+        const risk = document.querySelector('.nba-risk');
+
+        if (!indicator || !title || !list) return;
+
+        if (state === 'QUOTE_SENT') {
+          indicator.style.background = '#F59E0B';
+          title.textContent = 'Очікуємо підтвердження клієнта (WAITING_CLIENT_CONFIRMATION)';
+          list.innerHTML = `
+            <li>Ціну відправлено клієнту</li>
+            <li>Очікуємо відповідь (YES/NO)</li>
+            <li>Якщо немає відповіді — зробіть follow-up</li>
+          `;
+          if (risk) risk.style.display = 'none';
+        } else if (state === 'QUOTE_READY') {
+          indicator.style.background = '#3B82F6';
+          title.textContent = 'Перерахувати/уточнити калькуляцію (QUOTE_READY)';
+          list.innerHTML = `
+            <li>Approval відхилено — потрібно уточнити дані/умови</li>
+            <li>Перевірте габарити та припущення</li>
+            <li>Після перерахунку система створить новий approval</li>
+          `;
+          if (risk) risk.style.display = 'flex';
+        } else {
+          // default stays as initial QUOTE_APPROVAL_PENDING
+          indicator.style.background = '#EF4444';
+          if (risk) risk.style.display = 'flex';
+        }
+      }
+    };
+
     // Init
     document.addEventListener('DOMContentLoaded', () => {
       TipsManager.init();
       HelpManager.init();
       DocumentViewer.init();
       UploadModal.init();
+      TimelineManager.init();
+      RequiredFieldsManager.init();
+      ApprovalManager.init();
     });
   </script>
 
@@ -2352,6 +2866,140 @@
           </svg>
           Завантажити
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval Details Modal -->
+  <div id="approvalModal" class="upload-modal" style="display: none;">
+    <div class="upload-modal-overlay" onclick="ApprovalManager.closeDetails()"></div>
+    <div class="upload-modal-content" onclick="event.stopPropagation()" style="max-width: 900px;">
+      <div class="upload-modal-header">
+        <h3>Approval: <span id="approvalTypeTitle">QUOTE_APPROVAL</span></h3>
+        <button class="upload-modal-close" onclick="ApprovalManager.closeDetails()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="upload-modal-body">
+        <div class="doc-viewer-meta" style="margin-bottom: 12px; padding-bottom: 12px;">
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Approval ID:</span>
+            <span class="doc-viewer-meta-value" id="approvalIdValue"></span>
+          </div>
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Status:</span>
+            <span class="doc-viewer-meta-value" id="approvalStatusValue"></span>
+          </div>
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Requested:</span>
+            <span class="doc-viewer-meta-value" id="approvalRequestedValue"></span>
+          </div>
+          <div class="doc-viewer-meta-item">
+            <span class="doc-viewer-meta-label">Case:</span>
+            <span class="doc-viewer-meta-value" style="color: var(--accent);">F1-SEA-2026-02451</span>
+          </div>
+        </div>
+
+        <div class="doc-viewer-content-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="doc-viewer-preview" style="min-height: 260px;">
+            <div style="font-weight: 600; margin-bottom: 10px;">Request snapshot (immutable)</div>
+            <pre id="approvalRequestSnapshot" style="white-space: pre-wrap; margin:0; font-size: 12px; color: var(--text-secondary);"></pre>
+          </div>
+          <div class="doc-viewer-extracted">
+            <div class="extracted-header">
+              <h4 style="margin:0;">Що зміниться після рішення</h4>
+              <span class="extracted-badge medium">approval gate</span>
+            </div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+              <ul style="margin: 0; padding-left: 18px;">
+                <li>Рішення буде зафіксоване в <code>approvals.decision_snapshot</code> + <code>decision_comment</code></li>
+                <li>В timeline з’явиться <code>APPROVAL_APPROVED</code> або <code>APPROVAL_REJECTED</code> (actor: HUMAN)</li>
+                <li>Workflow (n8n) виконає дію та оновить <code>cases.state</code> (UI напряму state не змінює)</li>
+              </ul>
+            </div>
+            <div style="margin-top: 14px;">
+              <label style="display:block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Коментар (decision_comment):</label>
+              <textarea id="approvalDecisionComment" placeholder="Опціонально: пояснення/правки…" style="width: 100%; min-height: 70px; padding: 8px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-family: inherit; font-size: 12px; resize: vertical;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="upload-modal-actions">
+        <button class="btn btn-secondary" onclick="ApprovalManager.closeDetails()">Закрити</button>
+        <button class="btn btn-secondary" onclick="ApprovalManager.openEdit()">Edit & Approve</button>
+        <button class="btn btn-danger" onclick="ApprovalManager.openReject()">Reject</button>
+        <button class="btn btn-primary" onclick="ApprovalManager.openConfirm()">Approve</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval Confirm Modal -->
+  <div id="approvalConfirmModal" class="reject-reason-modal" style="display: none;" onclick="if(event.target === this) ApprovalManager.closeConfirm()">
+    <div class="reject-reason-content" onclick="event.stopPropagation()" style="max-width: 520px;">
+      <h4>Підтвердити approval</h4>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Підтвердити <strong id="confirmApprovalTitle">QUOTE_APPROVAL</strong> для кейсу <strong>F1-SEA-2026-02451</strong>?
+      </p>
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="ApprovalManager.closeConfirm()">Скасувати</button>
+        <button class="btn btn-primary" onclick="ApprovalManager.confirmApprove()">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval Reject Modal -->
+  <div id="approvalRejectModal" class="reject-reason-modal" style="display: none;" onclick="if(event.target === this) ApprovalManager.closeReject()">
+    <div class="reject-reason-content" onclick="event.stopPropagation()" style="max-width: 560px;">
+      <h4>Відхилити approval</h4>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+        Вкажіть причину відхилення <strong id="rejectApprovalTitle">QUOTE_APPROVAL</strong>
+      </p>
+      <textarea id="approvalRejectReasonInput" placeholder="Наприклад: потрібно уточнити маржу / невірні габарити / відсутній документ…" style="width: 100%; min-height: 90px; padding: 8px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-family: inherit; font-size: 13px; resize: vertical;"></textarea>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn btn-secondary" onclick="ApprovalManager.closeReject()">Скасувати</button>
+        <button class="btn btn-danger" onclick="ApprovalManager.confirmReject()">Відхилити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote Edit & Approve Modal -->
+  <div id="quoteEditModal" class="reject-reason-modal" style="display: none;" onclick="if(event.target === this) ApprovalManager.closeEdit()">
+    <div class="reject-reason-content" onclick="event.stopPropagation()" style="max-width: 640px;">
+      <h4>Edit & Approve: Quote</h4>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Внесіть правки в чернетку та підтвердьте (буде записано в <code>decision_snapshot</code>).
+      </p>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label style="display:block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Base cost (USD)</label>
+          <input id="editQuoteBaseCost" type="number" value="2450" style="width:100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-size: 13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Margin (USD)</label>
+          <input id="editQuoteMargin" type="number" value="350" style="width:100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-size: 13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Validity days</label>
+          <input id="editQuoteValidity" type="number" value="7" style="width:100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-size: 13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Total (USD)</label>
+          <input id="editQuoteTotal" type="number" value="2800" style="width:100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-size: 13px;" disabled>
+        </div>
+      </div>
+      <div style="margin-top: 12px;">
+        <label style="display:block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Assumptions (one per line)</label>
+        <textarea id="editQuoteAssumptions" style="width: 100%; min-height: 90px; padding: 8px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--bg-panel); color: var(--text); font-family: inherit; font-size: 13px; resize: vertical;">Stackable cargo
+No dangerous goods
+Standard container load
+Yiwu → Shenzhen → Odessa → Kyiv</textarea>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn btn-secondary" onclick="ApprovalManager.closeEdit()">Скасувати</button>
+        <button class="btn btn-primary" onclick="ApprovalManager.saveEditAndApprove()">Save & Approve</button>
       </div>
     </div>
   </div>

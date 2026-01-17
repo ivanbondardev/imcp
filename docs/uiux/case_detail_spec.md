@@ -70,6 +70,7 @@ Case Cockpit реалізує принципи [Shared Mental Model](../core/00_
 |------------------|-----------|------|
 | **Case Header** | HIGH | ID, status, state, SLA, owner, priority, client |
 | **Next Best Action** | HIGH | Sticky NBA card з action buttons |
+| **Approvals (pending)** | HIGH | Список pending approvals + review (request_snapshot) + approve/edit/reject |
 | **Quote Draft** | HIGH | Перегляд draft калькуляції |
 | **Documents Section** | HIGH | Список документів з статусами |
 | **Timeline** | HIGH | Історія подій (останні 5-10) |
@@ -112,11 +113,11 @@ Case Cockpit реалізує принципи [Shared Mental Model](../core/00_
 │ Main Work Area (8/12)             │ Context Sidebar (4/12)   │
 │                                   │                          │
 │ - Quote Draft                     │ - Cargo Summary          │
-│ - Documents Section               │ - Route Info             │
-│ - Timeline                        │ - Client Info            │
-│                                   │ - Key Dates              │
+│ - Approvals (pending)             │ - Route Info             │
+│ - Documents Section               │ - Client Info            │
+│ - Timeline                        │ - Key Dates              │
 │                                   │ - Risk Flags             │
-│                                   │ - Integration IDs        │
+│                                   │ - Integrations (IDs + status) │
 └───────────────────────────────────┴──────────────────────────┘
 ```
 
@@ -339,7 +340,8 @@ Case Detail → Document Click → Document Preview/Detail
 │    INVOICE • ZED • 890 KB                       [UPLOADED] 🔵  [View] [Verify] │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ 📄 Packing_List.xlsx                                                     │
-│    PACKING_LIST • CLIENT • 156 KB               [VERIFIED] 🟢  [View]    │
+│    PACKING_LIST • CLIENT • 156 KB               [UPLOADED] 🔵  [Review]  │
+│    needs human review (confidence: 88%)                                  │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -362,8 +364,10 @@ Case Detail → Document Click → Document Preview/Detail
 | `UPLOADED` | `badge-info` | 🔵 |
 | `PROCESSING` | `badge-warning` | 🟡 |
 | `VERIFIED` | `badge-success` | 🟢 |
-| `REJECTED` | `badge-danger` | 🔴 |
-| `EXPIRED` | `badge-secondary` | ⚪ |
+| `REPLACED` | `badge-secondary` | ⚪ |
+| `ARCHIVED` | `badge-secondary` | ⚪ |
+
+> **Примітка (core contract):** “needs verification / needs human review” — це **не статус** документа. Це похідний прапорець (наприклад `extraction_confidence < threshold` або `computed.risks[]`), який UI показує окремо від `documents.status`.
 
 ### 7.4 Document Types
 
@@ -404,9 +408,9 @@ Case Detail → Document Click → Document Preview/Detail
 │   STATE_CHANGED                                                          │
 │   QUOTE_READY → QUOTE_APPROVAL_PENDING                                   │
 ├──────────────────────────────────────────────────────────────────────────┤
-│ 💰 12:08 сьогодні  SYSTEM                                                │
-│   QUOTE_CALCULATED                                                       │
-│   Quote draft generated: $2,800 total                                    │
+│ 🤖 12:08 сьогодні  AI                                                    │
+│   AI_RUN_COMPLETED                                                       │
+│   GENERATE_QUOTE: draft generated ($2,800 total, confidence: 92%)         │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ 👤 11:42 сьогодні  HUMAN (Іван П.)                                       │
 │   STATE_CHANGED                                                          │
@@ -453,7 +457,7 @@ Case Detail → Document Click → Document Preview/Detail
 | `DOC_UPLOADED` | 📄 | Документ завантажено |
 | `DOC_EXTRACTED` | 🔍 | Дані витягнуто з документа |
 | `DOC_VERIFIED` | ✓ | Документ верифіковано |
-| `QUOTE_CALCULATED` | 💰 | Калькуляцію створено |
+| `AI_RUN_COMPLETED` | 🤖 | AI виклик завершено (EXTRACT/GENERATE/VERIFY) |
 | `EMAIL_SENT` | ✉️ | Email відправлено |
 | `COMMENT_ADDED` | 💬 | Коментар додано |
 
@@ -511,10 +515,12 @@ Case Detail → Document Click → Document Preview/Detail
 │    by warehouse                      │
 │ 🟢 No dangerous goods declared       │
 ├──────────────────────────────────────┤
-│ 🔗 Integration IDs                   │
+│ 🔗 Integrations                      │
 │ ─────────────────────────────────────│
 │ 1C Request:    REQ-2026-02451        │
+│ 1C Sync:       PENDING               │
 │ Marking:       ALEX-02451            │
+│ Last sync:     —                     │
 └──────────────────────────────────────┘
 ```
 
@@ -527,7 +533,7 @@ Case Detail → Document Click → Document Preview/Detail
 | **Client** | 👤 | company, contact, email, phone | `payload.client` |
 | **Key Dates** | 📅 | cargo_ready, created, sla_deadline | `payload.dates` + `cases` |
 | **Risk Flags** | ⚠️ | List of risks | `computed.risks[]` |
-| **Integration IDs** | 🔗 | 1c_request_id, marking | `payload.integration` |
+| **Integrations** | 🔗 | IDs + status (PENDING/SYNCED/FAILED), last_error, last_sync_at | `payload.integration` + `integrations` |
 
 ### 9.3 Context Card Layout
 
@@ -579,6 +585,22 @@ Case Detail → Document Click → Document Preview/Detail
 | `LOW` | 🟢 | `#F0FDF4` | `#166534` |
 | `MEDIUM` | 🟡 | `#FEF9C3` | `#854D0E` |
 | `HIGH` | 🔴 | `#FEE2E2` | `#991B1B` |
+
+### 9.5 Required Fields Checklist (core UX must-have)
+
+Окремий блок (зазвичай у Context Sidebar), який відповідає на питання:
+**“Що блокує перехід в цьому state?”**
+
+| Field | Status | Source |
+|---|---|---|
+| Client name | ✅ filled | `payload.client.name` |
+| Origin warehouse | ✅ filled | `payload.route.origin_warehouse` |
+| Cargo ready date | ✅ filled | `payload.cargo.ready_date` |
+| Dimensions | ⚠️ needs verification | `payload.cargo.dimensions` (+ `computed.risks[]`) |
+| Broker owner | ✅ filled | `payload.broker.owner` |
+| Dangerous goods | ✅ no | `payload.cargo.dangerous_goods` |
+
+> **Правило:** `needs verification` — це сигнал для людини (ризик/невизначеність), але це не те саме, що `missing`.
 
 ---
 
@@ -638,7 +660,7 @@ Case Detail → Document Click → Document Preview/Detail
 │                    │ │ ─────────────────────────────────────────────────────││
 │                    │ │ ● 12:10  SYSTEM   APPROVAL_CREATED                  ││
 │                    │ │ ↻ 12:10  SYSTEM   STATE_CHANGED                     ││
-│                    │ │ 💰 12:08  SYSTEM   QUOTE_CALCULATED                  ││
+│                    │ │ 🤖 12:08  AI       AI_RUN_COMPLETED                  ││
 │                    │ │ 👤 11:42  HUMAN    STATE_CHANGED                     ││
 │                    │ │ 🤖 10:30  AI       DOC_EXTRACTED                     ││
 │                    │ │ 👤 09:55  HUMAN    CASE_CREATED                      ││
@@ -807,9 +829,10 @@ SELECT
     SELECT jsonb_build_object(
       'id', a.id,
       'type', a.approval_type,
+      'status', a.status,
+      'requested_by', a.requested_by,
       'request_snapshot', a.request_snapshot,
-      'requested_at', a.requested_at,
-      'auto_drafted', a.auto_drafted
+      'requested_at', a.requested_at
     )
     FROM approvals a
     WHERE a.case_id = c.id AND a.status = 'PENDING'
@@ -830,17 +853,21 @@ WHERE c.id = $case_id;
 ```sql
 SELECT 
   id,
-  filename,
+  file_name,
   doc_type,
+  version,
   source,
   status,
-  file_size,
-  created_at,
-  verified_at,
-  verified_by
+  storage_path,
+  mime_type,
+  size_bytes,
+  uploaded_at,
+  uploaded_by,
+  extracted_data,
+  extraction_confidence
 FROM documents
 WHERE case_id = $case_id
-ORDER BY created_at DESC;
+ORDER BY uploaded_at DESC;
 ```
 
 ### 12.4 Timeline Query
