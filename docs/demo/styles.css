@@ -675,11 +675,14 @@ h6 { font-size: 11px; }
    =========================================== */
 
 .nba-card {
-  background: var(--accent);
-  color: white;
+  background: var(--bg-panel);
+  color: var(--text);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 16px 20px;
   margin-bottom: 20px;
+  border: 1px solid var(--divider);
+  border-left: 4px solid var(--accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .nba-header {
@@ -692,7 +695,7 @@ h6 { font-size: 11px; }
 .nba-indicator {
   width: 8px;
   height: 8px;
-  background: #fff;
+  background: var(--accent);
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
@@ -707,18 +710,18 @@ h6 { font-size: 11px; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  opacity: 0.9;
+  color: var(--text-muted);
 }
 
 .nba-title {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: white;
+  color: var(--text);
 }
 
 .nba-description {
-  opacity: 0.9;
+  color: var(--text-secondary);
   margin-bottom: 12px;
   font-size: 12px;
 }
@@ -738,14 +741,15 @@ h6 { font-size: 11px; }
   content: '•';
   position: absolute;
   left: 0;
-  opacity: 0.7;
+  color: var(--text-muted);
 }
 
 .nba-risk {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,255,255,0.15);
+  background: var(--warning-bg);
+  color: var(--warning-text);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   margin-bottom: 12px;
@@ -763,22 +767,11 @@ h6 { font-size: 11px; }
 }
 
 .nba-actions .btn {
-  background: white;
-  color: var(--accent);
-  border: none;
-}
-
-.nba-actions .btn:hover {
-  background: rgba(255,255,255,0.9);
+  /* Use default button styles */
 }
 
 .nba-actions .btn-secondary {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-
-.nba-actions .btn-secondary:hover {
-  background: rgba(255,255,255,0.3);
+  /* Use default secondary button styles */
 }
 
 /* ===========================================
