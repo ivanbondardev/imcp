@@ -172,6 +172,17 @@ CREATE TABLE approvals (
   decision_snapshot JSONB,                   -- What human approved (may differ)
   decision_comment  TEXT,
   
+  -- HITL 2.0: Correction Signal (Learning Loop)
+  correction_signal JSONB,                   -- Structured feedback for AI improvement
+  
+  -- AI Run Reference (for Learning Loop linking)
+  source_ai_run_id  UUID,                    -- Which AI run generated this approval request
+  
+  -- Verification Depth (Cognitive Bias Mitigation)
+  verification_mode TEXT DEFAULT 'STANDARD', -- STANDARD|DEEP|SPOT_CHECK
+  verification_checklist JSONB,              -- Fields verified by human
+  time_spent_seconds INT,                    -- How long human spent reviewing
+  
   -- Idempotency
   idempotency_key   TEXT,
   
@@ -181,6 +192,7 @@ CREATE TABLE approvals (
   
   -- Constraints
   CONSTRAINT valid_approval_status CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
+  CONSTRAINT valid_verification_mode CHECK (verification_mode IN ('STANDARD', 'DEEP', 'SPOT_CHECK')),
   CONSTRAINT unique_idempotency UNIQUE (idempotency_key)
 );
 
@@ -188,6 +200,48 @@ CREATE TABLE approvals (
 CREATE INDEX idx_approvals_case ON approvals(case_id, status);
 CREATE INDEX idx_approvals_pending ON approvals(status, requested_at) WHERE status = 'PENDING';
 CREATE INDEX idx_approvals_decider ON approvals(decided_by) WHERE decided_by IS NOT NULL;
+CREATE INDEX idx_approvals_ai_run ON approvals(source_ai_run_id) WHERE source_ai_run_id IS NOT NULL;
+```
+
+### 3.3.1 Correction Signal Schema (HITL 2.0 Learning Loop)
+
+```typescript
+interface CorrectionSignal {
+  // Type of correction
+  correction_type: 
+    | 'APPROVE_AS_IS'      // No changes needed
+    | 'MINOR_EDIT'         // Small adjustments
+    | 'MAJOR_EDIT'         // Significant changes
+    | 'REJECT_REGENERATE'  // Need completely different output
+    | 'REJECT_MANUAL';     // AI cannot handle this case
+  
+  // What was changed
+  edited_fields?: Array<{
+    field_path: string;      // 'cargo.weight', 'quote.margin_usd'
+    original_value: any;
+    corrected_value: any;
+    correction_reason?: string;  // 'client_clarification', 'policy_override', 'calculation_error'
+  }>;
+  
+  // Why correction was needed
+  root_cause?: 
+    | 'AI_HALLUCINATION'     // AI invented data
+    | 'OUTDATED_CONTEXT'     // AI used stale information
+    | 'MISSING_DATA'         // AI didn't have required info
+    | 'POLICY_VIOLATION'     // AI violated business rules
+    | 'EDGE_CASE'            // Unusual case AI couldn't handle
+    | 'QUALITY_ISSUE'        // General quality problem
+    | 'OTHER';
+  
+  // Quantitative metrics
+  fields_changed_count: number;
+  total_fields_count: number;
+  correction_severity: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+  
+  // Learning signal
+  should_retrain_on?: boolean;  // Flag for retraining consideration
+  pattern_tag?: string;         // Tag for pattern analysis
+}
 ```
 
 > ⚠️ **Invariant:** Decision update allowed **only if `status = 'PENDING'`** (optimistic locking).
@@ -265,7 +319,7 @@ CREATE TABLE ai_runs (
   case_id         UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
   
   -- Run Type
-  run_type        TEXT NOT NULL,             -- EXTRACT|GENERATE|VERIFY|CLASSIFY
+  run_type        TEXT NOT NULL,             -- EXTRACT|GENERATE|VERIFY|CLASSIFY|CRITIQUE
   model           TEXT,                      -- gpt-4, claude-3, etc.
   prompt_version  TEXT,
   
@@ -277,16 +331,58 @@ CREATE TABLE ai_runs (
   confidence      NUMERIC,
   flags           JSONB DEFAULT '[]',        -- ['LOW_CONFIDENCE', 'NEEDS_REVIEW']
   
+  -- AI Reasoning (HITL 2.0: Transparency)
+  reasoning       JSONB,                     -- Structured explanation of AI decision
+  uncertainty_areas JSONB DEFAULT '[]',      -- Fields/aspects where AI is uncertain
+  
+  -- Learning Loop (HITL 2.0: Feedback)
+  was_corrected   BOOLEAN DEFAULT false,     -- Was output corrected by human?
+  correction_ref  UUID,                      -- Reference to approval with correction
+  
   -- Performance
   duration_ms     INT,
   tokens_used     INT,
   
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   
-  CONSTRAINT valid_run_type CHECK (run_type IN ('EXTRACT', 'GENERATE', 'VERIFY', 'CLASSIFY'))
+  CONSTRAINT valid_run_type CHECK (run_type IN ('EXTRACT', 'GENERATE', 'VERIFY', 'CLASSIFY', 'CRITIQUE'))
 );
 
 CREATE INDEX idx_ai_runs_case ON ai_runs(case_id, created_at DESC);
+CREATE INDEX idx_ai_runs_corrected ON ai_runs(was_corrected, created_at DESC) 
+  WHERE was_corrected = true;
+```
+
+### 3.5.1 AI Reasoning Schema (HITL 2.0)
+
+```typescript
+interface AIReasoning {
+  // What AI considered when making decision
+  factors_considered: Array<{
+    factor: string;           // 'client_history', 'document_quality', 'price_benchmark'
+    weight: 'LOW' | 'MEDIUM' | 'HIGH';
+    observation: string;      // Brief description of what was observed
+  }>;
+  
+  // Alternatives AI considered
+  alternatives?: Array<{
+    option: string;
+    why_rejected: string;
+  }>;
+  
+  // Key assumptions made
+  assumptions: string[];
+  
+  // What could change the decision
+  would_reconsider_if: string[];
+}
+
+interface UncertaintyArea {
+  field: string;              // 'cargo.weight', 'quote.margin'
+  confidence: number;         // 0.0 - 1.0
+  reason: string;             // 'conflicting_data', 'missing_reference', 'unusual_value'
+  suggested_verification: string;  // What human should check
+}
 ```
 
 ---
@@ -330,7 +426,10 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
 
 ## 4. Event Taxonomy — Канонічні типи подій
 
-> ⚠️ **Контракт:** Усі події мають використовувати типи з цієї таблиці.
+> ⚠️ **Контракт:** Усі **audit events** в таблиці `case_events` мають використовувати `event_type` **лише** з цієї таблиці.
+
+> ✅ **Важливо (щоб не плутати):** “подія” у значенні **DB trigger / webhook / realtime notification** (наприклад `CASE_UPDATED`, “`approvals.status changed`”, “approval decided”) — це **транспортний сигнал** для запуску workflow і **не є** канонічною подією аудиту.  
+> Канонічні події аудиту — це **записи в `case_events`**, які фіксують “що сталося” (append-only) і відображаються в Timeline.
 
 ### 4.1 Core Events
 
@@ -376,8 +475,10 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
 
 | event_type | Опис | actor_type | metadata schema |
 |------------|------|------------|-----------------|
-| `AI_RUN_COMPLETED` | AI виклик завершено | AI | `{ai_run_id, run_type, confidence}` |
-| `AI_SUGGESTION_CREATED` | AI створив пропозицію | AI | `{field, suggested_value, confidence}` |
+| `AI_RUN_COMPLETED` | AI виклик завершено | AI | `{ai_run_id, run_type, confidence, has_uncertainty: bool}` |
+| `AI_SUGGESTION_CREATED` | AI створив пропозицію | AI | `{field, suggested_value, confidence, reasoning_summary?}` |
+| `AI_CORRECTION_RECORDED` | Людина виправила AI результат | HUMAN | `{ai_run_id, correction_signal, fields_changed}` |
+| `AI_CRITIQUE_COMPLETED` | LLM-критик оцінив результат | AI | `{ai_run_id, critic_verdict, escalated_to_human: bool}` |
 
 ### 4.6 Communication Events
 
@@ -429,6 +530,40 @@ CREATE INDEX idx_integrations_external ON integrations(integration_type, externa
   "error_code": "TIMEOUT",  // normalized: TIMEOUT|AUTH|VALIDATION|RATE_LIMIT|UNKNOWN
   "retry_count": 2,
   "retryable": true
+}
+
+// AI_RUN_COMPLETED (with HITL 2.0 transparency)
+{
+  "ai_run_id": "uuid",
+  "run_type": "GENERATE",
+  "confidence": 0.85,
+  "has_uncertainty": true,
+  "uncertainty_fields": ["cargo.weight", "quote.margin_usd"],
+  "reasoning_available": true
+}
+
+// AI_CORRECTION_RECORDED (Learning Loop signal)
+{
+  "ai_run_id": "uuid",
+  "approval_id": "uuid",
+  "correction_signal": {
+    "correction_type": "MINOR_EDIT",
+    "fields_changed": ["cargo.total_cbm"],
+    "root_cause": "MISSING_DATA",
+    "correction_severity": "LOW"
+  },
+  "fields_changed": 1,
+  "total_fields": 12
+}
+
+// AI_CRITIQUE_COMPLETED (LLM-as-Critic pattern)
+{
+  "ai_run_id": "uuid",
+  "critic_model": "gpt-4",
+  "critic_verdict": "PASS_WITH_NOTES",  // PASS|PASS_WITH_NOTES|FAIL|ESCALATE
+  "notes": ["margin seems low for dangerous goods"],
+  "escalated_to_human": false,
+  "confidence_adjustment": -0.1
 }
 ```
 
@@ -559,6 +694,24 @@ interface CaseComputed {
       fields: Record<string, any>;
       needs_verification: boolean;
     };
+  };
+  
+  // HITL 2.0: Learning Loop Metrics (n8n calculates)
+  quality_metrics?: {
+    ai_runs_count: number;
+    corrections_count: number;
+    correction_rate: number;           // corrections / ai_runs
+    avg_confidence: number;
+    most_corrected_fields: string[];   // Fields that humans correct most often
+    last_correction_at?: string;
+  };
+  
+  // HITL 2.0: Autonomy Level (dynamic based on performance)
+  autonomy?: {
+    current_level: 'FULL_HITL' | 'PARTIAL' | 'SUPERVISED' | 'AUTONOMOUS';
+    reason: string;                    // Why this level
+    adjusted_at: string;
+    next_review_at?: string;           // When to reassess
   };
 }
 ```

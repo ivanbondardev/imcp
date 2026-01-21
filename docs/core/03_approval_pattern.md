@@ -97,9 +97,9 @@ Approval завжди проходить через Supabase як джерело
 
 | Компонент | Роль |
 |-----------|------|
-| **UI** | Створює і показує approvals |
+| **UI** | Показує approvals і фіксує рішення людини (decision) |
 | **Supabase** | Зберігає approval і рішення (Source of Truth) |
-| **n8n** | Реагує на `APPROVAL_DECIDED` і виконує наступний крок |
+| **n8n** | Реагує на зміну рішення (`approvals.status` з `PENDING` → фінальний стан) і виконує наступний крок |
 
 > n8n **не очікує** в довгому workflow.  
 > Approval створюється в одному workflow, а рішення людини тригерить інший workflow.
@@ -210,12 +210,12 @@ UI повинен підтримувати (детальніше в [04_case_coc
 
 ### 9.2 Реакція на рішення (Workflow B)
 
-Коли `approvals.status` змінюється:
+Коли `approvals.status` змінюється з `PENDING` на фінальний стан:
 
 | Рішення | Дії |
 |---------|-----|
-| `APPROVED` | Виконати критичну дію → записати результат → додати `ACTION_EXECUTED` |
-| `REJECTED` | Створити follow-up → повернути кейс → додати `APPROVAL_REJECTED_HANDLED` |
+| `APPROVED` | Виконати критичну дію → записати результат інтеграції (`INTEGRATION_STARTED/INTEGRATION_SUCCESS/INTEGRATION_FAILED`) → змінити `cases.state` (`STATE_CHANGED`) |
+| `REJECTED` | Створити follow-up (опційно) → повернути кейс → змінити `cases.state` (`STATE_CHANGED`) |
 | `CANCELLED` | Зафіксувати факт, нічого не виконувати |
 
 ### 9.3 Важливий принцип
@@ -266,6 +266,155 @@ Approval Pattern забезпечує:
 
 > **IMCP без approvals перетворюється або на "робот-автопілот", або на "ручний трекер задач".  
 > Approvals — це механізм, який робить IMCP "Iron Man Suit".**
+
+---
+
+## 14. HITL 2.0: Learning Loop через Approvals
+
+Approvals у IMCP — це не тільки контроль, а й **механізм взаємного навчання** між людиною та AI.
+
+### 14.1 Принцип Learning Loop
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      APPROVAL LEARNING LOOP                      │
+│                                                                  │
+│  ┌────────────┐         ┌──────────────┐        ┌─────────────┐ │
+│  │ AI generates│ ──────► │  Approval    │ ──────► │ Human       │ │
+│  │ draft       │         │  created     │         │ decides     │ │
+│  └────────────┘         └──────────────┘        └──────┬──────┘ │
+│                                                         │        │
+│  ┌────────────────────────────────────────────────────┐ │        │
+│  │                                                    │ │        │
+│  │   ┌─────────────────────────────────────────────┐  │ │        │
+│  │   │  Correction Signal                          │  │◄┘        │
+│  │   │  • what was edited                          │  │          │
+│  │   │  • why (root_cause)                         │  │          │
+│  │   │  • severity                                 │  │          │
+│  │   └─────────────────────────────────────────────┘  │          │
+│  │                                                    │          │
+│  │                    QUALITY FEEDBACK                │          │
+│  └────────────────────────────────────────────────────┘          │
+│                              │                                   │
+│                              ▼                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │  Pattern Analysis                                          │  │
+│  │  • Which fields are corrected most?                        │  │
+│  │  • Which AI runs need improvement?                         │  │
+│  │  • What root causes are most common?                       │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                              │                                   │
+│                              ▼                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │  AI Improvement Actions                                    │  │
+│  │  • Prompt refinement                                       │  │
+│  │  • Training data augmentation                              │  │
+│  │  • Rule-based overrides                                    │  │
+│  │  • Confidence threshold adjustment                         │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 14.2 Correction Signal — структурований feedback
+
+Кожен approval із правками генерує `correction_signal`:
+
+| Поле | Призначення |
+|------|-------------|
+| `correction_type` | APPROVE_AS_IS / MINOR_EDIT / MAJOR_EDIT / REJECT_REGENERATE |
+| `edited_fields` | Список змінених полів з original → corrected |
+| `root_cause` | Чому AI помилився: HALLUCINATION / OUTDATED_CONTEXT / MISSING_DATA |
+| `correction_severity` | NONE / LOW / MEDIUM / HIGH |
+| `should_retrain_on` | Чи є цей приклад корисним для донавчання |
+
+### 14.3 Як UI збирає correction signal
+
+1. Людина відкриває approval
+2. Бачить `request_snapshot` (що пропонує AI)
+3. Бачить `reasoning` (чому AI так вирішив) — **по кліку**
+4. Редагує поля (система фіксує diff)
+5. При збереженні — опціонально вказує "чому виправив"
+6. Система автоматично формує `correction_signal`
+
+### 14.4 Verification Modes (протидія cognitive biases)
+
+| Режим | Опис | Коли застосовується |
+|-------|------|---------------------|
+| `STANDARD` | Звичайний approval flow | За замовчуванням |
+| `DEEP` | Розширена верифікація з чеклістом | Для високоризикових approvals |
+| `SPOT_CHECK` | Випадкова поглиблена перевірка | Періодично, для підтримки пильності |
+
+### 14.5 Метрики якості (Quality Dashboard)
+
+На основі correction signals система збирає метрики:
+
+| Метрика | Опис | Використання |
+|---------|------|--------------|
+| `correction_rate` | % approvals з правками | Загальна якість AI |
+| `avg_time_to_decide` | Середній час на рішення | UX оптимізація |
+| `fields_most_corrected` | Топ полів, які правлять | Фокус для покращення |
+| `root_causes_distribution` | Розподіл причин помилок | Пріоритезація покращень |
+| `confidence_calibration` | Чи відповідає confidence реальній точності | Калібрування моделі |
+
+### 14.6 Приклад correction_signal
+
+```json
+{
+  "correction_type": "MINOR_EDIT",
+  "edited_fields": [
+    {
+      "field_path": "cargo.total_cbm",
+      "original_value": 3.2,
+      "corrected_value": 3.8,
+      "correction_reason": "client_clarification"
+    }
+  ],
+  "root_cause": "MISSING_DATA",
+  "fields_changed_count": 1,
+  "total_fields_count": 15,
+  "correction_severity": "LOW",
+  "should_retrain_on": true,
+  "pattern_tag": "dims_extraction_error"
+}
+```
+
+---
+
+## 15. LLM-as-Critic Pattern (Advanced)
+
+Для зменшення навантаження на людину, IMCP може використовувати **проміжний AI-шар**:
+
+### 15.1 Концепція
+
+```
+AI Agent         LLM Critic           Human
+(generates) ────► (evaluates) ────► (if needed)
+                      │
+                      ▼
+              ┌──────────────┐
+              │ PASS: auto   │
+              │ FAIL: reject │
+              │ ESCALATE:    │
+              │   to human   │
+              └──────────────┘
+```
+
+### 15.2 Коли LLM-критик корисний
+
+| Сценарій | Дія критика |
+|----------|-------------|
+| Очевидно правильний результат, низький ризик | PASS → автоматичне виконання |
+| Явна помилка (hallucination, format error) | FAIL → повернути на перегенерацію |
+| Неоднозначність, потрібен контекст | ESCALATE → передати людині |
+
+### 15.3 Вимоги до впровадження
+
+- Критик має бути **іншою моделлю** або **іншим промптом**
+- Критик не замінює human approval для HIGH-risk операцій
+- Всі рішення критика логуються в `case_events`
+- Людина може переглядати рішення критика в аудит-логу
+
+> **Принцип:** LLM-критик — це фільтр, який зменшує approval fatigue, але не замінює людський контроль для критичних рішень.
 
 ---
 

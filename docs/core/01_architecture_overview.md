@@ -139,7 +139,7 @@ flowchart TB
 |---------|----------|-----------|
 | `cases` | UPDATE | Тільки `payload.*` (доменні поля), **НЕ** `state`, `status`, `computed` |
 | `approvals` | INSERT | Тільки з `status='PENDING'` |
-| `approvals` | UPDATE | Тільки `decision_*` поля, і тільки якщо `status='PENDING'` |
+| `approvals` | UPDATE | `status` + `decision_*` поля **атомарно**, і тільки якщо `status='PENDING'` (optimistic lock). Дозволені переходи: `PENDING → APPROVED/REJECTED/CANCELLED` |
 | `documents` | INSERT | Метадані нових документів |
 | `case_events` | INSERT | Тільки `actor_type='HUMAN'` події |
 
@@ -150,7 +150,7 @@ flowchart TB
 | ❌ Змінювати `cases.state` | State machine контролюється n8n |
 | ❌ Змінювати `cases.status` | Агрегований статус рахується автоматично |
 | ❌ Змінювати `cases.computed` | Результати AI/workflow |
-| ❌ Змінювати `approvals.status` напряму | Тільки через decision fields |
+| ❌ Змінювати `approvals.status` без decision-полів або поза дозволеними переходами | Має бути однозначне, аудитоване рішення + optimistic lock |
 | ❌ Видаляти `case_events` | Append-only audit log |
 | ❌ Запускати workflow напряму | Лише через зміни даних (event-driven) |
 
@@ -196,7 +196,7 @@ sequenceDiagram
     UI->>UI: Manager reviews snapshot
     UI->>DB: UPDATE approval decision + status APPROVED
     DB->>DB: Trigger: check status was PENDING
-    DB->>WF: [webhook] APPROVAL_DECIDED event
+    DB->>WF: [webhook] approvals.status changed (decision made)
 
     Note over WF: Workflow B: React to Decision
     WF->>DB: Read approval + case
@@ -205,9 +205,8 @@ sequenceDiagram
         EXT-->>WF: Success response
         WF->>DB: UPDATE integrations external_id
         WF->>DB: UPDATE cases.state to next state
-        WF->>DB: INSERT case_event ACTION_EXECUTED
+        WF->>DB: INSERT case_event INTEGRATION_SUCCESS
     else status = REJECTED
-        WF->>DB: INSERT case_event APPROVAL_REJECTED
         WF->>DB: UPDATE cases.state to fallback
     end
     

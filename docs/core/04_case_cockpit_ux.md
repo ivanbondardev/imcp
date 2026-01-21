@@ -203,7 +203,7 @@ Audit view, який формує довіру та контроль:
 
 ---
 
-## 5. Як показувати AI
+## 5. Як показувати AI (HITL 2.0: Transparency)
 
 ### 5.1 Показувати результат, а не "магію"
 
@@ -221,18 +221,168 @@ Audit view, який формує довіру та контроль:
 | "Suggested options…" | "The model believes…" |
 | "Needs approval…" | "According to AI analysis…" |
 
-### 5.3 Confidence + Flags
+### 5.3 Прозорість невпевненості (HITL 2.0)
 
-Показувати:
-- **Confidence:** low / medium / high
-- **Flags:** `LOW_CONFIDENCE`, `MISSING_DATA`, `CONFLICT_DETECTED`, `APPROVAL_REQUIRED`
+> **Принцип:** AI не має права маскувати невпевненість "авторитетним тоном".
 
-### 5.4 AI reasoning (опціонально)
+#### Обов'язковий показ:
+- **Confidence per field** — не тільки загальний, а для кожного критичного поля
+- **Uncertainty areas** — де саме AI не впевнений
+- **Суперечності** — коли дані з різних джерел конфліктують
+- **Assumptions** — припущення, які зробив AI
 
-Якщо показувати reasoning:
-- тільки по кліку
-- коротко
-- як "пояснення перевірки", а не як "есе"
+#### UI елементи для невпевненості:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 📦 Cargo Weight                                         │
+│                                                         │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │ 2,500 kg                           🟡 Medium    │   │
+│   │                                                 │   │
+│   │ ⚠️ Extracted from invoice, not confirmed by     │   │
+│   │    warehouse. Client email mentioned "~2.5t"    │   │
+│   │                                                 │   │
+│   │ 💡 Suggested verification: Request warehouse    │   │
+│   │    weighing before quote confirmation           │   │
+│   └─────────────────────────────────────────────────┘   │
+│                                                         │
+│ [ Confirm as-is ]  [ Edit value ]  [ Request verify ]   │
+└─────────────────────────────────────────────────────────┘
+```
+
+#### Confidence Indicators:
+
+| Індикатор | Значення | UI |
+|-----------|----------|----|
+| 🟢 High | 0.85+ | Зелений badge |
+| 🟡 Medium | 0.6-0.85 | Жовтий badge + hover tooltip |
+| 🔴 Low | < 0.6 | Червоний badge + inline warning |
+
+### 5.4 AI reasoning (HITL 2.0: Explainability)
+
+Reasoning **обов'язково доступний**, але показується **по кліку**:
+
+#### Структура reasoning panel:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 💭 How this was calculated                      [Close] │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ Factors considered:                                     │
+│ ├── 📄 Invoice INV-2026-0451 (HIGH weight)             │
+│ ├── 📧 Client email from Jan 15 (MEDIUM weight)        │
+│ └── 📊 Similar shipments avg (LOW weight)              │
+│                                                         │
+│ Assumptions made:                                       │
+│ • Packaging weight included in declared weight          │
+│ • Standard pallet dimensions assumed                    │
+│                                                         │
+│ Would reconsider if:                                    │
+│ • Warehouse provides actual measurements                │
+│ • Client confirms exact packing list                    │
+│                                                         │
+│ Alternatives rejected:                                  │
+│ • Using historical average (less accurate for this      │
+│   cargo type)                                           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 5.5 Conflict Detection
+
+Коли AI виявляє суперечності між джерелами:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ ⚠️ DATA CONFLICT DETECTED                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ Field: cargo.total_cbm                                  │
+│                                                         │
+│ ┌──────────────────┐    ┌──────────────────┐           │
+│ │ 📄 Invoice       │ vs │ 📧 Client email  │           │
+│ │    3.2 cbm       │    │    4.1 cbm       │           │
+│ └──────────────────┘    └──────────────────┘           │
+│                                                         │
+│ Delta: 28% difference                                   │
+│                                                         │
+│ [ Use Invoice value ]  [ Use Email value ]  [ Enter    │
+│                                               manually ] │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5.6 Verify Mode (HITL 2.0: Cognitive Bias Mitigation)
+
+Для протидії **automation bias** та **complacency**, UI підтримує різні режими верифікації:
+
+### Типи Verify Mode:
+
+| Режим | Опис | Коли застосовується |
+|-------|------|---------------------|
+| `STANDARD` | Звичайний approval flow | За замовчуванням |
+| `DEEP` | Чекліст обов'язкових перевірок | HIGH-risk approvals |
+| `SPOT_CHECK` | Випадкова поглиблена перевірка | Періодично (1 з N) |
+
+### DEEP Verify Mode UI:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🔍 DEEP VERIFICATION REQUIRED                           │
+│    This approval requires additional checks              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ Verification Checklist:                                 │
+│                                                         │
+│ ☐ Cargo dimensions match invoice                        │
+│   └── Source: Invoice p.2, line 15                      │
+│                                                         │
+│ ☐ Client name matches contract                          │
+│   └── Source: Contract header                           │
+│                                                         │
+│ ☐ Incoterms verified with client                        │
+│   └── Source: Email from Jan 14                         │
+│                                                         │
+│ ☐ Price calculation reviewed                            │
+│   └── Click to expand calculation breakdown             │
+│                                                         │
+│ ────────────────────────────────────────────────────────│
+│ ⚠️ All items must be checked before approval            │
+│                                                         │
+│ [ Cancel ]                              [ Approve (0/4) ]│
+└─────────────────────────────────────────────────────────┘
+```
+
+### SPOT_CHECK Mode:
+
+- Випадково активується для ~10% звичайних approvals
+- Менеджер **не знає заздалегідь**, чи буде spot check
+- Підтримує пильність через непередбачуваність
+- Результати spot checks аналізуються для quality metrics
+
+### Парадигма "Спростування" в UI:
+
+Замість питання "Чи все правильно?" → "Де може бути помилка?"
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 🔎 VERIFICATION FOCUS                                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ AI highlighted these areas for attention:               │
+│                                                         │
+│ 🎯 cargo.weight — extracted from low-quality scan       │
+│ 🎯 quote.margin — lower than average for this route     │
+│ 🎯 broker.export_declaration — marked as "unknown"      │
+│                                                         │
+│ Can you confirm these values are correct?               │
+│                                                         │
+│ [ All correct ]  [ I found issues ]                     │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -247,6 +397,67 @@ Audit view, який формує довіру та контроль:
 | Розмиті стани ("в процесі") | Незрозуміло що далі |
 | Багато вільного тексту | Важко верифікувати |
 | Відсутність історії | Немає audit trail |
+| **Приховування невпевненості AI** | Automation bias, помилки |
+| **Однаковий approval UX для всіх рівнів ризику** | Approval fatigue |
+| **Відсутність reasoning** | "Чорна скринька", недовіра |
+
+---
+
+## 6.1 Learning Loop UX (HITL 2.0)
+
+### Збір Correction Signal в UI
+
+Коли менеджер редагує draft перед approval:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 📝 You made changes to the draft                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ Changes detected:                                       │
+│ • cargo.total_cbm: 3.2 → 3.8 cbm                       │
+│                                                         │
+│ Help us improve (optional):                             │
+│                                                         │
+│ Why did you make this change?                           │
+│ ○ Client provided updated information                   │
+│ ○ Found error in source document                        │
+│ ○ AI extracted incorrectly                              │
+│ ○ Policy/business rule override                         │
+│ ○ Other: [________________]                             │
+│                                                         │
+│ [ Skip ]                              [ Submit & Approve ]│
+└─────────────────────────────────────────────────────────┘
+```
+
+### Quality Feedback Badge
+
+На approval history показуємо якість AI drafts:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 📊 AI Quality for this case type                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│ Quote Approval:  🟢 94% accuracy (last 30 days)         │
+│ BL Verification: 🟡 78% accuracy (dims field weak)      │
+│ Dims Extraction: 🔴 65% accuracy (improving...)         │
+│                                                         │
+│ Your corrections help improve these numbers!            │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Time Tracking (для метрик)
+
+UI автоматично трекає:
+- `time_to_first_action` — скільки часу менеджер дивився перед дією
+- `time_spent_editing` — скільки часу редагував
+- `verification_depth` — скільки полів розгорнув / перевірив
+
+Ці метрики допомагають:
+- Виявляти "rubber stamping" (занадто швидкі approvals)
+- Оптимізувати UX для частих операцій
+- Калібрувати spot check frequency
 
 ---
 
@@ -264,6 +475,10 @@ Audit view, який формує довіру та контроль:
 | 6 | Чи є "stop/rollback" для ризикових місць? | Cancel / Undo |
 | 7 | Чи мінімум кліків до критичної дії? | UX flow |
 | 8 | Чи не змушує UI "думати з нуля"? | Draft-first |
+| 9 | Чи видно рівень впевненості AI? | Confidence indicators |
+| 10 | Чи є доступ до reasoning AI? | Explainability |
+| 11 | Чи підсвічуються конфлікти даних? | Conflict detection |
+| 12 | Чи збирається feedback при редагуванні? | Learning Loop |
 
 ---
 
