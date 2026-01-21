@@ -11,6 +11,7 @@
 | [platform_ui_contracts.md](./platform_ui_contracts.md) | Глобальні патерни: навігація, авторизація, помилки, пошук |
 | [ui_patterns.md](./ui_patterns.md) | Каталог повторюваних UI патернів (badges, ризики, approvals, стани, empty/loading/error) |
 | [ui_style_reference.md](./ui_style_reference.md) | Дизайн-токени та візуальна мова |
+| [landing_page_spec.md](./landing_page_spec.md) | **Landing Page — референс для frontend та дизайну** |
 | [case_list_spec.md](./case_list_spec.md) | Операційна черга кейсів |
 | [case_detail_spec.md](./case_detail_spec.md) | Case Cockpit — екран кейса |
 | [documents_spec.md](./documents_spec.md) | Управління документами |
