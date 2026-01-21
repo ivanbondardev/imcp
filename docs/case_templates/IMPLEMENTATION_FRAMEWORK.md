@@ -1172,7 +1172,7 @@ sequenceDiagram
 |------------|---------------|
 | UPDATE `cases.payload.*` | UPDATE `cases.state` |
 | INSERT `approvals` (status=PENDING) | UPDATE `cases.status` |
-| UPDATE `approvals.decision_*` (якщо PENDING) | UPDATE `cases.computed` |
+| UPDATE `approvals.status` + `decision_*` **атомарно** (якщо PENDING; `PENDING → APPROVED/REJECTED/CANCELLED`) | UPDATE `cases.computed` |
 | INSERT `documents` | DELETE `case_events` |
 | INSERT `case_events` (actor_type=HUMAN) | Запускати workflow напряму |
 ```
@@ -1200,9 +1200,9 @@ sequenceDiagram
 ```
 
 **Альтернативний патерн (через approvals):**
-- UI створює `approval` зі `status = PENDING`
-- n8n реагує на `APPROVAL_CREATED` event
-- Після decision → n8n виконує дію
+- Система (зазвичай n8n) створює `approval` зі `status = PENDING` + `request_snapshot`
+- Supabase trigger/webhook/realtime сигналізує n8n про зміну (це **не** `case_events.event_type`)
+- Після decision (`approvals.status` змінено з `PENDING` на фінальний стан) → n8n виконує дію і логує канонічні `case_events` (`APPROVAL_*`, `INTEGRATION_*`, `STATE_CHANGED`)
 
 ### 9.4 Артефакт Фази 7
 
@@ -1233,7 +1233,7 @@ sequenceDiagram
 | f1_air_request_rates | state = CLIENT_INFO_COLLECTED | caseId | trigger agent request |
 | f1_air_rates_received | webhook from agent | rates data | computed.rates |
 | f1_air_calculate_quote | rates_received | case payload | computed.quote |
-| f1_air_quote_approval | approval decided | approval | state → QUOTE_SENT or QUOTE_READY |
+| f1_air_quote_approval | `approvals.status` changed (decision made) | approval_id | state → QUOTE_SENT or QUOTE_READY |
 | ... | ... | ... | ... |
 ```
 
@@ -1264,8 +1264,8 @@ Steps:
 | `APPROVAL_CREATED` | Створено новий approval | SYSTEM |
 | `APPROVAL_APPROVED` | Approval затверджено | HUMAN |
 | `APPROVAL_REJECTED` | Approval відхилено | HUMAN |
-| `DOCUMENT_UPLOADED` | Завантажено документ | HUMAN/INTEGRATION |
-| `DOCUMENT_VERIFIED` | Документ верифіковано | HUMAN/AI |
+| `DOC_UPLOADED` | Завантажено документ | HUMAN/INTEGRATION |
+| `DOC_VERIFIED` | Документ верифіковано людиною | HUMAN |
 | `INTEGRATION_SUCCESS` | Інтеграція успішна | INTEGRATION |
 | `INTEGRATION_FAILED` | Інтеграція провалилась | INTEGRATION |
 | `AI_RUN_COMPLETED` | AI виклик завершено | AI |
@@ -1273,7 +1273,7 @@ Steps:
 | `NOTIFICATION_SENT` | Відправлено нотифікацію | SYSTEM |
 | `COMMENT_ADDED` | Додано коментар | HUMAN |
 
-> Повний список: [02_core_data_model.md — Event Taxonomy](../../core/02_core_data_model.md#4-event-taxonomy)
+> Повний список: [02_core_data_model.md — Event Taxonomy](../../core/02_core_data_model.md#4-event-taxonomy-канонічні-типи-подій)
 
 ### 10.5 Error Handling
 
