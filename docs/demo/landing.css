@@ -3181,3 +3181,78 @@ code {
     max-width: 100%;
   }
 }
+
+/* ============================================ */
+/* Utility & New Classes */
+/* ============================================ */
+
+.engineering-link-wrap {
+  margin-top: 24px;
+  text-align: center;
+}
+
+/* Back to Top Button */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #3b82f6;
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 90;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.back-to-top:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+/* Print Styles */
+@media print {
+  .landing-nav, 
+  .video-wrap, 
+  .back-to-top, 
+  .cta-buttons, 
+  .hero-buttons {
+    display: none !important;
+  }
+  
+  .landing-hero {
+    padding-top: 2rem;
+    color: black;
+    background: white;
+  }
+  
+  .landing-hero h1, 
+  .section-title,
+  .landing-hero .tagline,
+  .landing-hero .subtitle {
+    color: black;
+    -webkit-text-fill-color: black;
+  }
+  
+  body {
+    color: black;
+    background: white;
+  }
+  
+  .section-badge {
+    border: 1px solid #ccc;
+  }
+}
