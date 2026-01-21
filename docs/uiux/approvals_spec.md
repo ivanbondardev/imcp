@@ -54,7 +54,7 @@ Approval = контрольна точка де:
 Таблиця нещодавніх рішень:
 - Type
 - Case
-- Decision (APPROVED / REJECTED)
+- Decision (`APPROVED | REJECTED | CANCELLED`)
 - Who
 - When
 

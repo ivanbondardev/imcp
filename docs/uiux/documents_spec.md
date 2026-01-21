@@ -96,8 +96,10 @@ AI екстрагує → людина верифікує.
 2. Вибір кейса (required)
 3. Опціонально: тип документа (AI визначить автоматично)
 4. Upload → status = UPLOADED
-5. AI processing trigger
-6. Status → VERIFIED або назад в UPLOADED з flag "needs review"
+5. Workflow (n8n) ставить `status=PROCESSING` на час обробки (опційно, але канонічний статус існує в core)
+6. Після екстракції:
+   - якщо confidence >= threshold: workflow може auto‑merge у `cases.payload.*` і перевести документ у `VERIFIED`
+   - якщо confidence < threshold: документ **не стає VERIFIED**; UI показує derived flag “needs human review” (це не статус), а workflow додає risk/flag у `cases.computed.*`
 
 Supported formats: PDF, Excel, Word, Images
 
@@ -110,7 +112,12 @@ Side-by-side view:
 - AI extracted data
 - Confidence score
 - Checkbox "Дані коректні"
-- Actions: Підтвердити / Редагувати / Відхилити
+- Actions (MVP): **Підтвердити** / **Редагувати & Підтвердити** / **Замінити файлом (нова версія)**
+
+Примітка щодо контракту (core):
+- UI не змінює `cases.state/status/computed`.
+- Верифікація фіксується як дія людини: UPDATE `cases.payload.*` (за потреби) + INSERT `case_events` (`DOC_VERIFIED`).
+- Переведення `documents.status` у `VERIFIED` робить workflow (n8n) у відповідь на людську верифікацію (event-driven).
 
 ---
 

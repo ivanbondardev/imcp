@@ -67,6 +67,16 @@ Personal Settings — інструмент адаптації робочого �
 
 ## Notifications — Event Types
 
+> ⚠️ Важливо: нижче — **ключі налаштувань нотифікацій** (product-level).  
+> Канонічні audit-події для Timeline живуть у `case_events.event_type` і мають формат `UPPER_SNAKE_CASE` (див. `docs/core/02_core_data_model.md#4-event-taxonomy`).
+>
+> Mapping робимо на рівні UI/notification-service:
+> - `approval_required` → `APPROVAL_CREATED` (або derived condition “є pending approvals”)
+> - `state_changed` → `STATE_CHANGED`
+> - `doc_uploaded` → `DOC_UPLOADED`
+> - `integration_failed` → `INTEGRATION_FAILED`
+> - `ai_draft_generated` → `AI_RUN_COMPLETED` (run_type=GENERATE) / або derived від появи draft у `cases.computed.*`
+
 ### Critical
 - `approval_required` — 🔒 locked ON
 - `sla_risk_24h`

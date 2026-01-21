@@ -71,16 +71,21 @@ Timeline — централізований журнал подій, що від
 - `APPROVAL_CREATED`
 - `APPROVAL_APPROVED`
 - `APPROVAL_REJECTED`
+- `APPROVAL_CANCELLED`
 
 ### Document
 - `DOC_UPLOADED`
 - `DOC_EXTRACTED`
 - `DOC_VERIFIED`
+- `DOC_REPLACED`
 
 ### Integration
 - `INTEGRATION_STARTED`
 - `INTEGRATION_SUCCESS`
 - `INTEGRATION_FAILED`
+
+### AI
+- `AI_RUN_COMPLETED`
 
 ### Communication
 - `EMAIL_SENT`

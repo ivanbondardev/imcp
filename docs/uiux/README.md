@@ -61,6 +61,25 @@ UI не може:
 
 ---
 
+## Матриця відповідності (Core → UI/UX)
+
+Таблиця для швидкого ревʼю узгодженості: **який core-принцип/контракт** і **де саме він реалізований в UI/UX спеках**.
+
+| Core документ / контракт | Що це означає для UI | Де покрито в UI/UX |
+|---|---|---|
+| `00_shared_mental_model.md` — **Human-in-the-Loop, Draft-First, Transparency** | UI показує **дію + контекст + ризики**, AI не “маскує” невпевненість, рішення людини — фінальне | `case_detail_spec.md`, `approvals_spec.md`, `documents_spec.md`, `timeline_spec.md`, `personal_settings_spec.md` |
+| `01_architecture_overview.md` — **UI Contract (can/can’t write)** | UI **не змінює** `cases.state/status/computed`; рішення людини пише в `approvals` (optimistic lock), події людини — `case_events` (`actor_type='HUMAN'`) | `case_detail_spec.md` (Approval flows), `documents_spec.md` (verification notes), цей README (контракт) |
+| `02_core_data_model.md` — **State vs Status** | UI завжди відрізняє `state` (бізнес) і `status` (агрегат) | `case_detail_spec.md` (Header), `case_list_spec.md` (групи/колонки), `owner_dashboard_spec.md` (термінологія) |
+| `02_core_data_model.md` — **Approvals: статуси/переходи/immutability** | `PENDING → APPROVED/REJECTED/CANCELLED`, `request_snapshot` immutable, рішення атомарне | `approvals_spec.md`, `case_detail_spec.md` |
+| `02_core_data_model.md` — **Documents: статуси + source enum** | `UPLOADED/PROCESSING/VERIFIED/REPLACED/ARCHIVED`, `source` включає `SYSTEM|AI` | `documents_spec.md`, `case_detail_spec.md` (Documents section) |
+| `02_core_data_model.md` — **Event Taxonomy (`case_events.event_type`)** | Timeline відображає **канонічні** події, append-only | `timeline_spec.md` |
+| `03_approval_pattern.md` — **Approval як мікро‑процес (контекст/ризики/CTA/decision_comment)** | Approval не “ви впевнені?” модалка, а керований процес з контекстом і фіксацією рішення | `approvals_spec.md`, `case_detail_spec.md` |
+| `04_case_cockpit_ux.md` — **Case Cockpit/NBA/Progressive Disclosure** | 1 екран на кейс, NBA 1–3 дії, мінімум когнітивного шуму | `case_detail_spec.md`, `case_list_spec.md`, `platform_ui_contracts.md` |
+| `02_core_data_model.md` — **Roles/RLS** | UI не “вгадує” доступ, показ/дії залежать від ролі та RLS | `platform_ui_contracts.md` (RLS-aware), `system_engineering_dashboard_spec.md` (access), `owner_dashboard_spec.md` (scope) |
+| `02_core_data_model.md` — **AI runs / quality loop signals** | Можливість drill‑down до AI/integration подій і метрик, без порушення приватності | `system_engineering_dashboard_spec.md`, `timeline_spec.md` |
+
+---
+
 ## Порядок читання
 
 1. Core README → загальне розуміння

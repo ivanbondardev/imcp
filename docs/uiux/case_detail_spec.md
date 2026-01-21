@@ -77,21 +77,24 @@ Timeline показує історію рішень та подій.
 
 ### Approve Flow
 1. Click Approve
-2. Confirmation modal
-3. API call
-4. State change + NBA update
+2. (Опційно) Verify step / confirmation лише для high‑risk або `verification_mode=DEEP` (щоб не створювати approval fatigue)
+3. API call: **атомарний** UPDATE `approvals` (decision + `status='APPROVED'`) лише якщо попередній `status='PENDING'`
+4. UI показує "Decision submitted" + запис у Timeline (канонічна подія `APPROVAL_APPROVED`)
+5. **State/NBA оновлюються після** реакції workflow (n8n) на рішення; UI отримує зміни через realtime і просто відображає результат
 
 ### Edit & Approve Flow
 1. Click Edit & Approve
 2. Modal з editable полями
 3. Save & Approve
-4. State change
+4. API call: UPDATE `approvals.decision_snapshot` + `status='APPROVED'` (optimistic lock)
+5. Workflow застосовує зміни до кейса (merge у `cases.payload.*` та/або інтеграції) і переводить `cases.state` за state machine
 
 ### Reject Flow
 1. Click Reject
 2. Modal з причиною (required)
 3. Confirm
-4. State rollback
+4. API call: UPDATE `approvals` → `status='REJECTED'` + `decision_comment`
+5. Workflow переводить кейс у відповідний fallback state (UI не робить rollback state самостійно)
 
 ---
 
@@ -99,7 +102,7 @@ Timeline показує історію рішень та подій.
 
 Список документів кейса:
 - File name + type badge
-- Source (CLIENT, ZED, BROKER)
+- Source (`CLIENT | ZED | BROKER | SYSTEM | AI`)
 - Status badge
 - AI confidence indicator (якщо є)
 - View / Verify actions
