@@ -4,6 +4,38 @@
 
 ---
 
+## Scope / Non-scope (для продуктового ревʼю)
+
+**Scope (P0):**
+- Операційне здоровʼя потоку (throughput, SLA, bottlenecks)
+- “Де буксує?” → drill-down до кейса
+- Owner-level ескалації (мінімально)
+
+**Non-scope (P1+):**
+- Технічний дебаг/лог-деталі (це Engineering Dashboard)
+- Поглиблена AI/інтеграційна діагностика
+
+---
+
+## MVP (P0) vs Next (P1)
+
+**P0:**
+- KPI tiles + At Risk queue + Bottlenecks
+- Drill-down до кейсів за 1–2 кліки
+
+**P1:**
+- Розширені сегменти (by team/route/client)
+- Регулярні executive summaries / експорти
+
+---
+
+## Entry points / Deep links
+
+- `/dashboard/owner` (вхід з навігації, якщо роль дозволяє)
+- Клік по кейсу веде у `/cases/:case_number`
+
+---
+
 ## Мета
 
 Owner Dashboard — "контрольна вежа", що відповідає на питання: **"Де буксує потік кейсів і що робити?"**
@@ -127,3 +159,20 @@ KPI з можливістю діяти.
 - Status vs State
 - Approval thresholds
 - Event types для метрик
+
+---
+
+## Edge cases (P0)
+
+- **Агрегати без raw logs**: для OPS_LEAD/OWNER показуємо метрики/сегменти без чутливих payloads
+- **“At Risk” без однозначної причини**: UI має показати top‑reason (SLA/approval/blocked/conflict) і шлях у кейс
+
+---
+
+## Product Acceptance Checklist (P0)
+
+- [ ] KPI tiles відповідають на “де буксує потік?” і всі клікабельні (drill‑down)
+- [ ] At Risk queue показує top‑reason + веде в `/cases/:case_number`
+- [ ] Bottlenecks показують топ станів/причин (без технічного дебагу)
+- [ ] Owner-level escalations: є мінімальний inline decision + comment (де потрібно)
+- [ ] Дані не розкривають raw payloads для ролей без доступу (privacy-by-role)

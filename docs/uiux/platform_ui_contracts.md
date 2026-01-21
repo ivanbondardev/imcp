@@ -35,6 +35,14 @@
 - `document_id` → Document viewer
 - `case_event_id` → Timeline з highlight
 
+### Route patterns (для продуктового ревʼю, P0)
+Прикладові URL (точні шляхи може змінити реалізація, але **семантика** має зберегтися):
+- Cases: `/cases/:case_number`
+- Approval detail: `/approvals/:approval_id`
+- Document viewer: `/documents/:document_id`
+- Timeline: `/timeline?case_id=:case_id`
+- Timeline highlight: `/timeline?case_id=:case_id&highlight=:case_event_id`
+
 ---
 
 ## 3. Auth & Access (RLS-aware)
@@ -58,6 +66,10 @@ UI не "вгадує" доступ — RLS у Supabase є джерелом іс
 - correlation_id якщо є
 - CTA: Retry / Back
 
+### RLS denied UX (P0)
+- **403 / RLS denied**: “У вас немає доступу” + CTA повернутись (без витоку деталей, без згадки існування ресурсу)
+- **404**: “Не знайдено” (використовуємо також коли не можна показати, що ресурс існує)
+
 ### Loading
 - Skeleton loaders для списків/карток
 - Background refresh з "Last updated" індикатором
@@ -70,6 +82,10 @@ UI не "вгадує" доступ — RLS у Supabase є джерелом іс
 ### Empty states
 - Пояснюють "чому пусто"
 - Пропонують next action
+
+Рекомендовані шаблони (P0):
+- Empty approvals: “Немає рішень, що потребують вашої уваги” + CTA “Перейти в Cases”
+- Empty documents: “Немає документів для верифікації” + CTA “Перейти в Documents / Upload”
 
 ---
 
@@ -101,3 +117,8 @@ UI не "вгадує" доступ — RLS у Supabase є джерелом іс
 - Toasts для коротких підтверджень
 - Агрегація при багатьох подіях за короткий час
 - Quiet hours з preferences
+
+### Нотифікації не замінюють черги (P0)
+- Approvals inbox — єдина “черга рішень”
+- Documents queue — єдина “черга верифікації”
+- Timeline — єдине “джерело аудиту”

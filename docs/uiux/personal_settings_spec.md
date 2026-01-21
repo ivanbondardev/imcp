@@ -4,6 +4,35 @@
 
 ---
 
+## Scope / Non-scope (для продуктового ревʼю)
+
+**Scope (P0):**
+- Зменшення шуму (notifications) + базові вподобання робочого середовища
+- Налаштування inbox/views без зміни бізнес‑процесу
+
+**Non-scope (P1+):**
+- Зміна approval gates / state machine / required fields (це не налаштування користувача)
+
+---
+
+## MVP (P0) vs Next (P1)
+
+**P0:**
+- Quiet hours + locked critical events
+- Inbox display (фільтри/сортування/колонки)
+- UI density
+
+**P1:**
+- Розширені правила нотифікацій (по case_type, по ролі, по SLA tiers)
+
+---
+
+## Entry points / Deep links
+
+- `/settings/personal` (вхід з навігації)
+
+---
+
 ## Мета
 
 Personal Settings — інструмент адаптації робочого середовища для ефективності та зменшення когнітивного навантаження.
@@ -149,3 +178,20 @@ Missing data → warning при використанні.
 - Fatigue-Aware Design
 - Human-in-the-Loop
 - Accountability
+
+---
+
+## Edge cases (P0)
+
+- **Занадто “тихо”**: UI має попереджати, якщо користувач вимикає все окрім locked critical (ризик пропустити важливе)
+- **Timezone/quiet hours**: явно показувати timezone і приклад “коли прийде наступний digest”
+
+---
+
+## Product Acceptance Checklist (P0)
+
+- [ ] Critical events (locked) не можна вимкнути, і це зрозуміло в UI
+- [ ] Quiet hours: користувач бачить timezone і приклад “коли буде тихо/коли прийдуть нотифікації”
+- [ ] Зміни мають явний unsaved indicator і require explicit save
+- [ ] Є “reset to defaults” (мінімально — для notifications та inbox display)
+- [ ] Налаштування не дозволяють змінювати state machine / approval gates / required fields

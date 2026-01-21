@@ -9,6 +9,7 @@
 | Документ | Опис |
 |----------|------|
 | [platform_ui_contracts.md](./platform_ui_contracts.md) | Глобальні патерни: навігація, авторизація, помилки, пошук |
+| [ui_patterns.md](./ui_patterns.md) | Каталог повторюваних UI патернів (badges, ризики, approvals, стани, empty/loading/error) |
 | [ui_style_reference.md](./ui_style_reference.md) | Дизайн-токени та візуальна мова |
 | [case_list_spec.md](./case_list_spec.md) | Операційна черга кейсів |
 | [case_detail_spec.md](./case_detail_spec.md) | Case Cockpit — екран кейса |
@@ -80,9 +81,41 @@ UI не може:
 
 ---
 
+## UX Priority Stack (для продуктового ревʼю)
+
+Порядок пріоритетів — що “обовʼязково має працювати” в UX до того, як ми поліруємо деталі:
+
+- **P0: Фокус і контроль**
+  - NBA (Next Best Action) завжди відповідає “що робити далі?”
+  - Approvals як керований мікро‑процес (контекст → ризики → рішення)
+  - Auditability: Timeline як джерело довіри (“що сталося”)
+- **P0: Anti-noise**
+  - ризики/невпевненість показуються чітко, але без “спаму”
+  - progressive disclosure для reasoning/деталей
+- **P1: Прискорення**
+  - глобальний пошук і keyboard-first flows
+  - batch-операції для документів/черг
+- **P1: Quality Loop**
+  - метрики якості AI (no-edit/correction rate) + drill‑down
+  - spot-check/deep verify режими, калібрування навантаження
+
+---
+
+## Глосарій UI термінів (коротко)
+
+| Термін | Значення (для продукту) |
+|---|---|
+| `case_id` vs `case_number` | `case_number` — людський ID у UI; `case_id` — технічний UUID |
+| `state` vs `status` | `state` — бізнес‑стан; `status` — агрегат `OPEN/BLOCKED/DONE/ARCHIVED` |
+| `event_type` vs notification key | `event_type` — канонічна audit‑подія (Timeline); notification key — налаштування сповіщень (product-level) |
+| “needs human review” | derived flag (не статус) — коли confidence/ризики вимагають уваги людини |
+
+---
+
 ## Порядок читання
 
 1. Core README → загальне розуміння
 2. platform_ui_contracts.md → глобальні патерни
+3. ui_patterns.md → канонічні UI патерни
 3. ui_style_reference.md → дизайн-система
 4. Специфікації екранів за потребою

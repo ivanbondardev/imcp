@@ -4,6 +4,36 @@
 
 ---
 
+## Scope / Non-scope (для продуктового ревʼю)
+
+**Scope (P0):**
+- Пріоритезована черга “що робити зараз”
+- Швидке відкриття кейса та швидкі фільтри
+
+**Non-scope (P1+):**
+- Складні кастомні вʼю/репорти (це більше Owner Dashboard)
+
+---
+
+## MVP (P0) vs Next (P1)
+
+**P0:**
+- Групи за терміновістю (pending approvals, at-risk/SLA, blocked)
+- Мінімальні колонки + швидкий пошук/фільтри
+
+**P1:**
+- Saved views, розширені фільтри, кастомізація колонок
+
+---
+
+## Entry points / Deep links
+
+- `/cases` (вхід з навігації)
+- Клік по рядку: `/cases/:case_number`
+- Пошук по `case_number` (див. `platform_ui_contracts.md`)
+
+---
+
 ## Мета
 
 Case List — центральний хаб менеджера, що відповідає на питання: **"Що мені робити зараз?"**
@@ -99,3 +129,21 @@ Modal для створення нового кейса:
 - `cases.status`: `OPEN | BLOCKED | DONE | ARCHIVED`
 - `cases.state`: бізнес-стани
 - `approvals.status`: `PENDING | APPROVED | REJECTED | CANCELLED`
+
+---
+
+## Edge cases (P0)
+
+- **Немає кейсів у черзі**: пояснити “чому пусто” + CTA “Створити кейс”/“Зняти фільтри”
+- **RLS різні видимості**: список ніколи не підказує існування “чужих” кейсів
+
+---
+
+## Product Acceptance Checklist (P0)
+
+- [ ] Є групування: pending approvals / in progress / blocked (зрозуміло, що робити першим)
+- [ ] SLA/at-risk сигнал видно без відкриття кейса
+- [ ] Рядок клікабельний і веде в `/cases/:case_number`
+- [ ] Пошук знаходить кейси по `case_number` (мінімум)
+- [ ] Quick filters працюють як AND-логіка і видно активні фільтри
+- [ ] Empty state пояснює “чому пусто” і дає 1–2 CTA

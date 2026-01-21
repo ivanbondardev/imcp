@@ -4,6 +4,38 @@ Append-only audit log усіх подій платформи.
 
 ---
 
+## Scope / Non-scope (для продуктового ревʼю)
+
+**Scope (P0):**
+- Канонічний audit log (append-only) для довіри/розслідувань
+- Фільтри по actor type + базовий пошук
+
+**Non-scope (P1+):**
+- Повноцінний SIEM/лог-агрегатор
+
+---
+
+## MVP (P0) vs Next (P1)
+
+**P0:**
+- Список подій з date grouping
+- Фільтр по actor type
+- Deep link highlight на конкретну подію
+
+**P1:**
+- Збережені фільтри/сегменти
+- Розширені експорти/репорти (для compliance)
+
+---
+
+## Entry points / Deep links
+
+- `/timeline` (вхід з навігації)
+- `/timeline?case_id=:case_id` (фільтр по кейсу)
+- `/timeline?case_id=:case_id&highlight=:case_event_id` (підсвітка події)
+
+---
+
 ## Мета
 
 Timeline — централізований журнал подій, що відповідає на питання: **"Що відбувалося в системі?"**
@@ -138,3 +170,21 @@ Date range filter (MVP).
 - `case_events` table schema
 - Event Taxonomy
 - Actor types enum
+
+---
+
+## Edge cases (P0)
+
+- **Великий потік подій**: lazy load / пагінація + “jump to latest”
+- **Дані без доступу**: редагуємо/маскуємо metadata за роллю (особливо для dashboards)
+
+---
+
+## Product Acceptance Checklist (P0)
+
+- [ ] На `/timeline` видно події з actor markers (HUMAN/SYSTEM/AI/INTEGRATION)
+- [ ] Є quick filters по actor type + зрозуміло, що фільтр активний
+- [ ] Події згруповані по датах (сьогодні/вчора/тиждень/раніше)
+- [ ] Є deep link highlight: відкриття URL одразу підсвічує потрібну подію
+- [ ] Details розгортаються по кліку (progressive disclosure), не “заливають” стрічку
+- [ ] Empty/Access states оброблені стандартно (див. `platform_ui_contracts.md`)

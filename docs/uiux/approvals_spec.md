@@ -4,6 +4,38 @@
 
 ---
 
+## Scope / Non-scope (для продуктового ревʼю)
+
+**Scope (P0):**
+- Єдина черга “що потребує мого рішення”
+- Мінімальний контекст для рішення + швидкі дії (inline)
+
+**Non-scope (P1+):**
+- Розширений approval analytics (це радше dashboards)
+- Складні multi-step approvals (поза MVP)
+
+---
+
+## MVP (P0) vs Next (P1)
+
+**P0:**
+- Pending queue з пріоритизацією за SLA/ризиком
+- Approval card: snapshot + risks + 3 CTA
+- Recently decided (коротка історія)
+
+**P1:**
+- Розгорнутий diff-view та “verification checklist” для DEEP mode
+
+---
+
+## Entry points / Deep links
+
+- `/approvals` (вхід з навігації)
+- `/approvals/:approval_id` (деталь, якщо є окремий view; інакше — scroll/highlight у списку)
+- З будь-якого approval є шлях у `/cases/:case_number`
+
+---
+
 ## Мета
 
 Approvals — черга рішень, що відповідає на питання: **"Що потребує мого рішення?"**
@@ -119,3 +151,22 @@ Request snapshot завжди видимий.
 - Approval lifecycle
 - Status transitions
 - Snapshot semantics
+
+---
+
+## Edge cases (P0)
+
+- **Duplicate approvals**: у UI показувати як “Already requested” (не плодити дублікати в UX)
+- **Outdated approval**: відображати `CANCELLED` з причиною та посиланням на актуальний approval/стан кейса
+- **Optimistic lock fail**: показати “хтось вже прийняв рішення” + refresh card
+
+---
+
+## Product Acceptance Checklist (P0)
+
+- [ ] На `/approvals` видно тільки те, що потребує рішення (pending) + коротка “recently decided”
+- [ ] Пріоритезація: SLA/critical approvals підняті вгору і візуально відрізняються
+- [ ] Кожна картка має: summary + request_snapshot + risk flags + 3 CTA
+- [ ] Reject вимагає причину (мінімальна довжина) і зберігає коментар
+- [ ] Після рішення користувач бачить підтвердження + може перейти в кейс або Timeline
+- [ ] Empty state: “нема що вирішувати” + CTA у Cases

@@ -4,6 +4,39 @@
 
 ---
 
+## Scope / Non-scope (для продуктового ревʼю)
+
+**Scope (P0):**
+- Черга документів, які потребують верифікації
+- Viewer + швидка верифікація/правка витягнутих даних
+
+**Non-scope (P1+):**
+- Повний DMS (версіювання/права/шаблони) як окремий продукт
+- Масові batch‑операції над десятками документів
+
+---
+
+## MVP (P0) vs Next (P1)
+
+**P0:**
+- Verification queue (needs review first)
+- Upload flow + статуси + viewer
+- Верифікація витягнутих даних (людина підтверджує/править)
+
+**P1:**
+- Batch verify / bulk actions
+- Розширені правила routing (case_type specific)
+
+---
+
+## Entry points / Deep links
+
+- `/documents` (вхід з навігації)
+- `/documents/:document_id` (viewer)
+- З документу є шлях у `/cases/:case_number`
+
+---
+
 ## Мета
 
 Documents — черга верифікації документів, що відповідає на питання: **"Які документи потребують моєї уваги?"**
@@ -139,3 +172,22 @@ Side-by-side view:
 - `documents.status` enum
 - AI extraction schema
 - RLS policies
+
+---
+
+## Edge cases (P0)
+
+- **Upload succeeded, processing failed**: статус/прапорець + CTA “Retry processing” (якщо дозволено) або “Replace file”
+- **Replaced version**: UI показує, що є нова версія, і веде на актуальну
+- **RLS denied**: viewer не розкриває метадані документу, якщо немає доступу
+
+---
+
+## Product Acceptance Checklist (P0)
+
+- [ ] На `/documents` є verification queue (“needs review first”) і видно link на кейс
+- [ ] Для кожного документа видно: file/type, source, status, confidence (якщо є)
+- [ ] Upload flow: після завантаження документ зʼявляється у списку зі статусом `UPLOADED`/`PROCESSING`
+- [ ] Viewer/verification: preview + extracted data + правка + підтвердження (без зайвих кроків)
+- [ ] “needs human review” показаний як derived flag (не статус) і пояснюється “чому”
+- [ ] Empty state: “нема документів для верифікації” + CTA “Upload”
