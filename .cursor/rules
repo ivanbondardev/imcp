@@ -40,7 +40,7 @@ AI        = Інструмент, НЕ суб'єкт рішення
 
 ### UI МОЖЕ записувати:
 - `cases.payload.*` — доменні поля
-- `approvals` — створювати (PENDING) та вирішувати (decision_*)
+- `approvals` — створювати (PENDING) та вирішувати **атомарно** (`status` + `decision_*`, тільки якщо `status='PENDING'`; `PENDING → APPROVED/REJECTED/CANCELLED`)
 - `documents` — метадані нових документів
 - `case_events` — тільки actor_type='HUMAN'
 
@@ -53,7 +53,7 @@ AI        = Інструмент, НЕ суб'єкт рішення
 ## Event Types (канонічні)
 
 Core: CASE_CREATED, STATE_CHANGED, STATUS_CHANGED
-Approval: APPROVAL_CREATED, APPROVAL_APPROVED, APPROVAL_REJECTED
+Approval: APPROVAL_CREATED, APPROVAL_APPROVED, APPROVAL_REJECTED, APPROVAL_CANCELLED
 Document: DOC_UPLOADED, DOC_EXTRACTED, DOC_VERIFIED
 Integration: INTEGRATION_STARTED, INTEGRATION_SUCCESS, INTEGRATION_FAILED
 
@@ -63,9 +63,11 @@ Integration: INTEGRATION_STARTED, INTEGRATION_SUCCESS, INTEGRATION_FAILED
 1. Система готує request_snapshot (чернетка)
 2. Створюється approval (status=PENDING)
 3. Людина вирішує: APPROVED / REJECTED / CANCELLED
-4. Workflow реагує на APPROVAL_DECIDED
+4. Workflow реагує на зміну `approvals.status` з `PENDING` на фінальний стан (transport trigger/webhook), а канонічні `case_events` логуються як `APPROVAL_*`, `INTEGRATION_*`, `STATE_CHANGED`
 5. Рішення immutable — не змінюється після прийняття
 ```
+
+> **Важливо:** DB trigger / webhook / realtime “сигнали” (напр. `CASE_UPDATED`, “`approvals.status changed`”) — це **транспорт**, а не `case_events.event_type`. Audit trail = лише `case_events` (append-only).
 
 ## Idempotency (ОБОВ'ЯЗКОВО)
 
